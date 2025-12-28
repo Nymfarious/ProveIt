@@ -8,7 +8,6 @@ export default {
   theme: {
     extend: {
       colors: {
-        // ProveIt Gutenberg Palette
         ink: {
           DEFAULT: '#1a1a1a',
           light: '#2d2d2d',
