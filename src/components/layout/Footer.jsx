@@ -26,10 +26,31 @@ export default function Footer() {
             </p>
           </div>
 
+          {/* Links */}
+          <div className="flex items-center justify-center gap-4 mb-4 text-xs">
+            <a 
+              href="https://constitution.congress.gov/constitution/amendment-1/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-copper/70 hover:text-copper transition-colors"
+            >
+              First Amendment
+            </a>
+            <span className="text-ink/20 dark:text-paper/20">✦</span>
+            <a 
+              href="https://www.supremecourt.gov/about/biographies.aspx"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-copper/70 hover:text-copper transition-colors"
+            >
+              U.S. Supreme Court
+            </a>
+          </div>
+
           {/* Version */}
           <div className="flex items-center justify-center gap-4 text-ink/20 dark:text-paper/20">
             <span className="font-mono text-[10px] uppercase tracking-wider">
-              ProveIt v0.1.0
+              ProveIt v2.2.0
             </span>
             <span>✦</span>
             <span className="font-mono text-[10px] uppercase tracking-wider">

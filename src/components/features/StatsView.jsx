@@ -1,7 +1,10 @@
-import { BarChart3, TrendingUp, Eye, Target } from 'lucide-react'
+import { useState } from 'react'
+import { BarChart3, TrendingUp, Eye, Target, AlertTriangle, Info } from 'lucide-react'
 import BiasBar from '../ui/BiasBar'
 
 export default function StatsView() {
+  const [includeIgnored, setIncludeIgnored] = useState(false)
+  
   // Mock stats - will be replaced with localStorage data
   const userStats = {
     totalArticles: 156,
@@ -13,6 +16,16 @@ export default function StatsView() {
       leanRight: 18,
       right: 7,
     },
+    // Stats including ignored/extreme sources
+    distributionWithIgnored: {
+      farLeft: 3,
+      left: 14,
+      leanLeft: 30,
+      center: 35,
+      leanRight: 20,
+      right: 9,
+      farRight: 5,
+    },
     topSources: [
       { name: 'Reuters', count: 24, bias: 'center' },
       { name: 'NPR', count: 18, bias: 'leanLeft' },
@@ -20,8 +33,15 @@ export default function StatsView() {
       { name: 'WSJ', count: 12, bias: 'leanRight' },
       { name: 'BBC', count: 10, bias: 'center' },
     ],
-    weeklyTrend: [-1.5, -1.2, -0.8, -1.0, -1.2]
+    weeklyTrend: [-1.5, -1.2, -0.8, -1.0, -1.2],
+    ignoredArticlesCount: 8,
   }
+
+  const currentDistribution = includeIgnored 
+    ? userStats.distributionWithIgnored 
+    : userStats.distribution
+
+  const totalWithIgnored = userStats.totalArticles + userStats.ignoredArticlesCount
 
   const getBiasLabel = (score) => {
     if (score <= -3) return 'Far Left'
@@ -37,6 +57,46 @@ export default function StatsView() {
 
   return (
     <div className="space-y-6">
+      {/* Disclaimer */}
+      <div className="p-4 rounded-lg border border-steel/20 bg-steel/5">
+        <div className="flex items-start gap-3">
+          <Info size={18} className="text-steel mt-0.5 flex-shrink-0" />
+          <div className="text-sm">
+            <p className="font-medium text-steel mb-1">About Your Statistics</p>
+            <p className="text-ink/60 dark:text-paper/60">
+              These analytics are based solely on your reading activity within ProveIt. 
+              Bias ratings come from independent media watchdog databases and reflect 
+              general editorial positioning—not the accuracy of individual articles. 
+              Your reading habits don't determine truth; they show perspective diversity.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Include Ignored Toggle */}
+      <div className={`p-3 rounded-lg border transition-colors ${
+        includeIgnored 
+          ? 'border-copper/40 bg-copper/5' 
+          : 'border-ink/10 dark:border-paper/10 bg-ink/[0.02] dark:bg-paper/[0.02]'
+      }`}>
+        <label className="flex items-center justify-between cursor-pointer">
+          <div className="flex items-center gap-2">
+            {includeIgnored && <AlertTriangle size={16} className="text-copper" />}
+            <span className={`text-sm ${includeIgnored ? 'text-copper font-medium' : 'text-ink/60 dark:text-paper/60'}`}>
+              {includeIgnored 
+                ? `Including ${userStats.ignoredArticlesCount} articles from Ignored Sources` 
+                : 'Include articles from Ignored Sources in stats'}
+            </span>
+          </div>
+          <button
+            onClick={() => setIncludeIgnored(!includeIgnored)}
+            className={`toggle ${includeIgnored ? 'active' : ''}`}
+          >
+            <span className="toggle-knob" />
+          </button>
+        </label>
+      </div>
+
       {/* Lean Indicator */}
       <div className="card">
         <h3 className="card-headline flex items-center gap-2 mb-6">
@@ -75,7 +135,7 @@ export default function StatsView() {
         </div>
 
         <p className="text-center text-sm text-ink/60 dark:text-paper/60 mt-4">
-          Based on {userStats.totalArticles} articles, you currently{' '}
+          Based on {includeIgnored ? totalWithIgnored : userStats.totalArticles} articles, you currently{' '}
           <span className="font-semibold text-ink dark:text-paper">
             {getBiasLabel(userStats.averageBias)}
           </span>
@@ -87,10 +147,15 @@ export default function StatsView() {
         <h3 className="card-headline flex items-center gap-2 mb-4">
           <BarChart3 size={18} className="text-copper" />
           Reading Distribution
+          {includeIgnored && (
+            <span className="text-xs font-normal text-copper bg-copper/10 px-2 py-0.5 rounded-full">
+              +Ignored
+            </span>
+          )}
         </h3>
-        <BiasBar sources={userStats.distribution} />
+        <BiasBar sources={currentDistribution} />
         <p className="text-sm text-ink/40 dark:text-paper/40 text-center mt-4">
-          {userStats.totalArticles} articles • Last 30 days
+          {includeIgnored ? totalWithIgnored : userStats.totalArticles} articles • Last 30 days
         </p>
       </div>
 
@@ -158,9 +223,9 @@ export default function StatsView() {
         </div>
       </div>
 
-      {/* Note */}
+      {/* Demo Note */}
       <p className="text-center text-xs text-ink/40 dark:text-paper/40">
-        📊 Demo data shown. Real analytics will track your reading patterns.
+        📊 Demo data shown. Real analytics will track your actual reading patterns.
       </p>
     </div>
   )

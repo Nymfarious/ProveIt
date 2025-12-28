@@ -14,9 +14,11 @@ function App() {
   const [activeView, setActiveView] = useState('search')
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('proveit-dark') === 'true'
+      const saved = localStorage.getItem('proveit-dark')
+      // Default to dark mode if no preference saved
+      return saved === null ? true : saved === 'true'
     }
-    return false
+    return true // Default dark
   })
 
   useEffect(() => {

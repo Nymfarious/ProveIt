@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Search, Link2, AlertCircle, CheckCircle, HelpCircle, Loader2 } from 'lucide-react'
+import { Search, Link2, AlertCircle, CheckCircle, HelpCircle, Loader2, Info } from 'lucide-react'
 import { runAI } from '../../lib/gemini'
 import BiasBar from '../ui/BiasBar'
 
@@ -18,7 +18,6 @@ export default function SearchView() {
     setResult(null)
 
     try {
-      // Use Gemini to analyze the claim
       const prompt = `You are a fact-checker. Analyze this claim or URL and provide a verdict.
 
 Claim/URL: "${query}"
@@ -35,10 +34,8 @@ Base your analysis on factual accuracy, context, and potential bias.`
 
       const response = await runAI(prompt)
       
-      // Try to parse JSON from response
       let parsed
       try {
-        // Extract JSON from response (handle markdown code blocks)
         const jsonMatch = response.match(/\{[\s\S]*\}/)
         if (jsonMatch) {
           parsed = JSON.parse(jsonMatch[0])
@@ -46,7 +43,6 @@ Base your analysis on factual accuracy, context, and potential bias.`
           throw new Error('No JSON found')
         }
       } catch {
-        // Fallback if parsing fails
         parsed = {
           verdict: 'mixed',
           confidence: 0.5,
@@ -103,15 +99,25 @@ Base your analysis on factual accuracy, context, and potential bias.`
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Enter URL or claim to verify..."
+              placeholder="Paste a news URL or type a statement to fact-check..."
               className="search-input pl-12 pr-4"
               disabled={isLoading}
             />
           </div>
           
-          <div className="flex items-center gap-2 mt-3 text-sm text-ink/50 dark:text-paper/50">
-            <Link2 size={14} />
-            <span>Paste a URL or type a claim to fact-check</span>
+          {/* Helper text */}
+          <div className="mt-3 p-3 bg-steel/5 dark:bg-steel/10 rounded-lg border border-steel/10">
+            <div className="flex items-start gap-2 text-sm text-ink/60 dark:text-paper/60">
+              <Info size={16} className="text-steel mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="font-medium text-ink/70 dark:text-paper/70 mb-1">What can you check?</p>
+                <ul className="space-y-1 text-xs">
+                  <li>• <span className="text-ink/80 dark:text-paper/80">News URLs:</span> Paste a link to any article</li>
+                  <li>• <span className="text-ink/80 dark:text-paper/80">Claims:</span> "The Earth is flat" or "Congress passed X bill"</li>
+                  <li>• <span className="text-ink/80 dark:text-paper/80">Quotes:</span> "Did [person] really say this?"</li>
+                </ul>
+              </div>
+            </div>
           </div>
 
           <button
