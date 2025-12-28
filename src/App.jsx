@@ -1,34 +1,65 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import Header from './components/layout/Header'
+import Navigation from './components/layout/Navigation'
+import Footer from './components/layout/Footer'
+import SearchView from './components/features/SearchView'
+import FeedView from './components/features/FeedView'
+import StatsView from './components/features/StatsView'
+import IgnoredView from './components/features/IgnoredView'
+import SettingsView from './components/features/SettingsView'
+import DevToolsView from './components/features/DevToolsView'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [activeView, setActiveView] = useState('search')
+  const [darkMode, setDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('proveit-dark') === 'true'
+    }
+    return false
+  })
+
+  useEffect(() => {
+    localStorage.setItem('proveit-dark', darkMode)
+    if (darkMode) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+  }, [darkMode])
+
+  const views = {
+    search: SearchView,
+    feed: FeedView,
+    stats: StatsView,
+    ignored: IgnoredView,
+    settings: SettingsView,
+    devtools: DevToolsView,
+  }
+
+  const ActiveComponent = views[activeView] || SearchView
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div className={`min-h-screen flex flex-col bg-paper dark:bg-ink text-ink dark:text-paper transition-colors duration-300`}>
+      <Header darkMode={darkMode} setDarkMode={setDarkMode} />
+      <Navigation activeView={activeView} setActiveView={setActiveView} />
+      
+      <main className="flex-1 container mx-auto px-4 py-6 max-w-4xl">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeView}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.15 }}
+          >
+            <ActiveComponent />
+          </motion.div>
+        </AnimatePresence>
+      </main>
+
+      <Footer />
+    </div>
   )
 }
 

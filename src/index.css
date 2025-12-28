@@ -1,68 +1,173 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Crimson+Text:wght@400;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+/* ═══════════════════════════════════════════════════════════════
+   PROVEIT - Gutenberg Meets Futuristic Newsroom
+   ═══════════════════════════════════════════════════════════════ */
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+@layer base {
+  html {
+    @apply antialiased scroll-smooth;
   }
-  a:hover {
-    color: #747bff;
+
+  body {
+    @apply bg-paper text-ink font-body min-h-screen;
   }
-  button {
-    background-color: #f9f9f9;
+
+  .dark body {
+    @apply bg-ink text-paper;
   }
+
+  h1, .masthead {
+    @apply font-masthead tracking-tight;
+  }
+
+  h2, h3, .headline {
+    @apply font-headline;
+  }
+}
+
+@layer components {
+  /* Navigation Icons */
+  .nav-icon {
+    @apply relative p-3 rounded-lg transition-all duration-200
+           text-ink/60 hover:text-ink hover:bg-ink/5
+           dark:text-paper/60 dark:hover:text-paper dark:hover:bg-paper/5
+           cursor-pointer;
+  }
+
+  .nav-icon.active {
+    @apply text-copper bg-copper/10;
+  }
+
+  .nav-icon::after {
+    content: attr(data-tooltip);
+    @apply absolute left-1/2 -translate-x-1/2 top-full mt-2
+           px-2 py-1 text-xs font-body
+           bg-ink text-paper dark:bg-paper dark:text-ink
+           rounded opacity-0 pointer-events-none
+           transition-opacity duration-200 whitespace-nowrap z-50;
+  }
+
+  .nav-icon:hover::after {
+    @apply opacity-100;
+  }
+
+  /* Cards */
+  .card {
+    @apply bg-white dark:bg-ink-light
+           border border-ink/10 dark:border-paper/10
+           rounded-xl p-5 shadow-sm;
+  }
+
+  .card-headline {
+    @apply font-headline text-lg font-semibold mb-2;
+  }
+
+  /* Bias Badges */
+  .bias-badge {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 
+           text-xs font-medium rounded-full;
+  }
+
+  .bias-badge.far-left { @apply bg-blue-900/20 text-blue-900 dark:text-blue-300; }
+  .bias-badge.left { @apply bg-blue-600/20 text-blue-700 dark:text-blue-300; }
+  .bias-badge.lean-left { @apply bg-blue-400/20 text-blue-600 dark:text-blue-300; }
+  .bias-badge.center { @apply bg-gray-400/20 text-gray-600 dark:text-gray-300; }
+  .bias-badge.lean-right { @apply bg-red-400/20 text-red-600 dark:text-red-300; }
+  .bias-badge.right { @apply bg-red-600/20 text-red-700 dark:text-red-300; }
+  .bias-badge.far-right { @apply bg-red-900/20 text-red-900 dark:text-red-300; }
+
+  /* Buttons */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2
+           px-4 py-2.5 rounded-lg font-medium
+           transition-all duration-200
+           focus:outline-none focus:ring-2 focus:ring-offset-2
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply btn bg-copper text-white hover:bg-copper-dark
+           focus:ring-copper;
+  }
+
+  .btn-secondary {
+    @apply btn bg-steel text-white hover:bg-steel-dark
+           focus:ring-steel;
+  }
+
+  .btn-ghost {
+    @apply btn text-ink dark:text-paper 
+           hover:bg-ink/5 dark:hover:bg-paper/5;
+  }
+
+  /* Search Input */
+  .search-input {
+    @apply w-full px-4 py-3 rounded-lg
+           bg-white dark:bg-ink
+           border-2 border-ink/10 dark:border-paper/10
+           font-body text-ink dark:text-paper
+           placeholder:text-ink/40 dark:placeholder:text-paper/40
+           focus:outline-none focus:border-copper
+           transition-colors duration-200;
+  }
+
+  /* Fringe Panels */
+  .fringe-panel {
+    @apply border-l-4 p-4 rounded-r-lg;
+  }
+
+  .fringe-panel.left-fringe {
+    @apply border-l-blue-800 bg-blue-50 dark:bg-blue-900/20;
+  }
+
+  .fringe-panel.right-fringe {
+    @apply border-l-red-800 bg-red-50 dark:bg-red-900/20;
+  }
+
+  /* Loading Animation */
+  .loading-pulse {
+    @apply animate-pulse bg-ink/10 dark:bg-paper/10 rounded;
+  }
+
+  /* Toggle Switch */
+  .toggle {
+    @apply relative inline-flex h-6 w-11 items-center rounded-full
+           bg-ink/20 dark:bg-paper/20 transition-colors
+           cursor-pointer;
+  }
+
+  .toggle.active {
+    @apply bg-copper;
+  }
+
+  .toggle-knob {
+    @apply inline-block h-4 w-4 transform rounded-full bg-white
+           transition-transform translate-x-1;
+  }
+
+  .toggle.active .toggle-knob {
+    @apply translate-x-6;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  @apply w-2;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-ink/20 dark:bg-paper/20 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-ink/30 dark:bg-paper/30;
 }
