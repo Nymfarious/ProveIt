@@ -9,13 +9,6 @@ import StatsView from './components/features/StatsView'
 import IgnoredView from './components/features/IgnoredView'
 import SettingsView from './components/features/SettingsView'
 import DevToolsView from './components/features/DevToolsView'
-import HelpView from './components/features/HelpView'
-import { useAnalytics } from './hooks/useAnalytics'
-
-// Create context for analytics
-import { createContext, useContext } from 'react'
-export const AnalyticsContext = createContext(null)
-export const useAnalyticsContext = () => useContext(AnalyticsContext)
 
 function App() {
   const [activeView, setActiveView] = useState('search')
@@ -26,12 +19,7 @@ function App() {
     }
     return true
   })
-  const [devToolsEnabled, setDevToolsEnabled] = useState(false)
 
-  // Initialize analytics
-  const analytics = useAnalytics()
-
-  // Dark mode effect
   useEffect(() => {
     localStorage.setItem('proveit-dark', darkMode)
     if (darkMode) {
@@ -41,30 +29,17 @@ function App() {
     }
   }, [darkMode])
 
-  // DevTools hotkey: Alt + Shift + D
+  // Keyboard shortcut: CTRL+ALT+V for DevTools
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.altKey && e.shiftKey && e.key === 'D') {
+      if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'v') {
         e.preventDefault()
-        setDevToolsEnabled(prev => {
-          const newState = !prev
-          if (newState) {
-            console.log('%c🔧 DevTools Enabled', 'color: #c45d2c; font-size: 14px; font-weight: bold;')
-          } else {
-            console.log('%c🔧 DevTools Disabled', 'color: #666; font-size: 14px;')
-            // If currently on devtools view, switch away
-            if (activeView === 'devtools') {
-              setActiveView('settings')
-            }
-          }
-          return newState
-        })
+        setActiveView(prev => prev === 'devtools' ? 'search' : 'devtools')
       }
     }
-
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [activeView])
+  }, [])
 
   const views = {
     search: SearchView,
@@ -73,38 +48,31 @@ function App() {
     ignored: IgnoredView,
     settings: SettingsView,
     devtools: DevToolsView,
-    help: HelpView,
   }
 
   const ActiveComponent = views[activeView] || SearchView
 
   return (
-    <AnalyticsContext.Provider value={analytics}>
-      <div className="min-h-screen flex flex-col bg-paper dark:bg-ink text-ink dark:text-paper transition-colors duration-300">
-        <Header darkMode={darkMode} setDarkMode={setDarkMode} />
-        <Navigation 
-          activeView={activeView} 
-          setActiveView={setActiveView} 
-          devToolsEnabled={devToolsEnabled}
-        />
-        
-        <main className="flex-1 container mx-auto px-4 py-6 max-w-4xl">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeView}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.15 }}
-            >
-              <ActiveComponent />
-            </motion.div>
-          </AnimatePresence>
-        </main>
+    <div className={`min-h-screen flex flex-col bg-paper dark:bg-ink text-ink dark:text-paper transition-colors duration-300`}>
+      <Header darkMode={darkMode} setDarkMode={setDarkMode} />
+      <Navigation activeView={activeView} setActiveView={setActiveView} />
+      
+      <main className="flex-1 container mx-auto px-4 py-6 max-w-4xl">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeView}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.15 }}
+          >
+            <ActiveComponent />
+          </motion.div>
+        </AnimatePresence>
+      </main>
 
-        <Footer lastLogin={analytics.lastLogin} />
-      </div>
-    </AnalyticsContext.Provider>
+      <Footer />
+    </div>
   )
 }
 
