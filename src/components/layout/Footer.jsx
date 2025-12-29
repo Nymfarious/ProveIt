@@ -1,34 +1,15 @@
-export default function Footer({ lastLogin }) {
-  const formatLastLogin = (timestamp) => {
-    if (!timestamp) return null
-    try {
-      const date = new Date(timestamp)
-      return date.toLocaleDateString('en-US', { 
-        month: 'short', 
-        day: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit'
-      })
-    } catch {
-      return null
-    }
-  }
-
+export default function Footer() {
   return (
     <footer className="border-t border-ink/10 dark:border-paper/10 mt-auto">
       <div className="bg-ink/[0.02] dark:bg-paper/[0.02] py-6">
         <div className="container mx-auto px-4 max-w-4xl">
-          {/* Printing press ornament */}
-          <div className="flex items-center justify-center gap-3 text-ink/20 dark:text-paper/20 mb-4">
-            <div className="flex-1 h-px bg-current" />
-            <svg viewBox="0 0 100 30" className="w-20 h-6" fill="currentColor">
-              <rect x="10" y="20" width="80" height="8" rx="1" />
-              <rect x="20" y="12" width="60" height="10" rx="1" />
-              <rect x="35" y="2" width="30" height="12" rx="1" />
-              <circle cx="25" cy="25" r="4" />
-              <circle cx="75" cy="25" r="4" />
-            </svg>
-            <div className="flex-1 h-px bg-current" />
+          {/* Flourish ornament - matching Header style */}
+          <div className="flex items-center justify-center gap-2 mb-4 text-copper/50">
+            <span className="text-sm">❧</span>
+            <div className="w-12 h-px bg-current" />
+            <span className="text-sm">✦</span>
+            <div className="w-12 h-px bg-current" />
+            <span className="text-sm">☙</span>
           </div>
 
           {/* Quote */}
@@ -51,41 +32,48 @@ export default function Footer({ lastLogin }) {
             >
               First Amendment
             </a>
-            <span className="text-ink/20 dark:text-paper/20">✦</span>
+            <span className="text-copper/30">✦</span>
             <a 
-              href="https://www.supremecourt.gov/about/biographies.aspx"
+              href="https://www.supremecourt.gov/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-copper/70 hover:text-copper transition-colors"
             >
               U.S. Supreme Court
             </a>
-            <span className="text-ink/20 dark:text-paper/20">✦</span>
+            <span className="text-copper/30">✦</span>
             <a 
-              href="https://github.com/Nymfarious/ProveIt/blob/main/LICENSE"
+              href="https://www.oyez.org/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-copper/70 hover:text-copper transition-colors"
             >
-              MIT License
+              Oyez
             </a>
           </div>
 
-          {/* Version & Last Login */}
-          <div className="flex items-center justify-between text-ink/20 dark:text-paper/20">
+          {/* Flourish before version */}
+          <div className="flex items-center justify-center gap-2 mb-2 text-ink/15 dark:text-paper/15">
+            <div className="w-8 h-px bg-current" />
+            <span className="text-xs">✦</span>
+            <div className="w-8 h-px bg-current" />
+          </div>
+
+          {/* Version */}
+          <div className="flex items-center justify-center gap-4 text-ink/20 dark:text-paper/20">
             <span className="font-mono text-[10px] uppercase tracking-wider">
-              ProveIt v2.3.3
+              ProveIt v2.4.0
             </span>
-            
+            <span>✦</span>
             <span className="font-mono text-[10px] uppercase tracking-wider">
               Personal Edition
             </span>
+          </div>
 
-            {lastLogin && (
-              <span className="font-mono text-[10px] opacity-60" title="Last session">
-                Last: {formatLastLogin(lastLogin)}
-              </span>
-            )}
+          {/* Bottom flourish */}
+          <div className="flex items-center justify-center gap-2 mt-3 text-ink/10 dark:text-paper/10">
+            <span className="text-xs">❧</span>
+            <span className="text-xs">☙</span>
           </div>
         </div>
       </div>

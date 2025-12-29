@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Search, Link2, AlertCircle, CheckCircle, HelpCircle, Loader2, Info } from 'lucide-react'
+import { Search, AlertCircle, CheckCircle, HelpCircle, Loader2 } from 'lucide-react'
 import { runAI } from '../../lib/gemini'
 import BiasBar from '../ui/BiasBar'
 
@@ -99,25 +99,10 @@ Base your analysis on factual accuracy, context, and potential bias.`
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Paste a news URL or type a statement to fact-check..."
+              placeholder="Paste a news URL or type a claim to fact-check..."
               className="search-input pl-12 pr-4"
               disabled={isLoading}
             />
-          </div>
-          
-          {/* Helper text */}
-          <div className="mt-3 p-3 bg-steel/5 dark:bg-steel/10 rounded-lg border border-steel/10">
-            <div className="flex items-start gap-2 text-sm text-ink/60 dark:text-paper/60">
-              <Info size={16} className="text-steel mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="font-medium text-ink/70 dark:text-paper/70 mb-1">What can you check?</p>
-                <ul className="space-y-1 text-xs">
-                  <li>• <span className="text-ink/80 dark:text-paper/80">News URLs:</span> Paste a link to any article</li>
-                  <li>• <span className="text-ink/80 dark:text-paper/80">Claims:</span> "The Earth is flat" or "Congress passed X bill"</li>
-                  <li>• <span className="text-ink/80 dark:text-paper/80">Quotes:</span> "Did [person] really say this?"</li>
-                </ul>
-              </div>
-            </div>
           </div>
 
           <button
@@ -193,13 +178,11 @@ Base your analysis on factual accuracy, context, and potential bias.`
             </div>
           </div>
 
-          {/* Source Distribution (placeholder) */}
+          {/* Source Distribution */}
           <div className="card">
             <h3 className="card-headline flex items-center gap-2 mb-4">
               <span>Source Distribution</span>
-              <span className="text-sm font-normal text-ink/50 dark:text-paper/50">
-                (Demo data)
-              </span>
+              <span className="text-sm font-normal text-ink/50 dark:text-paper/50">(Demo data)</span>
             </h3>
             <BiasBar sources={result.sources} />
           </div>
@@ -214,10 +197,18 @@ Base your analysis on factual accuracy, context, and potential bias.`
       {/* Empty State */}
       {!result && !error && (
         <div className="card text-center py-12">
+          <div className="flex items-center justify-center gap-2 mb-4 text-copper/30">
+            <span>❧</span>
+            <span>✦</span>
+            <span>☙</span>
+          </div>
           <Search size={40} className="mx-auto mb-3 text-ink/20 dark:text-paper/20" />
           <h3 className="font-headline text-lg mb-1">Ready to fact-check</h3>
-          <p className="text-sm text-ink/50 dark:text-paper/50">
+          <p className="text-sm text-ink/50 dark:text-paper/50 mb-4">
             Enter a claim or paste a URL above to get started
+          </p>
+          <p className="text-xs text-ink/30 dark:text-paper/30">
+            Need help? Click the <HelpCircle size={12} className="inline" /> icon in the navigation
           </p>
         </div>
       )}

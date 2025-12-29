@@ -9,6 +9,8 @@ import StatsView from './components/features/StatsView'
 import IgnoredView from './components/features/IgnoredView'
 import SettingsView from './components/features/SettingsView'
 import DevToolsView from './components/features/DevToolsView'
+import HelpView from './components/features/HelpView'
+import SupremeCourtView from './components/features/SupremeCourtView'
 
 function App() {
   const [activeView, setActiveView] = useState('search')
@@ -48,6 +50,8 @@ function App() {
     ignored: IgnoredView,
     settings: SettingsView,
     devtools: DevToolsView,
+    help: HelpView,
+    scotus: SupremeCourtView,
   }
 
   const ActiveComponent = views[activeView] || SearchView

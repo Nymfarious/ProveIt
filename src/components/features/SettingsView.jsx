@@ -55,13 +55,11 @@ export default function SettingsView() {
               <button onClick={() => setShowRetentionInfo(false)} className="p-1 hover:bg-ink/10 dark:hover:bg-paper/10 rounded"><X size={20} /></button>
             </div>
             <div className="space-y-4 text-sm text-ink/70 dark:text-paper/70">
-              <p><strong className="text-ink dark:text-paper">How the rolling window works:</strong></p>
               <div className="p-3 bg-steel/10 rounded-lg border border-steel/20">
                 <p className="mb-2">Data older than your retention period (default 30 days) is automatically deleted to save storage space.</p>
               </div>
               <p><strong className="text-ink dark:text-paper">Want to keep historical data?</strong></p>
-              <p>Use <strong>Export</strong> to download your data before it expires. You can then compare:</p>
-              <ul className="list-disc list-inside space-y-1 ml-2"><li><strong>Week-over-Week (WoW)</strong></li><li><strong>Month-over-Month (MoM)</strong></li><li><strong>Quarter-over-Quarter (QoQ)</strong></li></ul>
+              <p>Use <strong>Export</strong> to download your data before it expires for WoW, MoM, or QoQ analysis.</p>
               <div className="p-3 bg-copper/10 rounded-lg border border-copper/20">
                 <p className="text-copper font-medium mb-1">💡 Pro Tip</p>
                 <p className="text-copper/80 text-xs">Enable "Auto Snapshot" to automatically save weekly reports.</p>
@@ -106,7 +104,7 @@ export default function SettingsView() {
             <button onClick={() => setShowPrivacyInfo(true)} className="text-sm text-steel hover:text-steel-dark flex items-center gap-1"><Info size={14} />Learn more</button>
           </div>
           <div className="p-3 rounded-lg bg-forest/10 border border-forest/20 mb-6">
-            <div className="flex items-start gap-2"><Shield size={16} className="text-forest mt-0.5 flex-shrink-0" /><p className="text-sm text-forest"><strong>Your data stays on YOUR device.</strong> ProveIt doesn't track you or send your information anywhere.</p></div>
+            <div className="flex items-start gap-2"><Shield size={16} className="text-forest mt-0.5 flex-shrink-0" /><p className="text-sm text-forest"><strong>Your data stays on YOUR device.</strong> ProveIt doesn't track you.</p></div>
           </div>
           <div className="space-y-5">
             <div className="flex items-center justify-between">
@@ -121,10 +119,9 @@ export default function SettingsView() {
               <select value={privacy.dataRetentionDays} onChange={(e) => setPrivacy({ ...privacy, dataRetentionDays: Number(e.target.value) })} className="search-input text-sm">
                 <option value={7}>7 days</option><option value={14}>14 days</option><option value={30}>30 days (default)</option>
               </select>
-              <p className="text-xs text-ink/40 dark:text-paper/40 mt-1">Data older than this is automatically deleted. Use Export to keep historical records.</p>
             </div>
             <div className="flex items-center justify-between">
-              <div><p className="font-medium">Auto Weekly Snapshot</p><p className="text-sm text-ink/50 dark:text-paper/50">Save weekly reports for WoW/MoM comparison</p></div>
+              <div><p className="font-medium">Auto Weekly Snapshot</p><p className="text-sm text-ink/50 dark:text-paper/50">Save weekly reports for comparison</p></div>
               <button onClick={() => setPrivacy({ ...privacy, autoSnapshot: !privacy.autoSnapshot })} className={`toggle ${privacy.autoSnapshot ? 'active' : ''}`}><span className="toggle-knob" /></button>
             </div>
           </div>
@@ -143,26 +140,21 @@ export default function SettingsView() {
               <div className="p-3 rounded-lg bg-ink/5 dark:bg-paper/5"><p className="text-sm font-medium">{dataSummary.storageUsed}</p><p className="text-xs text-ink/50 dark:text-paper/50">Storage Used</p></div>
             </div>
           </div>
-
           <div className="card">
             <h3 className="card-headline flex items-center gap-2 mb-4"><FileText size={18} className="text-copper" />Export Your Data</h3>
             <div className="space-y-2">
               <button className="w-full flex items-center gap-3 p-3 rounded-lg bg-copper/10 hover:bg-copper/20 transition-colors text-left">
-                <FileText size={18} className="text-copper" />
-                <div className="flex-1"><span className="font-medium text-copper">View & Download Report</span><p className="text-xs text-ink/50 dark:text-paper/50">Opens styled report in browser</p></div>
+                <FileText size={18} className="text-copper" /><div className="flex-1"><span className="font-medium text-copper">View & Download Report</span><p className="text-xs text-ink/50 dark:text-paper/50">Opens styled report in browser</p></div>
               </button>
               <button className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-ink/5 dark:hover:bg-paper/5 transition-colors text-left">
-                <Printer size={18} className="text-ink/40 dark:text-paper/40" />
-                <div className="flex-1"><span className="font-medium">Print to PDF / Printer</span><p className="text-xs text-ink/50 dark:text-paper/50">Privacy-first printing</p></div>
+                <Printer size={18} className="text-ink/40 dark:text-paper/40" /><div className="flex-1"><span className="font-medium">Print to PDF / Printer</span></div>
               </button>
               <div className="flex gap-2">
                 <button className="flex-1 flex items-center justify-center gap-2 p-3 rounded-lg hover:bg-ink/5 dark:hover:bg-paper/5"><Download size={16} className="text-ink/40 dark:text-paper/40" /><span className="text-sm">Export JSON</span></button>
                 <button className="flex-1 flex items-center justify-center gap-2 p-3 rounded-lg hover:bg-ink/5 dark:hover:bg-paper/5"><Upload size={16} className="text-ink/40 dark:text-paper/40" /><span className="text-sm">Import Data</span></button>
               </div>
-              <p className="text-xs text-ink/40 dark:text-paper/40 text-center">JSON exports can be re-imported for extended WoW, MoM, or QoQ analysis</p>
             </div>
           </div>
-
           <div className="card">
             <h3 className="card-headline flex items-center gap-2 mb-4"><Trash2 size={18} className="text-burgundy" />Clear Tracking Data</h3>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -207,12 +199,32 @@ export default function SettingsView() {
         </div>
       )}
 
-      {/* About */}
+      {/* About - WITH PROPER FLOURISH */}
       <div className="card text-center">
-        <div className="flex items-center justify-center gap-2 mb-2 text-copper/50"><span>❧</span><span>✦</span><span>☙</span></div>
+        {/* Flourish - matching Header */}
+        <div className="flex items-center justify-center gap-2 mb-3 text-copper/50">
+          <span className="text-sm">❧</span>
+          <div className="w-12 h-px bg-current" />
+          <span className="text-sm">✦</span>
+          <div className="w-12 h-px bg-current" />
+          <span className="text-sm">☙</span>
+        </div>
+        
         <div className="font-masthead text-2xl tracking-widest mb-1">P R O V E I T</div>
-        <p className="text-sm text-ink/50 dark:text-paper/50">Version 2.3.4 • Personal Edition</p>
-        <p className="text-xs text-ink/30 dark:text-paper/30 mt-2 italic font-headline">"Veritas Lux" — Truth is Light</p>
+        <p className="text-sm text-ink/50 dark:text-paper/50">Version 2.4.0 • Personal Edition</p>
+        
+        {/* Tagline with flourish */}
+        <div className="flex items-center justify-center gap-3 mt-2">
+          <div className="w-8 h-px bg-ink/20 dark:bg-paper/20" />
+          <p className="text-xs text-ink/30 dark:text-paper/30 italic font-headline">"Veritas Lux" — Truth is Light</p>
+          <div className="w-8 h-px bg-ink/20 dark:bg-paper/20" />
+        </div>
+        
+        {/* Bottom flourish */}
+        <div className="flex items-center justify-center gap-2 mt-3 text-ink/15 dark:text-paper/15">
+          <span className="text-xs">❧</span>
+          <span className="text-xs">☙</span>
+        </div>
       </div>
     </div>
   )
