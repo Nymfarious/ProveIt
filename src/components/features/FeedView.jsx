@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Newspaper, TrendingUp, Clock, ExternalLink, Loader2, RefreshCw, Globe, Filter, History, X, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Newspaper, TrendingUp, Clock, ExternalLink, Loader2, RefreshCw, Globe, Filter, History, X, ChevronLeft, ChevronRight, Film } from 'lucide-react'
 import { fetchHeadlines } from '../../lib/news'
 
 const categories = [
@@ -9,7 +9,7 @@ const categories = [
   { id: 'technology', label: 'Tech' },
   { id: 'science', label: 'Science' },
   { id: 'health', label: 'Medical' },
-  { id: 'entertainment', label: 'Movies/TV' },
+  { id: 'entertainment', label: 'Movies/TV', hasImdb: true },
   { id: 'world', label: 'International' },
 ]
 
@@ -19,6 +19,22 @@ const regions = [
   { id: 'world', label: 'World' },
 ]
 
+// Extract potential IMDB search terms from article
+const extractImdbSearchTerms = (article) => {
+  // Would be smarter with NLP, but basic extraction for now
+  const title = article.title || ''
+  // Look for quoted titles, movie/show names patterns
+  const quotedMatch = title.match(/"([^"]+)"/)
+  if (quotedMatch) return quotedMatch[1]
+  
+  // Look for common patterns like "Actor in Movie" or "Show: Episode"
+  const colonMatch = title.match(/^([^:]+):/)
+  if (colonMatch) return colonMatch[1].trim()
+  
+  // Return first few meaningful words as fallback
+  return title.split(' ').slice(0, 3).join(' ')
+}
+
 export default function FeedView() {
   const [articles, setArticles] = useState([])
   const [isLoading, setIsLoading] = useState(true)
@@ -26,10 +42,8 @@ export default function FeedView() {
   const [category, setCategory] = useState('top')
   const [region, setRegion] = useState('us')
   const [showFilters, setShowFilters] = useState(false)
-  
-  // Feed History State
   const [feedHistory, setFeedHistory] = useState([])
-  const [activeHistoryIndex, setActiveHistoryIndex] = useState(-1) // -1 = current/live
+  const [activeHistoryIndex, setActiveHistoryIndex] = useState(-1)
   const [showHistory, setShowHistory] = useState(false)
 
   const loadNews = async (addToHistory = true) => {
@@ -40,7 +54,6 @@ export default function FeedView() {
       const data = await fetchHeadlines(category === 'world' ? 'top' : category, countryCode)
       setArticles(data)
       
-      // Add to history if this is a new fetch (not viewing history)
       if (addToHistory && data.length > 0) {
         const historyEntry = {
           id: Date.now(),
@@ -50,9 +63,7 @@ export default function FeedView() {
           articles: data,
           articleCount: data.length,
         }
-        
         setFeedHistory(prev => {
-          // Keep last 30 days worth, max 50 entries
           const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000)
           const filtered = prev.filter(h => new Date(h.timestamp).getTime() > thirtyDaysAgo)
           return [historyEntry, ...filtered].slice(0, 50)
@@ -71,7 +82,6 @@ export default function FeedView() {
     loadNews()
   }, [category, region])
 
-  // Load history entry
   const viewHistoryEntry = (index) => {
     const entry = feedHistory[index]
     if (entry) {
@@ -80,19 +90,12 @@ export default function FeedView() {
     }
   }
 
-  // Go back to live feed
   const goToLive = () => {
     setActiveHistoryIndex(-1)
     loadNews(false)
   }
 
-  const todayBalance = {
-    left: 2,
-    leanLeft: 4,
-    center: 6,
-    leanRight: 3,
-    right: 1,
-  }
+  const todayBalance = { left: 2, leanLeft: 4, center: 6, leanRight: 3, right: 1 }
   const totalReads = Object.values(todayBalance).reduce((a, b) => a + b, 0)
 
   const formatDate = (dateString) => {
@@ -109,11 +112,13 @@ export default function FeedView() {
     const date = new Date(timestamp)
     const now = new Date()
     const diffMins = Math.floor((now - date) / (1000 * 60))
-    
     if (diffMins < 60) return `${diffMins}m ago`
     if (diffMins < 1440) return `${Math.floor(diffMins / 60)}h ago`
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   }
+
+  const currentCategory = categories.find(c => c.id === category)
+  const showImdbLinks = currentCategory?.hasImdb
 
   return (
     <div className="space-y-6">
@@ -151,28 +156,24 @@ export default function FeedView() {
             {categories.map((cat) => (
               <button
                 key={cat.id}
-                onClick={() => { setCategory(cat.id); setActiveHistoryIndex(-1); }}
-                className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
-                  category === cat.id ? 'bg-copper text-white' : 'bg-ink/5 dark:bg-paper/5 hover:bg-ink/10 dark:hover:bg-paper/10'
+                onClick={() => { setCategory(cat.id); setActiveHistoryIndex(-1) }}
+                className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors flex items-center gap-1.5 ${
+                  category === cat.id ? 'bg-copper text-white' : 'bg-ink/5 dark:bg-paper/5 hover:bg-ink/10'
                 }`}
               >
+                {cat.hasImdb && <Film size={14} />}
                 {cat.label}
               </button>
             ))}
           </div>
           
           <div className="flex gap-1 ml-2">
-            <button
-              onClick={() => setShowHistory(!showHistory)}
-              className={`p-2 rounded-lg transition-colors ${showHistory ? 'bg-steel text-white' : 'bg-ink/5 dark:bg-paper/5'}`}
-              title="Feed History"
-            >
+            <button onClick={() => setShowHistory(!showHistory)}
+              className={`p-2 rounded-lg transition-colors ${showHistory ? 'bg-steel text-white' : 'bg-ink/5 dark:bg-paper/5'}`}>
               <History size={18} />
             </button>
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className={`p-2 rounded-lg transition-colors ${showFilters ? 'bg-copper text-white' : 'bg-ink/5 dark:bg-paper/5'}`}
-            >
+            <button onClick={() => setShowFilters(!showFilters)}
+              className={`p-2 rounded-lg transition-colors ${showFilters ? 'bg-copper text-white' : 'bg-ink/5 dark:bg-paper/5'}`}>
               <Filter size={18} />
             </button>
           </div>
@@ -183,13 +184,10 @@ export default function FeedView() {
             <Globe size={16} className="text-ink/40 dark:text-paper/40" />
             <span className="text-sm text-ink/60 dark:text-paper/60">Region:</span>
             {regions.map((r) => (
-              <button
-                key={r.id}
-                onClick={() => setRegion(r.id)}
+              <button key={r.id} onClick={() => setRegion(r.id)}
                 className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
                   region === r.id ? 'bg-steel text-white' : 'bg-ink/10 dark:bg-paper/10'
-                }`}
-              >
+                }`}>
                 {r.label}
               </button>
             ))}
@@ -203,10 +201,7 @@ export default function FeedView() {
           <div className="flex items-center justify-between mb-3">
             <h3 className="card-headline flex items-center gap-2">
               <History size={18} className="text-steel" />
-              Feed History
-              <span className="text-xs font-normal text-ink/40 dark:text-paper/40">
-                (Last 30 days)
-              </span>
+              Feed History <span className="text-xs font-normal text-ink/40">(Last 30 days)</span>
             </h3>
             <button onClick={() => setShowHistory(false)} className="text-ink/40 hover:text-ink dark:hover:text-paper">
               <X size={18} />
@@ -214,49 +209,33 @@ export default function FeedView() {
           </div>
 
           {feedHistory.length === 0 ? (
-            <p className="text-sm text-ink/50 dark:text-paper/50 text-center py-4">
-              No history yet. Refresh to start tracking.
-            </p>
+            <p className="text-sm text-ink/50 dark:text-paper/50 text-center py-4">No history yet.</p>
           ) : (
             <div className="space-y-2 max-h-64 overflow-y-auto">
-              {/* Live Feed Button */}
-              <button
-                onClick={goToLive}
+              <button onClick={goToLive}
                 className={`w-full p-3 rounded-lg text-left transition-colors flex items-center justify-between ${
-                  activeHistoryIndex === -1 ? 'bg-forest/10 border border-forest/30' : 'bg-ink/5 dark:bg-paper/5 hover:bg-ink/10 dark:hover:bg-paper/10'
-                }`}
-              >
+                  activeHistoryIndex === -1 ? 'bg-forest/10 border border-forest/30' : 'bg-ink/5 dark:bg-paper/5'
+                }`}>
                 <div className="flex items-center gap-2">
                   <span className={`w-2 h-2 rounded-full ${activeHistoryIndex === -1 ? 'bg-forest animate-pulse' : 'bg-ink/30'}`} />
                   <span className="font-medium text-sm">Live Feed</span>
                 </div>
-                {activeHistoryIndex === -1 && (
-                  <span className="text-xs text-forest">Current</span>
-                )}
+                {activeHistoryIndex === -1 && <span className="text-xs text-forest">Current</span>}
               </button>
 
               {feedHistory.map((entry, index) => (
-                <button
-                  key={entry.id}
-                  onClick={() => viewHistoryEntry(index)}
+                <button key={entry.id} onClick={() => viewHistoryEntry(index)}
                   className={`w-full p-3 rounded-lg text-left transition-colors ${
-                    activeHistoryIndex === index ? 'bg-copper/10 border border-copper/30' : 'bg-ink/5 dark:bg-paper/5 hover:bg-ink/10 dark:hover:bg-paper/10'
-                  }`}
-                >
+                    activeHistoryIndex === index ? 'bg-copper/10 border border-copper/30' : 'bg-ink/5 dark:bg-paper/5'
+                  }`}>
                   <div className="flex items-center justify-between">
                     <div>
                       <span className="text-sm font-medium">{categories.find(c => c.id === entry.category)?.label}</span>
-                      <span className="text-xs text-ink/40 dark:text-paper/40 ml-2">
-                        {regions.find(r => r.id === entry.region)?.label}
-                      </span>
+                      <span className="text-xs text-ink/40 ml-2">{regions.find(r => r.id === entry.region)?.label}</span>
                     </div>
-                    <span className="text-xs text-ink/40 dark:text-paper/40">
-                      {formatHistoryTime(entry.timestamp)}
-                    </span>
+                    <span className="text-xs text-ink/40">{formatHistoryTime(entry.timestamp)}</span>
                   </div>
-                  <p className="text-xs text-ink/50 dark:text-paper/50 mt-1">
-                    {entry.articleCount} articles
-                  </p>
+                  <p className="text-xs text-ink/50 mt-1">{entry.articleCount} articles</p>
                 </button>
               ))}
             </div>
@@ -274,26 +253,26 @@ export default function FeedView() {
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => activeHistoryIndex < feedHistory.length - 1 && viewHistoryEntry(activeHistoryIndex + 1)}
-              disabled={activeHistoryIndex >= feedHistory.length - 1}
-              className="p-1 rounded hover:bg-copper/20 disabled:opacity-30"
-            >
+            <button onClick={() => activeHistoryIndex < feedHistory.length - 1 && viewHistoryEntry(activeHistoryIndex + 1)}
+              disabled={activeHistoryIndex >= feedHistory.length - 1} className="p-1 rounded hover:bg-copper/20 disabled:opacity-30">
               <ChevronLeft size={18} className="text-copper" />
             </button>
-            <button
-              onClick={() => activeHistoryIndex > 0 ? viewHistoryEntry(activeHistoryIndex - 1) : goToLive()}
-              className="p-1 rounded hover:bg-copper/20"
-            >
+            <button onClick={() => activeHistoryIndex > 0 ? viewHistoryEntry(activeHistoryIndex - 1) : goToLive()}
+              className="p-1 rounded hover:bg-copper/20">
               <ChevronRight size={18} className="text-copper" />
             </button>
-            <button
-              onClick={goToLive}
-              className="text-xs text-copper hover:underline ml-2"
-            >
-              Go to Live
-            </button>
+            <button onClick={goToLive} className="text-xs text-copper hover:underline ml-2">Go to Live</button>
           </div>
+        </div>
+      )}
+
+      {/* IMDB Notice for Movies/TV */}
+      {showImdbLinks && (
+        <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center gap-2">
+          <Film size={16} className="text-amber-600" />
+          <span className="text-xs text-amber-700 dark:text-amber-400">
+            Movies/TV articles include IMDB links for cast, movie, and show lookups.
+          </span>
         </div>
       )}
 
@@ -302,19 +281,14 @@ export default function FeedView() {
         <div className="flex items-center justify-between mb-4">
           <h3 className="card-headline flex items-center gap-2">
             <Newspaper size={18} className="text-copper" />
-            {categories.find(c => c.id === category)?.label} News
+            {currentCategory?.label} News
             {region !== 'us' && category !== 'world' && (
               <span className="text-xs bg-steel/20 text-steel px-2 py-0.5 rounded-full">
                 {regions.find(r => r.id === region)?.label}
               </span>
             )}
           </h3>
-          <button 
-            onClick={() => loadNews()} 
-            disabled={isLoading}
-            className="nav-icon p-2" 
-            data-tooltip="Refresh"
-          >
+          <button onClick={() => loadNews()} disabled={isLoading} className="nav-icon p-2">
             <RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} />
           </button>
         </div>
@@ -335,34 +309,52 @@ export default function FeedView() {
           </div>
         ) : (
           <div className="divide-y divide-ink/10 dark:divide-paper/10">
-            {articles.slice(0, 10).map((article) => (
-              <article key={article.id} className="py-4 first:pt-0 last:pb-0">
-                <a href={article.url} target="_blank" rel="noopener noreferrer" className="block group">
-                  <div className="flex gap-4">
-                    {article.image && (
-                      <div className="hidden sm:block w-24 h-16 flex-shrink-0 rounded overflow-hidden bg-ink/5 dark:bg-paper/5">
-                        <img src={article.image} alt="" className="w-full h-full object-cover" onError={(e) => e.target.style.display = 'none'} />
-                      </div>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-headline font-semibold leading-tight mb-1 group-hover:text-copper transition-colors line-clamp-2">
-                        {article.title}
-                      </h4>
-                      {article.description && (
-                        <p className="text-sm text-ink/60 dark:text-paper/60 line-clamp-2 mb-2">{article.description}</p>
+            {articles.slice(0, 10).map((article) => {
+              const imdbSearch = showImdbLinks ? extractImdbSearchTerms(article) : null
+              return (
+                <article key={article.id} className="py-4 first:pt-0 last:pb-0">
+                  <a href={article.url} target="_blank" rel="noopener noreferrer" className="block group">
+                    <div className="flex gap-4">
+                      {article.image && (
+                        <div className="hidden sm:block w-24 h-16 flex-shrink-0 rounded overflow-hidden bg-ink/5 dark:bg-paper/5">
+                          <img src={article.image} alt="" className="w-full h-full object-cover" onError={(e) => e.target.style.display = 'none'} />
+                        </div>
                       )}
-                      <div className="flex items-center gap-3 text-xs">
-                        <span className="bias-badge center">{article.sourceName || article.source}</span>
-                        <span className="text-ink/40 dark:text-paper/40 flex items-center gap-1">
-                          <Clock size={12} />{formatDate(article.date)}
-                        </span>
-                        <ExternalLink size={12} className="text-ink/30 dark:text-paper/30" />
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-headline font-semibold leading-tight mb-1 group-hover:text-copper transition-colors line-clamp-2">
+                          {article.title}
+                        </h4>
+                        {article.description && (
+                          <p className="text-sm text-ink/60 dark:text-paper/60 line-clamp-2 mb-2">{article.description}</p>
+                        )}
+                        <div className="flex items-center gap-3 text-xs">
+                          <span className="bias-badge center">{article.sourceName || article.source}</span>
+                          <span className="text-ink/40 dark:text-paper/40 flex items-center gap-1">
+                            <Clock size={12} />{formatDate(article.date)}
+                          </span>
+                          <ExternalLink size={12} className="text-ink/30 dark:text-paper/30" />
+                          
+                          {/* IMDB Link for Movies/TV */}
+                          {showImdbLinks && imdbSearch && (
+                            <a
+                              href={`https://www.imdb.com/find/?q=${encodeURIComponent(imdbSearch)}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              className="flex items-center gap-1 text-amber-600 hover:text-amber-500 font-medium"
+                              title={`Search IMDB for "${imdbSearch}"`}
+                            >
+                              <Film size={12} />
+                              IMDB
+                            </a>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </a>
-              </article>
-            ))}
+                  </a>
+                </article>
+              )
+            })}
           </div>
         )}
       </div>

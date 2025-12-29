@@ -1,92 +1,148 @@
-# ProveIt v2.4.1 - Bug Fixes
+# ProveIt v3.0.0 - Major Release
 
-## Bugs Fixed
+## 🎉 What's New
 
-| Bug | Fix | File |
-|-----|-----|------|
-| Flourish appears twice on Justice tab | Removed duplicate | SupremeCourtView.jsx |
-| Email button redundant in nav | Removed (use Settings > Email) | Navigation.jsx |
-| Input text invisible in Flagged Sources | Fixed text color & padding | IgnoredView.jsx |
-| Footer links no descriptions | Added hover tooltips | Footer.jsx |
-| Oyez not explained | Added description in footer | Footer.jsx |
-| API Keys exposed to users | Moved to DevTools | SettingsView.jsx, DevToolsView.jsx |
-| Save API Key button too loud | Made subtle/ghost style | DevToolsView.jsx |
-| WikiLeaks not blocked | Added to Conspiracy list | IgnoredView.jsx |
-| No Library of Congress link | Added to footer | Footer.jsx |
-| Justice Wikipedia links missing | Added to each justice | SupremeCourtView.jsx |
+### Footer Fixes
+- ✅ Dark curved hover tooltips (removed white ones)
+- ✅ Removed gray Oyez explainer text (hover does the job)
+- ✅ Removed bottom flourish (was redundant)
+- ✅ Changed diamond (✦) to bullet (•) between version/edition
 
----
+### Rate Limiting
+- ✅ **5 fact-checks/day** for free users
+- ✅ Usage counter displayed in Search view
+- ✅ "Add your own API key" for unlimited access
+- ✅ Dev Mode toggle in DevTools for developers
 
-## Testing Checklist
+### IMDB Integration
+- ✅ Movies/TV articles show IMDB search links
+- ✅ Auto-extracts search terms from headlines
 
-### Navigation
-- [ ] All nav icons work correctly
-- [ ] Email icon is REMOVED from nav bar
-- [ ] DevTools accessible via nav icon
-- [ ] DevTools accessible via CTRL+ALT+V
+### Supreme Court Enhancements
+- ✅ **Justice portraits** from official SCOTUS website (public domain)
+- ✅ **Wikipedia links** for each justice
+- ✅ **SCOTUS News panel** (collapsible, 3/7 day filter)
+- ✅ News articles show source bias indicators
 
-### Footer
-- [ ] Single flourish displays correctly: ❧ ─ ✦ ─ ☙
-- [ ] First Amendment link → hover shows "Freedom of Speech & Press"
-- [ ] U.S. Supreme Court link → hover shows "Official Court Website"
-- [ ] Oyez link → hover shows "Nonpartisan Court Archive"
-- [ ] Library of Congress link → hover shows "National Research Library"
-- [ ] Oyez description text appears below links
-- [ ] Version shows v2.4.1
+### Pre-Approved Sources System (NEW VIEW)
+- ✅ **Political Sources** - 20+ sources with bias ratings (-3 to +3)
+- ✅ **Legal Sources** - Oyez, Cornell Law, SCOTUSblog, PACER, etc.
+- ✅ **Medical Sources** - Tiered system (1-3) with credibility ratings
+- ✅ **Medical Disclaimer** - Full popup with legal coverage
+- ✅ **Blocked Medical Sources** - Known misinformation sites
+- ✅ Searchable source database
 
-### Supreme Court Tab
-- [ ] ONLY ONE flourish at bottom (not two)
-- [ ] Each justice has Wikipedia link icon
-- [ ] View on Oyez links have tooltips
-- [ ] Tabs switch correctly (Docket/Shadow/Justices)
-
-### Flagged Sources Tab
-- [ ] Input field has left padding (not bumping margin)
-- [ ] Input text is VISIBLE when typing (dark on light, light on dark)
-- [ ] WikiLeaks appears in Conspiracy/Disinfo list
-- [ ] Star ratings work
-- [ ] Add source button works
-
-### Settings Tab
-- [ ] Only 3 tabs: Privacy, My Data, Email
-- [ ] API Keys section is GONE
-- [ ] Flourish displays correctly in About section
-- [ ] Version shows v2.4.1
-
-### DevTools Tab
-- [ ] API Configuration section present
-- [ ] Each API shows what it "powers"
-- [ ] Test button works for each active API
-- [ ] Planned APIs show "PLANNED" badge
-- [ ] Debug actions work
-- [ ] Input fields are subtle/unobtrusive
-
-### General
-- [ ] Dark mode toggle works
-- [ ] All flourishes consistent: ❧ ─ ✦ ─ ☙
-- [ ] No console errors
-- [ ] Responsive on mobile
+### DevTools Improvements
+- ✅ **Unlock Unlimited** toggle for developers
+- ✅ **User API Key** input - add your own Gemini key for unlimited
+- ✅ API test buttons
+- ✅ What each API powers (explained)
 
 ---
 
-## Files Changed
+## 📁 Files Changed/Added
 
 ```
-ProveIt/
+ProveIt-v3.0.0/
+├── public/
+│   └── favicon.svg
 ├── src/
-│   ├── App.jsx                      ← Minor (version)
+│   ├── App.jsx                      ← Rate limiting logic
+│   ├── lib/
+│   │   ├── gemini.js               ← AI integration
+│   │   ├── news.js                 ← News API
+│   │   └── trustedSources.js       ← NEW: Source database
 │   └── components/
+│       ├── ui/
+│       │   └── BiasBar.jsx
 │       ├── layout/
-│       │   ├── Navigation.jsx       ← REMOVED email button
-│       │   └── Footer.jsx           ← Hover tooltips, LOC link, Oyez desc
+│       │   ├── Navigation.jsx      ← Added Sources icon
+│       │   └── Footer.jsx          ← Fixed hovers, removed extras
 │       └── features/
-│           ├── SupremeCourtView.jsx ← Single flourish, Wikipedia links
-│           ├── IgnoredView.jsx      ← Fixed input, WikiLeaks added
-│           ├── SettingsView.jsx     ← REMOVED API Keys section
-│           └── DevToolsView.jsx     ← API Keys moved here
+│           ├── SearchView.jsx      ← Rate limiting UI
+│           ├── FeedView.jsx        ← IMDB links
+│           ├── SupremeCourtView.jsx ← Portraits, news panel
+│           ├── SourcesView.jsx     ← NEW: Trusted sources
+│           ├── DevToolsView.jsx    ← Unlock unlimited
+│           ├── SettingsView.jsx
+│           ├── StatsView.jsx
+│           ├── IgnoredView.jsx
+│           └── HelpView.jsx
+├── index.html
 └── README.md
 ```
 
 ---
 
-*ProveIt v2.4.1 - "Veritas Lux"*
+## 🧪 Testing Checklist
+
+### Footer
+- [ ] Dark curved tooltips appear on hover (no white)
+- [ ] No gray Oyez text below links
+- [ ] No double flourish at bottom
+- [ ] Version shows "v3.0.0" with bullet (•) separator
+
+### Rate Limiting
+- [ ] Usage counter shows "X fact-checks remaining"
+- [ ] After 5 checks, button shows "Limit Reached"
+- [ ] Error message suggests adding API key
+- [ ] Resets at midnight (check localStorage)
+
+### DevTools
+- [ ] "Unlock Unlimited" toggle works
+- [ ] Adding Gemini API key unlocks unlimited
+- [ ] Test buttons work
+- [ ] API explanations visible
+
+### IMDB Links
+- [ ] Movies/TV category shows film icon
+- [ ] Each article has IMDB link
+- [ ] IMDB link opens search in new tab
+
+### Supreme Court
+- [ ] Justice portraits load (or show initials fallback)
+- [ ] Wikipedia links work
+- [ ] News button opens panel
+- [ ] News filter (3/7 days) works
+- [ ] Source bias dots show on news items
+
+### Trusted Sources (New!)
+- [ ] Navigate via Shield icon in nav
+- [ ] Political tab shows bias bars
+- [ ] Legal tab shows trusted sources with links
+- [ ] Medical tab shows tiered sources
+- [ ] Medical disclaimer popup works
+- [ ] Blocked sources show in red
+- [ ] Search filters sources
+
+### Navigation
+- [ ] Shield icon appears for Sources
+- [ ] All nav items work
+- [ ] Active state highlights correctly
+
+---
+
+## 💰 Cost Model
+
+| User Type | Fact-Checks | How |
+|-----------|-------------|-----|
+| Free User | 5/day | Uses app's embedded key |
+| Own Key | Unlimited | Adds their Gemini API key |
+| Developer | Unlimited | Enables Dev Mode toggle |
+| Magic Link | Unlimited | Invited by email hash |
+
+---
+
+## 🚀 Deployment
+
+```bash
+cd ~/path/to/ProveIt
+# Copy all files from zip
+npm install  # if new dependencies
+npm run build
+npm run deploy  # or push to GitHub Pages
+```
+
+---
+
+*ProveIt v3.0.0 - "Veritas Lux" • Truth is Light*

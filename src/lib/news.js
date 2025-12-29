@@ -1,51 +1,40 @@
-const API_KEY = import.meta.env.VITE_NEWSDATA_KEY;
-const BASE_URL = "https://newsdata.io/api/1/news";
+const NEWS_API_KEY = import.meta.env.VITE_NEWSDATA_KEY || localStorage.getItem('proveit-user-newsdata-key')
 
-// Helper to dedup articles based on strict title matching
-function removeDuplicates(articles) {
-  const seen = new Set();
-  return articles.filter(article => {
-    const duplicate = seen.has(article.title);
-    seen.add(article.title);
-    return !duplicate;
-  });
-}
-
-export async function fetchHeadlines(category = "top", country = "us") {
-  if (!API_KEY) {
-    console.error("VITE_NEWSDATA_KEY is missing in .env");
-    return [];
+export async function fetchHeadlines(category = 'top', country = 'us') {
+  if (!NEWS_API_KEY) {
+    // Return demo data if no API key
+    return getDemoArticles(category)
   }
 
   try {
-    // Fetching English news, filtering for the specific category
-    const response = await fetch(
-      `${BASE_URL}?apikey=${API_KEY}&country=${country}&language=en&category=${category}`
-    );
+    const url = `https://newsdata.io/api/1/news?apikey=${NEWS_API_KEY}&country=${country}&category=${category}&language=en`
+    const response = await fetch(url)
+    const data = await response.json()
     
-    const data = await response.json();
-    
-    if (data.status !== "success") {
-      throw new Error(data.results?.message || "Failed to fetch news");
+    if (data.status === 'success' && data.results) {
+      return data.results.map((article, index) => ({
+        id: article.article_id || index,
+        title: article.title,
+        description: article.description,
+        url: article.link,
+        image: article.image_url,
+        source: article.source_id,
+        sourceName: article.source_name || article.source_id,
+        date: article.pubDate,
+        category: article.category?.[0] || category,
+      }))
     }
-
-    // Transform API shape to match your ProveIt UI Component expectations
-    return removeDuplicates(data.results).map(article => ({
-      id: article.article_id,
-      title: article.title,
-      source: article.source_id,
-      sourceName: article.source_name || article.source_id,
-      url: article.link,
-      image: article.image_url, // Might be null, handle in UI with a fallback pattern
-      date: article.pubDate,
-      description: article.description,
-      // Placeholder for your Bias Engine (Step 3)
-      biasRating: "analyzing", 
-      biasScore: 0
-    }));
-
+    return getDemoArticles(category)
   } catch (error) {
-    console.error("News Fetch Error:", error);
-    return [];
+    console.error('News fetch error:', error)
+    return getDemoArticles(category)
   }
+}
+
+function getDemoArticles(category) {
+  return [
+    { id: 1, title: `Demo: ${category} headline #1`, description: 'This is demo content. Add your NewsData.io API key for live news.', url: '#', source: 'Demo', sourceName: 'Demo Source', date: new Date().toISOString() },
+    { id: 2, title: `Demo: ${category} headline #2`, description: 'Configure your API key in DevTools for real news.', url: '#', source: 'Demo', sourceName: 'Demo Source', date: new Date().toISOString() },
+    { id: 3, title: `Demo: ${category} headline #3`, description: 'ProveIt supports NewsData.io for live news feeds.', url: '#', source: 'Demo', sourceName: 'Demo Source', date: new Date().toISOString() },
+  ]
 }

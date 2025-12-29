@@ -1,10 +1,10 @@
-import { Search, Newspaper, BarChart3, FolderX, Settings, Wrench, HelpCircle, Scale } from 'lucide-react'
+import { Search, Newspaper, BarChart3, FolderX, Settings, Wrench, HelpCircle, Scale, Shield } from 'lucide-react'
 
-// REMOVED: Mail icon - Email is now only in Settings > Email tab
 const navItems = [
   { id: 'search', icon: Search, tooltip: 'Fact Check' },
   { id: 'feed', icon: Newspaper, tooltip: 'My Feed' },
   { id: 'scotus', icon: Scale, tooltip: 'Supreme Court' },
+  { id: 'sources', icon: Shield, tooltip: 'Trusted Sources' },
   { id: 'stats', icon: BarChart3, tooltip: 'My Stats' },
   { id: 'ignored', icon: FolderX, tooltip: 'Flagged Sources' },
   { id: 'help', icon: HelpCircle, tooltip: 'How to Use' },

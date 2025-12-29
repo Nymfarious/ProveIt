@@ -22,98 +22,93 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Links with hover descriptions */}
+          {/* Links with DARK curved hover tooltips only */}
           <div className="flex flex-wrap items-center justify-center gap-4 mb-4 text-xs">
             <a 
               href="https://constitution.congress.gov/constitution/amendment-1/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-copper/70 hover:text-copper transition-colors group relative"
-              title="Read the First Amendment protecting freedom of speech and press"
             >
               First Amendment
-              <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 bg-ink dark:bg-paper text-paper dark:text-ink text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
+              <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 
+                             bg-ink text-paper text-[10px] px-3 py-1.5 rounded-lg
+                             opacity-0 group-hover:opacity-100 transition-opacity 
+                             whitespace-nowrap pointer-events-none z-10
+                             shadow-lg">
                 Freedom of Speech & Press
               </span>
             </a>
             
-            <span className="text-copper/30">✦</span>
+            <span className="text-copper/30">•</span>
             
             <a 
               href="https://www.supremecourt.gov/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-copper/70 hover:text-copper transition-colors group relative"
-              title="Official U.S. Supreme Court website - cases, orders, and opinions"
             >
               U.S. Supreme Court
-              <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 bg-ink dark:bg-paper text-paper dark:text-ink text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
+              <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 
+                             bg-ink text-paper text-[10px] px-3 py-1.5 rounded-lg
+                             opacity-0 group-hover:opacity-100 transition-opacity 
+                             whitespace-nowrap pointer-events-none z-10
+                             shadow-lg">
                 Official Court Website
               </span>
             </a>
             
-            <span className="text-copper/30">✦</span>
+            <span className="text-copper/30">•</span>
             
             <a 
               href="https://www.oyez.org/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-copper/70 hover:text-copper transition-colors group relative"
-              title="Oyez - Free, nonpartisan SCOTUS multimedia archive from Cornell Law"
             >
               Oyez
-              <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 bg-ink dark:bg-paper text-paper dark:text-ink text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
-                Nonpartisan Court Archive
+              <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 
+                             bg-ink text-paper text-[10px] px-3 py-1.5 rounded-lg
+                             opacity-0 group-hover:opacity-100 transition-opacity 
+                             whitespace-nowrap pointer-events-none z-10
+                             shadow-lg">
+                Nonpartisan SCOTUS Archive
               </span>
             </a>
             
-            <span className="text-copper/30">✦</span>
+            <span className="text-copper/30">•</span>
             
             <a 
               href="https://www.loc.gov/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-copper/70 hover:text-copper transition-colors group relative"
-              title="Library of Congress - America's national library and research center"
             >
               Library of Congress
-              <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 bg-ink dark:bg-paper text-paper dark:text-ink text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
+              <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 
+                             bg-ink text-paper text-[10px] px-3 py-1.5 rounded-lg
+                             opacity-0 group-hover:opacity-100 transition-opacity 
+                             whitespace-nowrap pointer-events-none z-10
+                             shadow-lg">
                 National Research Library
               </span>
             </a>
           </div>
 
-          {/* Oyez Description */}
-          <div className="text-center mb-4">
-            <p className="text-[10px] text-ink/30 dark:text-paper/30 max-w-md mx-auto">
-              <strong>Oyez</strong> is a free, nonpartisan multimedia archive of Supreme Court proceedings 
-              maintained by Cornell Law School & IIT Chicago-Kent College of Law.
-            </p>
-          </div>
+          {/* REMOVED: Oyez gray text explainer - hover does the job */}
 
-          {/* Flourish before version */}
-          <div className="flex items-center justify-center gap-2 mb-2 text-ink/15 dark:text-paper/15">
-            <div className="w-8 h-px bg-current" />
-            <span className="text-xs">✦</span>
-            <div className="w-8 h-px bg-current" />
-          </div>
-
-          {/* Version */}
-          <div className="flex items-center justify-center gap-4 text-ink/20 dark:text-paper/20">
+          {/* Version - changed diamond to bullet/dot */}
+          <div className="flex items-center justify-center gap-3 text-ink/20 dark:text-paper/20">
             <span className="font-mono text-[10px] uppercase tracking-wider">
-              ProveIt v2.4.1
+              ProveIt v3.0.0
             </span>
-            <span>✦</span>
+            <span className="text-copper/40">•</span>
             <span className="font-mono text-[10px] uppercase tracking-wider">
               Personal Edition
             </span>
           </div>
 
-          {/* Bottom flourish */}
-          <div className="flex items-center justify-center gap-2 mt-3 text-ink/10 dark:text-paper/10">
-            <span className="text-xs">❧</span>
-            <span className="text-xs">☙</span>
-          </div>
+          {/* REMOVED: Bottom flourish (❧ ☙) - was redundant */}
         </div>
       </div>
     </footer>

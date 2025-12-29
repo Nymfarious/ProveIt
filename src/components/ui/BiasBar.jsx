@@ -1,67 +1,34 @@
-import { motion } from 'framer-motion'
+export default function BiasBar({ sources = {} }) {
+  const { farLeft = 0, left = 0, leanLeft = 0, center = 0, leanRight = 0, right = 0, farRight = 0 } = sources
+  const total = farLeft + left + leanLeft + center + leanRight + right + farRight
 
-const biasConfig = [
-  { key: 'farLeft', label: 'Far Left', color: 'bg-blue-900' },
-  { key: 'left', label: 'Left', color: 'bg-blue-600' },
-  { key: 'leanLeft', label: 'Lean Left', color: 'bg-blue-400' },
-  { key: 'center', label: 'Center', color: 'bg-gray-400' },
-  { key: 'leanRight', label: 'Lean Right', color: 'bg-red-400' },
-  { key: 'right', label: 'Right', color: 'bg-red-600' },
-  { key: 'farRight', label: 'Far Right', color: 'bg-red-900' },
-]
+  if (total === 0) {
+    return (
+      <div className="h-8 rounded-full bg-ink/10 dark:bg-paper/10 flex items-center justify-center">
+        <span className="text-xs text-ink/40 dark:text-paper/40">No data</span>
+      </div>
+    )
+  }
 
-export default function BiasBar({ sources, showLabels = true }) {
-  const total = Object.values(sources || {}).reduce((a, b) => a + b, 0)
-  if (total === 0) return null
-
-  const activeSegments = biasConfig.filter(b => (sources[b.key] || 0) > 0)
+  const getWidth = (value) => `${(value / total) * 100}%`
 
   return (
-    <div className="space-y-3">
-      {/* Stacked bar */}
-      <div className="flex h-8 rounded-lg overflow-hidden border border-ink/10 dark:border-paper/10">
-        {activeSegments.map((bias, index) => {
-          const count = sources[bias.key] || 0
-          const percentage = (count / total) * 100
-          
-          return (
-            <motion.div
-              key={bias.key}
-              className={`${bias.color} relative group cursor-pointer flex items-center justify-center`}
-              style={{ width: `${percentage}%` }}
-              initial={{ width: 0 }}
-              animate={{ width: `${percentage}%` }}
-              transition={{ duration: 0.4, delay: index * 0.05 }}
-            >
-              {/* Tooltip */}
-              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-ink dark:bg-paper text-paper dark:text-ink text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none">
-                {bias.label}: {count} ({Math.round(percentage)}%)
-              </div>
-              
-              {/* Count */}
-              {percentage > 12 && (
-                <span className="text-white text-sm font-medium">
-                  {count}
-                </span>
-              )}
-            </motion.div>
-          )
-        })}
+    <div className="space-y-2">
+      <div className="h-6 rounded-full overflow-hidden flex shadow-inner">
+        {farLeft > 0 && <div className="bg-blue-900 h-full transition-all" style={{ width: getWidth(farLeft) }} title={`Far Left: ${farLeft}`} />}
+        {left > 0 && <div className="bg-blue-700 h-full transition-all" style={{ width: getWidth(left) }} title={`Left: ${left}`} />}
+        {leanLeft > 0 && <div className="bg-blue-500 h-full transition-all" style={{ width: getWidth(leanLeft) }} title={`Lean Left: ${leanLeft}`} />}
+        {center > 0 && <div className="bg-slate-400 h-full transition-all" style={{ width: getWidth(center) }} title={`Center: ${center}`} />}
+        {leanRight > 0 && <div className="bg-red-500 h-full transition-all" style={{ width: getWidth(leanRight) }} title={`Lean Right: ${leanRight}`} />}
+        {right > 0 && <div className="bg-red-700 h-full transition-all" style={{ width: getWidth(right) }} title={`Right: ${right}`} />}
+        {farRight > 0 && <div className="bg-red-900 h-full transition-all" style={{ width: getWidth(farRight) }} title={`Far Right: ${farRight}`} />}
       </div>
-
-      {/* Legend */}
-      {showLabels && (
-        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs">
-          {activeSegments.map((bias) => (
-            <div key={bias.key} className="flex items-center gap-1.5">
-              <div className={`w-3 h-3 rounded ${bias.color}`} />
-              <span className="text-ink/60 dark:text-paper/60">
-                {bias.label} ({sources[bias.key]})
-              </span>
-            </div>
-          ))}
-        </div>
-      )}
+      
+      <div className="flex justify-between text-xs text-ink/50 dark:text-paper/50">
+        <span>LEFT</span>
+        <span>CENTER</span>
+        <span>RIGHT</span>
+      </div>
     </div>
   )
 }

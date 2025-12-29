@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { Search, AlertCircle, CheckCircle, HelpCircle, Loader2 } from 'lucide-react'
+import { Search, AlertCircle, CheckCircle, HelpCircle, Loader2, Zap } from 'lucide-react'
 import { runAI } from '../../lib/gemini'
 import BiasBar from '../ui/BiasBar'
 
-export default function SearchView() {
+export default function SearchView({ canFactCheck, remainingChecks, incrementUsage, isUnlimitedUser }) {
   const [query, setQuery] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [result, setResult] = useState(null)
@@ -12,6 +12,12 @@ export default function SearchView() {
   const handleSearch = async (e) => {
     e.preventDefault()
     if (!query.trim()) return
+    
+    // Check rate limit
+    if (!canFactCheck) {
+      setError('Daily limit reached (5 fact-checks). Add your own API key in DevTools for unlimited access.')
+      return
+    }
 
     setIsLoading(true)
     setError(null)
@@ -33,6 +39,9 @@ Respond in this exact JSON format only, no other text:
 Base your analysis on factual accuracy, context, and potential bias.`
 
       const response = await runAI(prompt)
+      
+      // Increment usage AFTER successful API call
+      if (incrementUsage) incrementUsage()
       
       let parsed
       try {
@@ -57,18 +66,12 @@ Base your analysis on factual accuracy, context, and potential bias.`
         confidence: parsed.confidence || 0.5,
         summary: parsed.summary || 'Analysis complete.',
         keyPoints: parsed.keyPoints || [],
-        sources: {
-          left: 2,
-          leanLeft: 3,
-          center: 4,
-          leanRight: 2,
-          right: 1
-        },
+        sources: { left: 2, leanLeft: 3, center: 4, leanRight: 2, right: 1 },
         aiProvider: 'gemini'
       })
     } catch (err) {
       console.error('Search error:', err)
-      setError('Failed to analyze. Please check your API key in Settings.')
+      setError('Failed to analyze. Please check your API key in DevTools.')
     } finally {
       setIsLoading(false)
     }
@@ -87,6 +90,27 @@ Base your analysis on factual accuracy, context, and potential bias.`
 
   return (
     <div className="space-y-6">
+      {/* Usage Counter */}
+      <div className={`flex items-center justify-between p-3 rounded-lg ${
+        canFactCheck ? 'bg-forest/10 border border-forest/20' : 'bg-burgundy/10 border border-burgundy/20'
+      }`}>
+        <div className="flex items-center gap-2">
+          <Zap size={16} className={canFactCheck ? 'text-forest' : 'text-burgundy'} />
+          <span className={`text-sm ${canFactCheck ? 'text-forest' : 'text-burgundy'}`}>
+            {isUnlimitedUser ? (
+              'Unlimited fact-checks (Developer/Invited)'
+            ) : canFactCheck ? (
+              `${remainingChecks} fact-checks remaining today`
+            ) : (
+              'Daily limit reached'
+            )}
+          </span>
+        </div>
+        {!isUnlimitedUser && !canFactCheck && (
+          <span className="text-xs text-burgundy">Add your own API key in DevTools →</span>
+        )}
+      </div>
+
       {/* Search Box */}
       <div className="card">
         <form onSubmit={handleSearch}>
@@ -107,13 +131,18 @@ Base your analysis on factual accuracy, context, and potential bias.`
 
           <button
             type="submit"
-            disabled={isLoading || !query.trim()}
-            className="btn-primary w-full mt-4"
+            disabled={isLoading || !query.trim() || !canFactCheck}
+            className="btn-primary w-full mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <>
                 <Loader2 size={18} className="animate-spin" />
                 Analyzing...
+              </>
+            ) : !canFactCheck ? (
+              <>
+                <AlertCircle size={18} />
+                Limit Reached
               </>
             ) : (
               <>
@@ -138,7 +167,6 @@ Base your analysis on factual accuracy, context, and potential bias.`
       {/* Results */}
       {result && (
         <div className="space-y-4">
-          {/* Verdict Card */}
           <div className="card">
             <div className="flex items-start gap-4">
               {(() => {
@@ -178,7 +206,6 @@ Base your analysis on factual accuracy, context, and potential bias.`
             </div>
           </div>
 
-          {/* Source Distribution */}
           <div className="card">
             <h3 className="card-headline flex items-center gap-2 mb-4">
               <span>Source Distribution</span>
@@ -187,7 +214,6 @@ Base your analysis on factual accuracy, context, and potential bias.`
             <BiasBar sources={result.sources} />
           </div>
 
-          {/* AI Attribution */}
           <div className="text-center text-xs text-ink/40 dark:text-paper/40 font-mono">
             Analyzed by {result.aiProvider.toUpperCase()} • {new Date().toLocaleTimeString()}
           </div>
