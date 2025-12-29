@@ -384,49 +384,52 @@ export default function SettingsView() {
               Export Your Data
             </h3>
             
-            <div className="space-y-3">
-              {/* View Report Button (Primary) */}
+            <div className="space-y-2">
+              {/* Primary actions - subtle links */}
               <button 
                 onClick={handleExportReport}
-                className="w-full btn-primary flex items-center justify-center gap-2"
+                className="w-full py-2.5 px-4 text-left flex items-center gap-3 rounded-lg
+                         hover:bg-ink/5 dark:hover:bg-paper/5 transition-colors group"
               >
-                <FileCode size={16} />
-                View & Download Report
+                <FileCode size={16} className="text-copper" />
+                <div className="flex-1">
+                  <span className="font-medium group-hover:text-copper transition-colors">View Report</span>
+                  <span className="text-xs text-ink/40 dark:text-paper/40 ml-2">Opens in browser</span>
+                </div>
               </button>
-              <p className="text-xs text-ink/40 dark:text-paper/40 text-center">
-                Opens a styled report in your browser. Also downloads as HTML.
-              </p>
 
-              {/* Print Button */}
               <button 
                 onClick={handlePrint}
-                className="w-full btn-secondary flex items-center justify-center gap-2"
+                className="w-full py-2.5 px-4 text-left flex items-center gap-3 rounded-lg
+                         hover:bg-ink/5 dark:hover:bg-paper/5 transition-colors group"
               >
-                <Printer size={16} />
-                Print to PDF / Printer
+                <Printer size={16} className="text-steel" />
+                <div className="flex-1">
+                  <span className="font-medium group-hover:text-copper transition-colors">Print / Save PDF</span>
+                  <span className="text-xs text-ink/40 dark:text-paper/40 ml-2">Local only</span>
+                </div>
               </button>
-              <p className="text-xs text-ink/40 dark:text-paper/40 text-center">
-                Privacy-first printing — no cloud services required.
-              </p>
 
-              <div className="border-t border-ink/10 dark:border-paper/10 pt-3 mt-3">
-                <div className="grid grid-cols-2 gap-3">
-                  {/* JSON Export */}
+              <div className="border-t border-ink/10 dark:border-paper/10 pt-2 mt-2">
+                <div className="flex gap-2">
                   <button 
                     onClick={handleExportJSON}
-                    className="btn-secondary flex items-center justify-center gap-2 text-sm"
+                    className="flex-1 py-2 px-3 text-sm flex items-center justify-center gap-2 rounded-lg
+                             text-ink/60 dark:text-paper/60 hover:bg-ink/5 dark:hover:bg-paper/5 
+                             hover:text-copper transition-colors"
                   >
                     <FileJson size={14} />
                     Export JSON
                   </button>
                   
-                  {/* Import */}
                   <button 
                     onClick={handleImportClick}
-                    className="btn-secondary flex items-center justify-center gap-2 text-sm"
+                    className="flex-1 py-2 px-3 text-sm flex items-center justify-center gap-2 rounded-lg
+                             text-ink/60 dark:text-paper/60 hover:bg-ink/5 dark:hover:bg-paper/5 
+                             hover:text-copper transition-colors"
                   >
                     <Upload size={14} />
-                    Import Data
+                    Import
                   </button>
                   <input
                     ref={fileInputRef}
@@ -436,9 +439,6 @@ export default function SettingsView() {
                     className="hidden"
                   />
                 </div>
-                <p className="text-xs text-ink/40 dark:text-paper/40 mt-2 text-center">
-                  JSON for backups & data portability
-                </p>
               </div>
             </div>
 
