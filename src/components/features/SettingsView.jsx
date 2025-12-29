@@ -13,7 +13,10 @@ import {
   FileText,
   Palette,
   Eye,
-  Info
+  Info,
+  FileJson,
+  FileCode,
+  Printer
 } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 import { useAnalyticsContext } from '../../App'
@@ -25,6 +28,7 @@ export default function SettingsView() {
   const [session, setSession] = useState(null)
   const [reportStatus, setReportStatus] = useState(null)
   const [importResult, setImportResult] = useState(null)
+  const [showPrintInfo, setShowPrintInfo] = useState(false)
   const fileInputRef = useRef(null)
 
   const analytics = useAnalyticsContext()
@@ -66,7 +70,6 @@ export default function SettingsView() {
   const handleSendReport = async () => {
     if (!session) return
     
-    // Check for stale security (30+ days)
     if (analytics?.isStale) {
       alert('For your security, please re-verify your email. It has been 30+ days since your last report.')
       await supabase.auth.signOut()
@@ -101,9 +104,24 @@ export default function SettingsView() {
     }
   }
 
-  // Handle export
-  const handleExport = () => {
+  // Handle JSON export (raw data)
+  const handleExportJSON = () => {
     analytics?.exportData?.()
+  }
+
+  // Handle HTML report export (styled, opens in browser)
+  const handleExportReport = () => {
+    analytics?.exportReport?.()
+  }
+
+  // Handle print
+  const handlePrint = () => {
+    setShowPrintInfo(true)
+  }
+
+  const confirmPrint = () => {
+    setShowPrintInfo(false)
+    analytics?.printReport?.()
   }
 
   // Handle import
@@ -126,7 +144,7 @@ export default function SettingsView() {
       }
     }
     reader.readAsText(file)
-    e.target.value = '' // Reset input
+    e.target.value = ''
   }
 
   // Handle sign out
@@ -143,6 +161,81 @@ export default function SettingsView() {
 
   return (
     <div className="space-y-6">
+      {/* Print Privacy Modal */}
+      {showPrintInfo && (
+        <div className="fixed inset-0 bg-ink/50 dark:bg-ink/70 flex items-center justify-center z-50 p-4">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-paper dark:bg-ink-light rounded-xl max-w-md w-full p-6 shadow-xl"
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-copper/10 flex items-center justify-center">
+                <Printer className="w-5 h-5 text-copper" />
+              </div>
+              <h3 className="font-headline text-xl font-semibold">Print Your Report</h3>
+            </div>
+
+            <div className="space-y-4">
+              <div className="p-4 bg-forest/10 border border-forest/20 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <Shield className="w-5 h-5 text-forest mt-0.5 flex-shrink-0" />
+                  <div className="text-sm">
+                    <p className="font-semibold text-forest mb-1">Privacy-First Printing</p>
+                    <p className="text-ink/70 dark:text-paper/70">
+                      ProveIt uses your browser's built-in print function. Your data is 
+                      processed entirely on your device and is <strong>never sent to external 
+                      print services</strong>.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-4 bg-copper/10 border border-copper/20 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <AlertTriangle className="w-5 h-5 text-copper mt-0.5 flex-shrink-0" />
+                  <div className="text-sm">
+                    <p className="font-semibold text-copper mb-1">Recommended: Local Printer</p>
+                    <p className="text-ink/70 dark:text-paper/70">
+                      For maximum privacy, use a <strong>directly connected printer</strong> (USB or 
+                      trusted home Wi-Fi). Avoid cloud printing services (Google Cloud Print, 
+                      HP ePrint, etc.) unless you trust them with your reading data.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-xs text-ink/50 dark:text-paper/50">
+                <p>When the print dialog opens:</p>
+                <ul className="list-disc pl-4 mt-1 space-y-0.5">
+                  <li>Select "Save as PDF" to create a local file</li>
+                  <li>Or select your trusted local printer</li>
+                  <li>Your data stays on your device</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <button 
+                onClick={() => setShowPrintInfo(false)}
+                className="flex-1 py-2 border border-ink/20 dark:border-paper/20 rounded-lg 
+                         hover:bg-ink/5 dark:hover:bg-paper/5 transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={confirmPrint}
+                className="flex-1 py-2 bg-copper text-white rounded-lg hover:bg-copper-dark 
+                         transition-colors flex items-center justify-center gap-2 font-medium"
+              >
+                <Printer size={16} />
+                Continue to Print
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
       {/* Tabs */}
       <div className="flex rounded-lg overflow-hidden border border-ink/10 dark:border-paper/10">
         {[
@@ -284,35 +377,69 @@ export default function SettingsView() {
           animate={{ opacity: 1, y: 0 }}
           className="space-y-6"
         >
-          {/* Export/Import */}
+          {/* Export Options */}
           <div className="card">
             <h3 className="card-headline flex items-center gap-2 mb-4">
               <FileText size={18} className="text-copper" />
-              Data Portability
+              Export Your Data
             </h3>
             
-            <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-3">
+              {/* View Report Button (Primary) */}
               <button 
-                onClick={handleExport}
-                className="btn-secondary flex items-center justify-center gap-2"
+                onClick={handleExportReport}
+                className="w-full btn-primary flex items-center justify-center gap-2"
               >
-                <Download size={16} />
-                Export Data
+                <FileCode size={16} />
+                View & Download Report
               </button>
+              <p className="text-xs text-ink/40 dark:text-paper/40 text-center">
+                Opens a styled report in your browser. Also downloads as HTML.
+              </p>
+
+              {/* Print Button */}
               <button 
-                onClick={handleImportClick}
-                className="btn-secondary flex items-center justify-center gap-2"
+                onClick={handlePrint}
+                className="w-full btn-secondary flex items-center justify-center gap-2"
               >
-                <Upload size={16} />
-                Import Data
+                <Printer size={16} />
+                Print to PDF / Printer
               </button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".json"
-                onChange={handleFileImport}
-                className="hidden"
-              />
+              <p className="text-xs text-ink/40 dark:text-paper/40 text-center">
+                Privacy-first printing — no cloud services required.
+              </p>
+
+              <div className="border-t border-ink/10 dark:border-paper/10 pt-3 mt-3">
+                <div className="grid grid-cols-2 gap-3">
+                  {/* JSON Export */}
+                  <button 
+                    onClick={handleExportJSON}
+                    className="btn-secondary flex items-center justify-center gap-2 text-sm"
+                  >
+                    <FileJson size={14} />
+                    Export JSON
+                  </button>
+                  
+                  {/* Import */}
+                  <button 
+                    onClick={handleImportClick}
+                    className="btn-secondary flex items-center justify-center gap-2 text-sm"
+                  >
+                    <Upload size={14} />
+                    Import Data
+                  </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".json"
+                    onChange={handleFileImport}
+                    className="hidden"
+                  />
+                </div>
+                <p className="text-xs text-ink/40 dark:text-paper/40 mt-2 text-center">
+                  JSON for backups & data portability
+                </p>
+              </div>
             </div>
 
             {/* Import Result */}
@@ -331,16 +458,18 @@ export default function SettingsView() {
               </div>
             )}
 
+            {/* What's in the export */}
             <div className="mt-4 p-3 bg-ink/5 dark:bg-paper/5 rounded-lg">
               <div className="flex items-start gap-2 text-xs text-ink/60 dark:text-paper/60">
                 <Info size={14} className="mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="font-medium mb-1">What's in the export?</p>
+                  <p className="font-medium mb-1">What's included?</p>
                   <ul className="space-y-0.5">
-                    <li>• Your preferences (theme, tracking settings)</li>
-                    <li>• Statistics (lean score, distribution)</li>
+                    <li>• Your lean score & statistics</li>
+                    <li>• Reading distribution by bias</li>
+                    <li>• Top sources & diversity score</li>
                     <li>• Reading history (up to 1,000 entries)</li>
-                    <li>• Summary for quick reference</li>
+                    <li>• Your preferences</li>
                   </ul>
                 </div>
               </div>
@@ -522,7 +651,7 @@ export default function SettingsView() {
         </div>
         <div className="font-masthead text-2xl tracking-widest mb-1">P R O V E I T</div>
         <p className="text-sm text-ink/50 dark:text-paper/50">
-          Version 2.3.0 • Personal Edition
+          Version 2.3.3 • Personal Edition
         </p>
         <p className="text-xs text-ink/30 dark:text-paper/30 mt-2 italic font-headline">
           "Veritas Lux" — Truth is Light

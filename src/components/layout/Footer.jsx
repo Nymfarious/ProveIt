@@ -60,12 +60,21 @@ export default function Footer({ lastLogin }) {
             >
               U.S. Supreme Court
             </a>
+            <span className="text-ink/20 dark:text-paper/20">✦</span>
+            <a 
+              href="https://github.com/Nymfarious/ProveIt/blob/main/LICENSE"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-copper/70 hover:text-copper transition-colors"
+            >
+              MIT License
+            </a>
           </div>
 
           {/* Version & Last Login */}
           <div className="flex items-center justify-between text-ink/20 dark:text-paper/20">
             <span className="font-mono text-[10px] uppercase tracking-wider">
-              ProveIt v2.3.0
+              ProveIt v2.3.3
             </span>
             
             <span className="font-mono text-[10px] uppercase tracking-wider">
