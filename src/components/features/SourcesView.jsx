@@ -1,11 +1,29 @@
-import { useState } from 'react'
-import { Shield, Scale, Stethoscope, Newspaper, ExternalLink, AlertTriangle, CheckCircle, Info, X, Search } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Shield, Scale, Stethoscope, Newspaper, ExternalLink, AlertTriangle, CheckCircle, Info, X, Search, Power } from 'lucide-react'
 import { TRUSTED_SOURCES, getBiasLabel, getCredibilityBadge, MEDICAL_DISCLAIMER } from '../../lib/trustedSources'
 
 export default function SourcesView() {
   const [activeTab, setActiveTab] = useState('political')
   const [showMedicalDisclaimer, setShowMedicalDisclaimer] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
+  
+  // BUG FIX: Allow users to toggle source categories on/off
+  const [enabledCategories, setEnabledCategories] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('proveit-enabled-sources')
+      if (saved) return JSON.parse(saved)
+    }
+    return { political: true, legal: true, medical: true }
+  })
+
+  // Save preferences
+  useEffect(() => {
+    localStorage.setItem('proveit-enabled-sources', JSON.stringify(enabledCategories))
+  }, [enabledCategories])
+
+  const toggleCategory = (category) => {
+    setEnabledCategories(prev => ({ ...prev, [category]: !prev[category] }))
+  }
 
   const tabs = [
     { id: 'political', label: 'Political', icon: Newspaper, color: 'text-copper' },
@@ -22,7 +40,6 @@ export default function SourcesView() {
   }
 
   const renderBiasBar = (bias) => {
-    // Position from 0 (far left, -3) to 100 (far right, +3)
     const position = ((bias + 3) / 6) * 100
     return (
       <div className="relative h-2 w-20 rounded-full bg-gradient-to-r from-blue-600 via-slate-400 to-red-600 overflow-hidden">
@@ -31,19 +48,6 @@ export default function SourcesView() {
           style={{ left: `${position}%` }}
         />
       </div>
-    )
-  }
-
-  const renderCredibilityTier = (tier) => {
-    const colors = {
-      1: 'bg-forest text-white',
-      2: 'bg-steel text-white',
-      3: 'bg-copper text-white',
-    }
-    return (
-      <span className={`text-[10px] px-1.5 py-0.5 rounded ${colors[tier] || 'bg-ink/20'}`}>
-        Tier {tier}
-      </span>
     )
   }
 
@@ -64,10 +68,56 @@ export default function SourcesView() {
         </div>
       </div>
 
+      {/* Category Enable/Disable Controls - BUG FIX */}
+      <div className="card border-copper/30">
+        <h3 className="card-headline flex items-center gap-2 mb-4">
+          <Power size={18} className="text-copper" />
+          Active Source Categories
+        </h3>
+        <p className="text-xs text-ink/50 dark:text-paper/50 mb-4">
+          Turn off categories you don't want included in fact-check analysis and feed filtering.
+        </p>
+        
+        <div className="grid sm:grid-cols-3 gap-3">
+          {tabs.map((tab) => {
+            const Icon = tab.icon
+            const isEnabled = enabledCategories[tab.id]
+            return (
+              <button
+                key={tab.id}
+                onClick={() => toggleCategory(tab.id)}
+                className={`p-4 rounded-lg border-2 transition-all ${
+                  isEnabled 
+                    ? 'border-forest/50 bg-forest/10' 
+                    : 'border-ink/20 dark:border-paper/20 bg-ink/5 dark:bg-paper/5 opacity-60'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <Icon size={20} className={isEnabled ? tab.color : 'text-ink/40'} />
+                  <div className={`w-3 h-3 rounded-full ${isEnabled ? 'bg-forest' : 'bg-ink/30'}`} />
+                </div>
+                <p className={`font-medium text-left ${isEnabled ? '' : 'text-ink/50 dark:text-paper/50'}`}>
+                  {tab.label}
+                </p>
+                <p className="text-xs text-left text-ink/40 dark:text-paper/40 mt-1">
+                  {isEnabled ? 'Active in analysis' : 'Disabled'}
+                </p>
+              </button>
+            )
+          })}
+        </div>
+        
+        <div className="mt-4 p-3 rounded-lg bg-steel/10 border border-steel/20 text-xs text-ink/60 dark:text-paper/60">
+          <Info size={12} className="inline mr-1" />
+          Disabled categories won't be used when checking sources in fact-checks or news feeds.
+        </div>
+      </div>
+
       {/* Tab Navigation */}
       <div className="flex gap-1 p-1 bg-ink/5 dark:bg-paper/5 rounded-lg">
         {tabs.map((tab) => {
           const Icon = tab.icon
+          const isEnabled = enabledCategories[tab.id]
           return (
             <button
               key={tab.id}
@@ -76,10 +126,11 @@ export default function SourcesView() {
                 activeTab === tab.id
                   ? 'bg-paper dark:bg-ink shadow-sm text-ink dark:text-paper'
                   : 'text-ink/60 dark:text-paper/60 hover:text-ink dark:hover:text-paper'
-              }`}
+              } ${!isEnabled ? 'opacity-50' : ''}`}
             >
               <Icon size={16} className={activeTab === tab.id ? tab.color : ''} />
               <span className="hidden sm:inline">{tab.label}</span>
+              {!isEnabled && <span className="text-[10px] text-burgundy">(off)</span>}
             </button>
           )
         })}
@@ -98,6 +149,17 @@ export default function SourcesView() {
                    focus:outline-none focus:ring-2 focus:ring-copper/50"
         />
       </div>
+
+      {/* Disabled Warning */}
+      {!enabledCategories[activeTab] && (
+        <div className="p-4 rounded-lg bg-burgundy/10 border border-burgundy/30 flex items-center gap-3">
+          <AlertTriangle size={20} className="text-burgundy flex-shrink-0" />
+          <div>
+            <p className="text-sm font-medium text-burgundy">This category is disabled</p>
+            <p className="text-xs text-burgundy/70">Sources below won't be used in analysis. Toggle above to re-enable.</p>
+          </div>
+        </div>
+      )}
 
       {/* Medical Disclaimer Modal */}
       {showMedicalDisclaimer && (
@@ -131,7 +193,7 @@ export default function SourcesView() {
           </h3>
           
           <div className="mb-4 p-3 rounded-lg bg-steel/10 border border-steel/20 text-xs text-ink/60 dark:text-paper/60">
-            <p>Bias ratings from -3 (Far Left) to +3 (Far Right) based on editorial positioning, not factual accuracy.</p>
+            <p>Bias ratings from -3 (Far Left) to +3 (Far Right) based on editorial positioning.</p>
           </div>
 
           <div className="space-y-2">
@@ -166,7 +228,7 @@ export default function SourcesView() {
           <div className="mb-4 p-3 rounded-lg bg-forest/10 border border-forest/20 text-xs">
             <div className="flex items-start gap-2">
               <CheckCircle size={14} className="text-forest mt-0.5 flex-shrink-0" />
-              <p className="text-forest">These sources are nonpartisan and trusted for legal research and court information.</p>
+              <p className="text-forest">Nonpartisan sources for legal research and court information.</p>
             </div>
           </div>
 
@@ -181,12 +243,7 @@ export default function SourcesView() {
                     </div>
                     <p className="text-xs text-ink/50 dark:text-paper/50">{source.description}</p>
                   </div>
-                  <a 
-                    href={source.url} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-steel hover:text-copper flex-shrink-0"
-                  >
+                  <a href={source.url} target="_blank" rel="noopener noreferrer" className="text-steel hover:text-copper flex-shrink-0">
                     <ExternalLink size={16} />
                   </a>
                 </div>
@@ -208,10 +265,7 @@ export default function SourcesView() {
                 <p className="text-sm text-burgundy/80 mb-2">
                   This is NOT medical advice. Do not self-diagnose or interpret test results.
                 </p>
-                <button 
-                  onClick={() => setShowMedicalDisclaimer(true)}
-                  className="text-xs text-burgundy underline hover:no-underline"
-                >
+                <button onClick={() => setShowMedicalDisclaimer(true)} className="text-xs text-burgundy underline">
                   Read Full Disclaimer
                 </button>
               </div>
@@ -225,9 +279,9 @@ export default function SourcesView() {
             </h3>
 
             <div className="mb-4 p-3 rounded-lg bg-steel/10 border border-steel/20 text-xs text-ink/60 dark:text-paper/60">
-              <p><strong>Tier 1:</strong> Government & academic institutions (highest credibility)</p>
-              <p><strong>Tier 2:</strong> Reputable medical news (high credibility, verify claims)</p>
-              <p><strong>Tier 3:</strong> Mixed quality (always cross-reference with Tier 1)</p>
+              <p><strong>Tier 1:</strong> Government & academic (highest credibility)</p>
+              <p><strong>Tier 2:</strong> Reputable medical news (verify claims)</p>
+              <p><strong>Tier 3:</strong> Mixed quality (cross-reference with Tier 1)</p>
             </div>
 
             {/* Tier 1 */}
@@ -282,7 +336,7 @@ export default function SourcesView() {
             <div className="mb-4">
               <h4 className="text-sm font-semibold text-copper flex items-center gap-2 mb-2">
                 <span className="w-6 h-6 rounded-full bg-copper text-white flex items-center justify-center text-xs">3</span>
-                Tier 3 - Mixed Quality (Verify Claims)
+                Tier 3 - Mixed Quality
               </h4>
               <div className="space-y-2">
                 {filterSources(TRUSTED_SOURCES.medical.filter(s => s.tier === 3)).map((source) => (
@@ -302,7 +356,7 @@ export default function SourcesView() {
               </div>
             </div>
 
-            {/* Blocked Medical Sources */}
+            {/* Blocked */}
             <div>
               <h4 className="text-sm font-semibold text-burgundy flex items-center gap-2 mb-2">
                 <AlertTriangle size={16} />

@@ -100,7 +100,7 @@ export default function Footer() {
           {/* Version - changed diamond to bullet/dot */}
           <div className="flex items-center justify-center gap-3 text-ink/20 dark:text-paper/20">
             <span className="font-mono text-[10px] uppercase tracking-wider">
-              ProveIt v3.0.0
+              ProveIt v3.1.1
             </span>
             <span className="text-copper/40">•</span>
             <span className="font-mono text-[10px] uppercase tracking-wider">

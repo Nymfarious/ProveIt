@@ -1,74 +1,74 @@
-# ProveIt v3.0.0 - Major Release
+# ProveIt v3.1.1 - Bug Fix + Feature Release
 
-## 🎉 What's New
-
-### Footer Fixes
-- ✅ Dark curved hover tooltips (removed white ones)
-- ✅ Removed gray Oyez explainer text (hover does the job)
-- ✅ Removed bottom flourish (was redundant)
-- ✅ Changed diamond (✦) to bullet (•) between version/edition
-
-### Rate Limiting
-- ✅ **5 fact-checks/day** for free users
-- ✅ Usage counter displayed in Search view
-- ✅ "Add your own API key" for unlimited access
-- ✅ Dev Mode toggle in DevTools for developers
-
-### IMDB Integration
-- ✅ Movies/TV articles show IMDB search links
-- ✅ Auto-extracts search terms from headlines
-
-### Supreme Court Enhancements
-- ✅ **Justice portraits** from official SCOTUS website (public domain)
-- ✅ **Wikipedia links** for each justice
-- ✅ **SCOTUS News panel** (collapsible, 3/7 day filter)
-- ✅ News articles show source bias indicators
-
-### Pre-Approved Sources System (NEW VIEW)
-- ✅ **Political Sources** - 20+ sources with bias ratings (-3 to +3)
-- ✅ **Legal Sources** - Oyez, Cornell Law, SCOTUSblog, PACER, etc.
-- ✅ **Medical Sources** - Tiered system (1-3) with credibility ratings
-- ✅ **Medical Disclaimer** - Full popup with legal coverage
-- ✅ **Blocked Medical Sources** - Known misinformation sites
-- ✅ Searchable source database
-
-### DevTools Improvements
-- ✅ **Unlock Unlimited** toggle for developers
-- ✅ **User API Key** input - add your own Gemini key for unlimited
-- ✅ API test buttons
-- ✅ What each API powers (explained)
+**v3.1.1 = Bug Fix (3.1.0) + Features (3.1.1) combined**
 
 ---
 
-## 📁 Files Changed/Added
+## 🐛 Bug Fix (from v3.1.0)
+
+### Source Category Toggles
+- **Issue:** Users couldn't disable Legal or Medical sources as trusted resources
+- **Fix:** Added toggle controls in Trusted Sources view
+- **How it works:**
+  - Three toggles for Political, Legal, Medical
+  - Disabled categories show "(off)" indicator
+  - Preferences saved to localStorage
+  - Disabled sources won't be used in fact-check analysis
+
+---
+
+## 🆕 New Features (v3.1.1)
+
+### 1. Justice Bias Meters (Supreme Court View)
+- Visual bias meter for each justice (-2 to +2 scale)
+- Based on Martin-Quinn scores and voting patterns
+- Labels: Very Liberal → Liberal → Conservative → Very Conservative
+- Agreement rate percentage with majority decisions
+- "About Bias Ratings" explainer popup
+
+### 2. Case POV Analysis (Supreme Court View)
+- 5 perspectives on each major ruling:
+  - Far Left, Left, Center, Right, Far Right
+- Color-coded panels for each viewpoint
+- Collapsible under "View Perspectives Analysis" button
+- Disclaimer that these are synthesized from common arguments
+
+### 3. Media Authenticity Checker (NEW VIEW)
+- Upload images, GIFs, or videos for analysis
+- **18+ detection markers** in 3 categories:
+  - **Common:** Fingers, text, symmetry, lighting, edges
+  - **Uncommon:** Earrings, teeth, hair, patterns, reflections
+  - **Advanced:** Metadata, compression, noise, perspective, watermarks
+- Authenticity spectrum (Likely Fake ↔ Likely Real)
+- Expandable checklist showing detected issues
+- Download report button
+
+### 4. Founding Documents Hub (NEW VIEW)
+- **Declaration of Independence**
+- **U.S. Constitution**
+- **Bill of Rights & Amendments**
+- Each section includes:
+  - Original text excerpt (italic)
+  - "Plain English" layman's explanation (freshman US History level)
+  - Links to trusted resources (National Archives, LOC)
+- Quick Facts panel (56 signers, 7 articles, 27 amendments)
+
+---
+
+## 📁 Files Added/Changed
 
 ```
-ProveIt-v3.0.0/
-├── public/
-│   └── favicon.svg
+ProveIt-v3.1.1/
 ├── src/
-│   ├── App.jsx                      ← Rate limiting logic
-│   ├── lib/
-│   │   ├── gemini.js               ← AI integration
-│   │   ├── news.js                 ← News API
-│   │   └── trustedSources.js       ← NEW: Source database
+│   ├── App.jsx                      ← Added 2 new views
 │   └── components/
-│       ├── ui/
-│       │   └── BiasBar.jsx
 │       ├── layout/
-│       │   ├── Navigation.jsx      ← Added Sources icon
-│       │   └── Footer.jsx          ← Fixed hovers, removed extras
+│       │   └── Navigation.jsx       ← Camera + BookOpen icons
 │       └── features/
-│           ├── SearchView.jsx      ← Rate limiting UI
-│           ├── FeedView.jsx        ← IMDB links
-│           ├── SupremeCourtView.jsx ← Portraits, news panel
-│           ├── SourcesView.jsx     ← NEW: Trusted sources
-│           ├── DevToolsView.jsx    ← Unlock unlimited
-│           ├── SettingsView.jsx
-│           ├── StatsView.jsx
-│           ├── IgnoredView.jsx
-│           └── HelpView.jsx
-├── index.html
+│           ├── SourcesView.jsx      ← BUG FIX: Toggle controls
+│           ├── SupremeCourtView.jsx ← Bias meters + POV analysis
+│           ├── MediaCheckerView.jsx ← NEW: Authenticity checker
+│           └── FoundingDocsView.jsx ← NEW: Documents hub
 └── README.md
 ```
 
@@ -76,60 +76,75 @@ ProveIt-v3.0.0/
 
 ## 🧪 Testing Checklist
 
-### Footer
-- [ ] Dark curved tooltips appear on hover (no white)
-- [ ] No gray Oyez text below links
-- [ ] No double flourish at bottom
-- [ ] Version shows "v3.0.0" with bullet (•) separator
+### Trusted Sources (Bug Fix)
+- [ ] Navigate to Shield icon → Sources
+- [ ] See "Active Source Categories" section at top
+- [ ] Toggle Political OFF → shows "(off)" in tab
+- [ ] Toggle Legal OFF → disabled sources won't be used
+- [ ] Toggle Medical OFF → same behavior
+- [ ] Refresh page → preferences persist
 
-### Rate Limiting
-- [ ] Usage counter shows "X fact-checks remaining"
-- [ ] After 5 checks, button shows "Limit Reached"
-- [ ] Error message suggests adding API key
-- [ ] Resets at midnight (check localStorage)
+### Justice Bias Meters
+- [ ] Navigate to Supreme Court → The Court tab
+- [ ] Each justice shows gradient bias bar
+- [ ] Marker position reflects liberal ↔ conservative lean
+- [ ] Bias label shows (Very Liberal, Liberal, Conservative, etc.)
+- [ ] Agreement % shows on right side
+- [ ] "About Bias Ratings" info popup works
 
-### DevTools
-- [ ] "Unlock Unlimited" toggle works
-- [ ] Adding Gemini API key unlocks unlimited
-- [ ] Test buttons work
-- [ ] API explanations visible
+### Case POV Analysis
+- [ ] Navigate to Supreme Court → Current Docket
+- [ ] Expand a case (e.g., Trump v. United States)
+- [ ] Click "View Perspectives Analysis"
+- [ ] 5 colored panels appear (Far Left → Far Right)
+- [ ] Each has appropriate background color
+- [ ] Collapse works
 
-### IMDB Links
-- [ ] Movies/TV category shows film icon
-- [ ] Each article has IMDB link
-- [ ] IMDB link opens search in new tab
+### Media Authenticity Checker
+- [ ] Navigate to Camera icon
+- [ ] Drop zone appears for upload
+- [ ] Upload an image → preview shows
+- [ ] Click "Check Authenticity"
+- [ ] Loading spinner appears
+- [ ] Results show: verdict, score, spectrum
+- [ ] Expand checklist sections
+- [ ] Detected issues show AlertTriangle icon
+- [ ] Clear issues show CheckCircle icon
+- [ ] "Check Another" clears state
 
-### Supreme Court
-- [ ] Justice portraits load (or show initials fallback)
-- [ ] Wikipedia links work
-- [ ] News button opens panel
-- [ ] News filter (3/7 days) works
-- [ ] Source bias dots show on news items
-
-### Trusted Sources (New!)
-- [ ] Navigate via Shield icon in nav
-- [ ] Political tab shows bias bars
-- [ ] Legal tab shows trusted sources with links
-- [ ] Medical tab shows tiered sources
-- [ ] Medical disclaimer popup works
-- [ ] Blocked sources show in red
-- [ ] Search filters sources
+### Founding Documents Hub
+- [ ] Navigate to BookOpen icon
+- [ ] Three document cards show (Declaration, Constitution, Amendments)
+- [ ] Click each → content changes
+- [ ] Expand sections → original + plain English show
+- [ ] "Trusted Resources" links work
+- [ ] Quick Facts show at bottom
 
 ### Navigation
-- [ ] Shield icon appears for Sources
-- [ ] All nav items work
-- [ ] Active state highlights correctly
+- [ ] 11 icons total now
+- [ ] Scrollable on mobile if needed
+- [ ] All icons lead to correct views
 
 ---
 
-## 💰 Cost Model
+## 🎨 UI/UX Notes
 
-| User Type | Fact-Checks | How |
-|-----------|-------------|-----|
-| Free User | 5/day | Uses app's embedded key |
-| Own Key | Unlimited | Adds their Gemini API key |
-| Developer | Unlimited | Enables Dev Mode toggle |
-| Magic Link | Unlimited | Invited by email hash |
+### Bias Meter Colors
+- Blue gradient = Liberal/Left
+- Slate gray = Center
+- Red gradient = Conservative/Right
+
+### POV Panel Colors
+- Far Left: Blue-900 (dark blue)
+- Left: Blue-600
+- Center: Slate-500
+- Right: Red-600
+- Far Right: Red-900 (dark red)
+
+### Media Checker Severity
+- High severity: Burgundy
+- Medium severity: Copper
+- Low severity: Steel
 
 ---
 
@@ -137,12 +152,11 @@ ProveIt-v3.0.0/
 
 ```bash
 cd ~/path/to/ProveIt
-# Copy all files from zip
-npm install  # if new dependencies
+# Extract v3.1.1 files
 npm run build
-npm run deploy  # or push to GitHub Pages
+# Deploy as usual
 ```
 
 ---
 
-*ProveIt v3.0.0 - "Veritas Lux" • Truth is Light*
+*ProveIt v3.1.1 - "Veritas Lux" • Truth is Light*

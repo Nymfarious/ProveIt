@@ -190,7 +190,7 @@ export default function SettingsView() {
         </div>
         
         <div className="font-masthead text-2xl tracking-widest mb-1">P R O V E I T</div>
-        <p className="text-sm text-ink/50 dark:text-paper/50">Version 3.0.0 • Personal Edition</p>
+        <p className="text-sm text-ink/50 dark:text-paper/50">Version 3.1.1 • Personal Edition</p>
         
         <div className="flex items-center justify-center gap-3 mt-2">
           <div className="w-8 h-px bg-ink/20 dark:bg-paper/20" />
