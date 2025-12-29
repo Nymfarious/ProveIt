@@ -9,6 +9,7 @@ const CONSPIRACY_DISINFO = [
   { name: 'The Epoch Times', reason: 'Falun Gong-affiliated, misleading content', severity: 2 },
   { name: 'Gateway Pundit', reason: 'Frequent false claims', severity: 2 },
   { name: 'Zero Hedge', reason: 'Conspiracy promotion', severity: 2 },
+  { name: 'WikiLeaks', reason: 'Controversial sourcing, legal concerns', severity: 3 },
 ]
 
 const EXTREME_LEFT = [
@@ -61,7 +62,7 @@ export default function IgnoredView() {
         <div className="flex items-start gap-3">
           <FolderX size={24} className="text-copper flex-shrink-0" />
           <div>
-            <h2 className="font-headline text-lg font-semibold mb-2">Ignored Sources</h2>
+            <h2 className="font-headline text-lg font-semibold mb-2">Flagged Sources</h2>
             <p className="text-sm text-ink/60 dark:text-paper/60">
               Sources on these lists are flagged in your feed with warnings. You can choose to auto-hide them or view them with context.
             </p>
@@ -69,7 +70,7 @@ export default function IgnoredView() {
         </div>
       </div>
 
-      {/* Conspiracy / Disinformation - FIRST */}
+      {/* Conspiracy / Disinformation */}
       <div className="card">
         <button onClick={() => toggleSection('conspiracy')} className="w-full flex items-center justify-between">
           <h3 className="card-headline flex items-center gap-2">
@@ -208,13 +209,26 @@ export default function IgnoredView() {
               {showTimerInfo && (
                 <div className="mt-3 pt-3 border-t border-steel/20 text-xs text-ink/60 dark:text-paper/60">
                   <div className="flex items-center gap-2 mb-1"><Clock size={12} /><strong>2-Minute Review Timer</strong></div>
-                  <p>Ratings are only counted if you've viewed an article for at least 2 minutes. This ensures ratings are based on actual review, not accidental clicks.</p>
+                  <p>Ratings are only counted if you've viewed an article for at least 2 minutes.</p>
                 </div>
               )}
             </div>
 
+            {/* FIXED INPUT FIELD - proper text color and padding */}
             <div className="flex gap-2">
-              <input type="text" value={newSource} onChange={(e) => setNewSource(e.target.value)} placeholder="Add source URL or name..." className="input flex-1" onKeyDown={(e) => e.key === 'Enter' && addCustomSource()} />
+              <input 
+                type="text" 
+                value={newSource} 
+                onChange={(e) => setNewSource(e.target.value)} 
+                placeholder="Add source URL or name..." 
+                className="flex-1 px-4 py-3 rounded-lg border border-ink/20 dark:border-paper/20 
+                         bg-paper dark:bg-ink 
+                         text-ink dark:text-paper 
+                         placeholder:text-ink/40 dark:placeholder:text-paper/40
+                         focus:outline-none focus:ring-2 focus:ring-copper/50 focus:border-copper
+                         transition-colors"
+                onKeyDown={(e) => e.key === 'Enter' && addCustomSource()} 
+              />
               <button onClick={addCustomSource} className="btn-primary px-4"><Plus size={18} /></button>
             </div>
 
@@ -246,7 +260,7 @@ export default function IgnoredView() {
         )}
       </div>
 
-      <p className="text-center text-xs text-ink/40 dark:text-paper/40">Ignored sources still appear in your feed with warnings. Use Settings → Privacy to completely hide them.</p>
+      <p className="text-center text-xs text-ink/40 dark:text-paper/40">Flagged sources still appear in your feed with warnings. Use Settings → Privacy to completely hide them.</p>
     </div>
   )
 }

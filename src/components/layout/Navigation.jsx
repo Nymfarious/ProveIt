@@ -1,26 +1,18 @@
-import { Search, Newspaper, BarChart3, FolderX, Mail, Settings, Wrench, HelpCircle, Scale } from 'lucide-react'
+import { Search, Newspaper, BarChart3, FolderX, Settings, Wrench, HelpCircle, Scale } from 'lucide-react'
 
+// REMOVED: Mail icon - Email is now only in Settings > Email tab
 const navItems = [
   { id: 'search', icon: Search, tooltip: 'Fact Check' },
   { id: 'feed', icon: Newspaper, tooltip: 'My Feed' },
   { id: 'scotus', icon: Scale, tooltip: 'Supreme Court' },
   { id: 'stats', icon: BarChart3, tooltip: 'My Stats' },
-  { id: 'ignored', icon: FolderX, tooltip: 'Ignored Sources' },
-  { id: 'email', icon: Mail, tooltip: 'Email Report', action: 'email' },
+  { id: 'ignored', icon: FolderX, tooltip: 'Flagged Sources' },
   { id: 'help', icon: HelpCircle, tooltip: 'How to Use' },
   { id: 'settings', icon: Settings, tooltip: 'Settings' },
   { id: 'devtools', icon: Wrench, tooltip: 'DevTools' },
 ]
 
 export default function Navigation({ activeView, setActiveView }) {
-  const handleClick = (item) => {
-    if (item.action === 'email') {
-      alert('Email report feature coming soon!')
-      return
-    }
-    setActiveView(item.id)
-  }
-
   return (
     <nav className="sticky top-0 z-40 bg-paper/95 dark:bg-ink/95 backdrop-blur-sm border-b border-ink/10 dark:border-paper/10">
       <div className="container mx-auto px-4 max-w-4xl">
@@ -32,7 +24,7 @@ export default function Navigation({ activeView, setActiveView }) {
             return (
               <button
                 key={item.id}
-                onClick={() => handleClick(item)}
+                onClick={() => setActiveView(item.id)}
                 className={`nav-icon ${isActive ? 'active' : ''}`}
                 data-tooltip={item.tooltip}
                 aria-label={item.tooltip}

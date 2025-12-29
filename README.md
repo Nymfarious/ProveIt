@@ -1,86 +1,92 @@
-# ProveIt v2.4.0 Update
+# ProveIt v2.4.1 - Bug Fixes
 
-## What's New
+## Bugs Fixed
 
-### Bug Fixes
-| Bug | Fix |
-|-----|-----|
-| **How to Use mixed with Search** | Separated into dedicated HelpView (? icon in nav) |
-| **Flourish missing in footer** | Added ❧ ✦ ☙ flourish to Footer, Settings, throughout |
-
-### New Features
-
-#### Supreme Court Integration (Scale icon)
-- **Current Docket**: Active cases with status, issue summaries, oral argument dates
-- **Shadow Docket**: Emergency orders and stays with vote breakdowns
-- **The Court**: All 9 justices with appointment info
-- Links to supremecourt.gov and Oyez
-
-#### Feed History (Clock icon in Feed)
-- **30-day history** of previous feed refreshes
-- Navigate between past feeds with timestamps
-- "Live Feed" indicator for current content
-- Compare what was trending at different times
-
-### Navigation Updates
-New icons in navigation bar:
-- ⚖️ **Scale** - Supreme Court
-- ❓ **Help Circle** - How to Use guide
-
-### Files to Replace
-
-```
-ProveIt/
-├── public/
-│   └── favicon.svg              ← (same as v2.3.4)
-├── src/
-│   ├── App.jsx                  ← REPLACE (adds HelpView, SupremeCourtView)
-│   └── components/
-│       ├── layout/
-│       │   ├── Navigation.jsx   ← REPLACE (new icons)
-│       │   └── Footer.jsx       ← REPLACE (proper flourish)
-│       └── features/
-│           ├── SearchView.jsx       ← REPLACE (clean, no How to Use)
-│           ├── HelpView.jsx         ← NEW FILE
-│           ├── SupremeCourtView.jsx ← NEW FILE
-│           ├── FeedView.jsx         ← REPLACE (history tabs)
-│           ├── SettingsView.jsx     ← REPLACE (footer flourish)
-│           ├── StatsView.jsx        ← (same as v2.3.4)
-│           └── IgnoredView.jsx      ← (same as v2.3.4)
-└── index.html                   ← (same as v2.3.4)
-```
-
-## How to Apply
-
-```bash
-cd ~/path/to/ProveIt
-
-# Copy all files from the zip
-# New files: HelpView.jsx, SupremeCourtView.jsx
-
-git add .
-git commit -m "v2.4.0 - Supreme Court, Feed History, How to Use page, flourish fix"
-git push
-```
-
-## Keyboard Shortcut
-
-**CTRL+ALT+V** → Toggle DevTools view
-
-## Flourish Reference
-
-The proper flourish used throughout:
-```
-❧ ─── ✦ ─── ☙
-```
-
-This appears in:
-- Header (masthead)
-- Footer
-- Settings panel (About section)
-- HelpView headers
-- SupremeCourtView (with ⚖ variant)
+| Bug | Fix | File |
+|-----|-----|------|
+| Flourish appears twice on Justice tab | Removed duplicate | SupremeCourtView.jsx |
+| Email button redundant in nav | Removed (use Settings > Email) | Navigation.jsx |
+| Input text invisible in Flagged Sources | Fixed text color & padding | IgnoredView.jsx |
+| Footer links no descriptions | Added hover tooltips | Footer.jsx |
+| Oyez not explained | Added description in footer | Footer.jsx |
+| API Keys exposed to users | Moved to DevTools | SettingsView.jsx, DevToolsView.jsx |
+| Save API Key button too loud | Made subtle/ghost style | DevToolsView.jsx |
+| WikiLeaks not blocked | Added to Conspiracy list | IgnoredView.jsx |
+| No Library of Congress link | Added to footer | Footer.jsx |
+| Justice Wikipedia links missing | Added to each justice | SupremeCourtView.jsx |
 
 ---
 
-*ProveIt v2.4.0 - "Veritas Lux"*
+## Testing Checklist
+
+### Navigation
+- [ ] All nav icons work correctly
+- [ ] Email icon is REMOVED from nav bar
+- [ ] DevTools accessible via nav icon
+- [ ] DevTools accessible via CTRL+ALT+V
+
+### Footer
+- [ ] Single flourish displays correctly: ❧ ─ ✦ ─ ☙
+- [ ] First Amendment link → hover shows "Freedom of Speech & Press"
+- [ ] U.S. Supreme Court link → hover shows "Official Court Website"
+- [ ] Oyez link → hover shows "Nonpartisan Court Archive"
+- [ ] Library of Congress link → hover shows "National Research Library"
+- [ ] Oyez description text appears below links
+- [ ] Version shows v2.4.1
+
+### Supreme Court Tab
+- [ ] ONLY ONE flourish at bottom (not two)
+- [ ] Each justice has Wikipedia link icon
+- [ ] View on Oyez links have tooltips
+- [ ] Tabs switch correctly (Docket/Shadow/Justices)
+
+### Flagged Sources Tab
+- [ ] Input field has left padding (not bumping margin)
+- [ ] Input text is VISIBLE when typing (dark on light, light on dark)
+- [ ] WikiLeaks appears in Conspiracy/Disinfo list
+- [ ] Star ratings work
+- [ ] Add source button works
+
+### Settings Tab
+- [ ] Only 3 tabs: Privacy, My Data, Email
+- [ ] API Keys section is GONE
+- [ ] Flourish displays correctly in About section
+- [ ] Version shows v2.4.1
+
+### DevTools Tab
+- [ ] API Configuration section present
+- [ ] Each API shows what it "powers"
+- [ ] Test button works for each active API
+- [ ] Planned APIs show "PLANNED" badge
+- [ ] Debug actions work
+- [ ] Input fields are subtle/unobtrusive
+
+### General
+- [ ] Dark mode toggle works
+- [ ] All flourishes consistent: ❧ ─ ✦ ─ ☙
+- [ ] No console errors
+- [ ] Responsive on mobile
+
+---
+
+## Files Changed
+
+```
+ProveIt/
+├── src/
+│   ├── App.jsx                      ← Minor (version)
+│   └── components/
+│       ├── layout/
+│       │   ├── Navigation.jsx       ← REMOVED email button
+│       │   └── Footer.jsx           ← Hover tooltips, LOC link, Oyez desc
+│       └── features/
+│           ├── SupremeCourtView.jsx ← Single flourish, Wikipedia links
+│           ├── IgnoredView.jsx      ← Fixed input, WikiLeaks added
+│           ├── SettingsView.jsx     ← REMOVED API Keys section
+│           └── DevToolsView.jsx     ← API Keys moved here
+└── README.md
+```
+
+---
+
+*ProveIt v2.4.1 - "Veritas Lux"*

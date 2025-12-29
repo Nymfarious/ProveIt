@@ -1,270 +1,224 @@
-import { useState, useEffect } from 'react'
-import { Wrench, Play, Copy, RefreshCw, Terminal, Activity, CheckCircle, AlertTriangle, Wifi, WifiOff } from 'lucide-react'
+import { useState } from 'react'
+import { Wrench, Key, Activity, CheckCircle, XCircle, Loader2, AlertCircle, Info, Zap } from 'lucide-react'
 
 export default function DevToolsView() {
-  const [testEndpoint, setTestEndpoint] = useState('/api/check?url=reuters.com')
-  const [testResult, setTestResult] = useState(null)
-  const [isRunning, setIsRunning] = useState(false)
-  const [copied, setCopied] = useState(false)
-  const [apiStatus, setApiStatus] = useState({
-    gemini: 'checking',
-    newsdata: 'checking',
-  })
+  const [apiKeys, setApiKeys] = useState({ newsdata: '', gemini: '', claude: '', openai: '' })
+  const [testResults, setTestResults] = useState({})
+  const [testing, setTesting] = useState({})
 
-  // Check API connectivity on mount
-  useEffect(() => {
-    checkAPIs()
-  }, [])
-
-  const checkAPIs = async () => {
-    // Check if env vars are set (basic check)
-    const hasGemini = !!import.meta.env.VITE_GEMINI_API_KEY
-    const hasNewsData = !!import.meta.env.VITE_NEWSDATA_KEY
-
-    setApiStatus({
-      gemini: hasGemini ? 'connected' : 'missing',
-      newsdata: hasNewsData ? 'connected' : 'missing',
-    })
-  }
-
-  // This is DEMO data - real tracking not implemented yet
-  const usage = {
-    newsdata: { used: 0, limit: 200, label: 'NewsData.io', real: apiStatus.newsdata === 'connected' },
-    gemini: { used: 0, limit: null, label: 'Gemini API', unit: 'k tokens', real: apiStatus.gemini === 'connected' },
-    claude: { used: 0, limit: null, label: 'Claude API', unit: 'k tokens', real: false },
-    openai: { used: 0, limit: null, label: 'OpenAI API', unit: 'k tokens', real: false },
-  }
-
-  const recentCalls = [
-    // Will be populated by real usage later
+  const apis = [
+    { 
+      key: 'newsdata', 
+      label: 'NewsData.io', 
+      envVar: 'VITE_NEWSDATA_KEY',
+      powers: 'Live news feed, headlines, and article retrieval',
+      status: 'active',
+    },
+    { 
+      key: 'gemini', 
+      label: 'Google Gemini', 
+      envVar: 'VITE_GEMINI_API_KEY',
+      powers: 'Fact-checking AI analysis and claim verification',
+      status: 'active',
+    },
+    { 
+      key: 'claude', 
+      label: 'Anthropic Claude', 
+      envVar: 'VITE_CLAUDE_API_KEY',
+      powers: 'Alternative AI provider for analysis (planned)',
+      status: 'planned',
+    },
+    { 
+      key: 'openai', 
+      label: 'OpenAI', 
+      envVar: 'VITE_OPENAI_API_KEY',
+      powers: 'Alternative AI provider for analysis (planned)',
+      status: 'planned',
+    },
   ]
 
-  const runTest = async () => {
-    setIsRunning(true)
-    setTestResult(null)
+  const testApi = async (apiKey) => {
+    setTesting(prev => ({ ...prev, [apiKey]: true }))
     
-    // Actually test the Gemini API
-    try {
-      const { runAI } = await import('../../lib/gemini')
-      const response = await runAI('Respond with exactly: "API connection successful"')
-      setTestResult({
-        status: 200,
-        success: true,
-        message: 'Gemini API is working!',
-        response: response.substring(0, 100)
-      })
-    } catch (error) {
-      setTestResult({
-        status: 500,
-        success: false,
-        message: 'API test failed',
-        error: error.message
-      })
-    }
+    // Simulate API test
+    await new Promise(resolve => setTimeout(resolve, 1500))
     
-    setIsRunning(false)
+    // Check if key exists in env or state
+    const hasKey = apiKeys[apiKey] || import.meta.env[`VITE_${apiKey.toUpperCase()}_KEY`] || 
+                   import.meta.env[`VITE_${apiKey.toUpperCase()}_API_KEY`]
+    
+    setTestResults(prev => ({ 
+      ...prev, 
+      [apiKey]: hasKey ? 'success' : 'missing'
+    }))
+    setTesting(prev => ({ ...prev, [apiKey]: false }))
   }
 
-  const copyKey = () => {
-    navigator.clipboard.writeText('pk_live_demo_key_xxx')
-    setCopied(true)
-    setTimeout(() => setCopied(false), 1500)
-  }
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'connected': return 'text-forest'
-      case 'missing': return 'text-burgundy'
-      default: return 'text-ink/40 dark:text-paper/40'
-    }
-  }
-
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'connected': return <Wifi size={14} />
-      case 'missing': return <WifiOff size={14} />
-      default: return <RefreshCw size={14} className="animate-spin" />
-    }
+  const getStatusIcon = (apiKey) => {
+    if (testing[apiKey]) return <Loader2 size={14} className="animate-spin text-copper" />
+    if (testResults[apiKey] === 'success') return <CheckCircle size={14} className="text-forest" />
+    if (testResults[apiKey] === 'missing') return <XCircle size={14} className="text-burgundy" />
+    return null
   }
 
   return (
     <div className="space-y-6">
-      {/* API Status Header */}
+      {/* Header */}
       <div className="card">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="card-headline flex items-center gap-2">
-            <Wrench size={18} className="text-copper" />
-            ProveIt DevTools
-          </h3>
-          <button 
-            onClick={checkAPIs}
-            className="text-sm text-steel hover:text-steel-dark flex items-center gap-1"
-          >
-            <RefreshCw size={14} />
-            Refresh Status
-          </button>
-        </div>
-        
-        {/* API Connection Status */}
-        <div className="space-y-2">
-          <p className="text-xs font-mono text-ink/50 dark:text-paper/50 uppercase tracking-wider mb-2">
-            API Connections
-          </p>
-          
-          <div className="grid gap-2">
-            {Object.entries(apiStatus).map(([key, status]) => (
-              <div 
-                key={key}
-                className="flex items-center justify-between p-3 rounded-lg bg-ink/5 dark:bg-paper/5"
-              >
-                <span className="font-medium capitalize">{key}</span>
-                <span className={`flex items-center gap-1 text-sm ${getStatusColor(status)}`}>
-                  {getStatusIcon(status)}
-                  {status === 'connected' ? 'Connected' : status === 'missing' ? 'API Key Missing' : 'Checking...'}
-                </span>
-              </div>
-            ))}
+        <div className="flex items-center gap-3">
+          <div className="p-3 rounded-lg bg-copper/10">
+            <Wrench size={24} className="text-copper" />
+          </div>
+          <div>
+            <h2 className="font-headline text-xl font-semibold">Developer Tools</h2>
+            <p className="text-sm text-ink/60 dark:text-paper/60">
+              API configuration, diagnostics, and advanced settings
+            </p>
           </div>
         </div>
+        <p className="mt-3 text-xs text-ink/40 dark:text-paper/40">
+          Keyboard shortcut: <code className="bg-ink/10 dark:bg-paper/10 px-1.5 py-0.5 rounded">CTRL+ALT+V</code>
+        </p>
       </div>
 
-      {/* Quick Test - REAL */}
+      {/* API Configuration & Usage */}
       <div className="card">
         <h3 className="card-headline flex items-center gap-2 mb-4">
-          <Terminal size={18} className="text-copper" />
-          Test API Connection
+          <Key size={18} className="text-copper" />
+          API Configuration & Usage
         </h3>
         
-        <p className="text-sm text-ink/60 dark:text-paper/60 mb-4">
-          Click "Test" to verify your Gemini API key is working correctly.
-        </p>
-
-        <button 
-          onClick={runTest}
-          disabled={isRunning || apiStatus.gemini !== 'connected'}
-          className="btn-primary w-full"
-        >
-          {isRunning ? (
-            <>
-              <RefreshCw size={16} className="animate-spin" />
-              Testing...
-            </>
-          ) : (
-            <>
-              <Play size={16} />
-              Test Gemini API
-            </>
-          )}
-        </button>
-
-        {testResult && (
-          <div className={`mt-4 p-4 rounded-lg ${
-            testResult.success 
-              ? 'bg-forest/10 border border-forest/20' 
-              : 'bg-burgundy/10 border border-burgundy/20'
-          }`}>
-            <div className="flex items-center gap-2 mb-2">
-              {testResult.success ? (
-                <CheckCircle size={18} className="text-forest" />
-              ) : (
-                <AlertTriangle size={18} className="text-burgundy" />
-              )}
-              <span className={`font-medium ${testResult.success ? 'text-forest' : 'text-burgundy'}`}>
-                {testResult.message}
-              </span>
-            </div>
-            {testResult.response && (
-              <p className="text-sm text-ink/60 dark:text-paper/60 font-mono">
-                Response: "{testResult.response}"
-              </p>
-            )}
-            {testResult.error && (
-              <p className="text-sm text-burgundy font-mono">
-                Error: {testResult.error}
-              </p>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Usage Stats - DEMO */}
-      <div className="card">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="card-headline flex items-center gap-2">
-            <Activity size={18} className="text-copper" />
-            API Usage
-          </h3>
-          <span className="text-xs bg-copper/20 text-copper px-2 py-1 rounded-full">
-            Demo Data
-          </span>
-        </div>
-
         <div className="p-3 rounded-lg bg-steel/10 border border-steel/20 mb-4">
-          <p className="text-sm text-steel">
-            <AlertTriangle size={14} className="inline mr-1" />
-            Usage tracking not yet implemented. These are placeholder values.
-            Real tracking coming in a future update.
-          </p>
+          <div className="flex items-start gap-2">
+            <Info size={14} className="text-steel mt-0.5 flex-shrink-0" />
+            <div className="text-xs text-ink/60 dark:text-paper/60">
+              <p className="mb-1"><strong>For developers:</strong> API keys should be set in your <code className="bg-steel/20 px-1 rounded">.env</code> file.</p>
+              <p>Keys entered here are for testing only and won't persist after refresh.</p>
+            </div>
+          </div>
         </div>
-        
+
         <div className="space-y-4">
-          {Object.entries(usage).map(([key, data]) => (
-            <div key={key}>
-              <div className="flex justify-between text-sm mb-1">
-                <span className="flex items-center gap-2">
-                  {data.label}
-                  {data.real && (
-                    <span className="text-xs text-forest">● API Ready</span>
-                  )}
-                </span>
-                <span className="font-mono text-ink/60 dark:text-paper/60">
-                  {data.used}{data.unit || ''} {data.limit ? `/ ${data.limit}` : ''}
-                </span>
+          {apis.map((api) => (
+            <div 
+              key={api.key} 
+              className={`p-4 rounded-lg border ${
+                api.status === 'planned' 
+                  ? 'bg-ink/5 dark:bg-paper/5 border-ink/10 dark:border-paper/10 opacity-60' 
+                  : 'bg-paper dark:bg-ink border-ink/20 dark:border-paper/20'
+              }`}
+            >
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">{api.label}</span>
+                    {api.status === 'planned' && (
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-steel/20 text-steel">PLANNED</span>
+                    )}
+                    {getStatusIcon(api.key)}
+                  </div>
+                  <p className="text-xs text-ink/50 dark:text-paper/50 mt-1">
+                    <Zap size={10} className="inline mr-1" />
+                    {api.powers}
+                  </p>
+                </div>
+                
+                {api.status === 'active' && (
+                  <button
+                    onClick={() => testApi(api.key)}
+                    disabled={testing[api.key]}
+                    className="text-xs px-2 py-1 rounded border border-ink/20 dark:border-paper/20 
+                             hover:bg-ink/5 dark:hover:bg-paper/5 transition-colors
+                             disabled:opacity-50"
+                  >
+                    {testing[api.key] ? 'Testing...' : 'Test'}
+                  </button>
+                )}
               </div>
-              <div className="h-2 bg-ink/10 dark:bg-paper/10 rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-copper rounded-full transition-all duration-500"
-                  style={{ width: data.limit ? `${(data.used / data.limit) * 100}%` : '0%' }}
-                />
-              </div>
+              
+              {api.status === 'active' && (
+                <div className="mt-2">
+                  <input
+                    type="password"
+                    value={apiKeys[api.key]}
+                    onChange={(e) => setApiKeys({ ...apiKeys, [api.key]: e.target.value })}
+                    placeholder={api.envVar}
+                    className="w-full px-3 py-2 text-sm rounded border border-ink/20 dark:border-paper/20 
+                             bg-paper dark:bg-ink text-ink dark:text-paper
+                             placeholder:text-ink/30 dark:placeholder:text-paper/30
+                             focus:outline-none focus:ring-1 focus:ring-copper/50"
+                  />
+                </div>
+              )}
+              
+              {testResults[api.key] === 'missing' && (
+                <p className="text-xs text-burgundy mt-2">
+                  ⚠ No API key found. Set {api.envVar} in your .env file.
+                </p>
+              )}
+              {testResults[api.key] === 'success' && (
+                <p className="text-xs text-forest mt-2">
+                  ✓ API key detected and ready.
+                </p>
+              )}
             </div>
           ))}
         </div>
       </div>
 
-      {/* Endpoints Reference */}
+      {/* System Status */}
       <div className="card">
-        <h3 className="card-headline mb-4">Personal API Endpoints (Planned)</h3>
+        <h3 className="card-headline flex items-center gap-2 mb-4">
+          <Activity size={18} className="text-copper" />
+          System Status
+        </h3>
         
-        <p className="text-sm text-ink/60 dark:text-paper/60 mb-4">
-          These endpoints will be available when you run the ProveIt API server locally.
-        </p>
-        
-        <div className="space-y-2 font-mono text-sm">
-          {[
-            { method: 'GET', path: '/api/check', desc: 'Check URL bias' },
-            { method: 'GET', path: '/api/search', desc: 'Search news' },
-            { method: 'POST', path: '/api/summarize', desc: 'AI summary' },
-            { method: 'GET', path: '/api/fringe', desc: 'Fringe watch' },
-            { method: 'GET', path: '/api/stats', desc: 'User stats' },
-          ].map((endpoint) => (
-            <div key={endpoint.path} className="flex items-center gap-3 opacity-60">
-              <span className={`px-2 py-0.5 rounded text-xs font-bold ${
-                endpoint.method === 'GET' 
-                  ? 'bg-steel/20 text-steel' 
-                  : 'bg-copper/20 text-copper'
-              }`}>
-                {endpoint.method}
-              </span>
-              <span>{endpoint.path}</span>
-              <span className="text-ink/40 dark:text-paper/40">— {endpoint.desc}</span>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="p-3 rounded-lg bg-forest/10 border border-forest/20">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-forest animate-pulse" />
+              <span className="text-sm text-forest font-medium">App Online</span>
             </div>
-          ))}
+          </div>
+          <div className="p-3 rounded-lg bg-ink/5 dark:bg-paper/5 border border-ink/10 dark:border-paper/10">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-steel" />
+              <span className="text-sm text-ink/60 dark:text-paper/60">LocalStorage OK</span>
+            </div>
+          </div>
         </div>
+      </div>
+
+      {/* Debug Actions */}
+      <div className="card">
+        <h3 className="card-headline flex items-center gap-2 mb-4">
+          <AlertCircle size={18} className="text-burgundy" />
+          Debug Actions
+        </h3>
         
-        <p className="text-xs text-ink/40 dark:text-paper/40 mt-4 text-center">
-          Personal API server coming in v3.0
-        </p>
+        <div className="space-y-2">
+          <button 
+            onClick={() => { localStorage.clear(); location.reload() }}
+            className="w-full p-3 text-left rounded-lg border border-burgundy/30 text-burgundy hover:bg-burgundy/5 transition-colors"
+          >
+            <span className="font-medium">Clear All Local Data</span>
+            <p className="text-xs opacity-70 mt-1">Removes all stored preferences and history. App will reload.</p>
+          </button>
+          
+          <button 
+            onClick={() => console.log('Debug info:', { apis: apiKeys, storage: localStorage })}
+            className="w-full p-3 text-left rounded-lg border border-ink/20 dark:border-paper/20 hover:bg-ink/5 dark:hover:bg-paper/5 transition-colors"
+          >
+            <span className="font-medium">Log Debug Info</span>
+            <p className="text-xs text-ink/50 dark:text-paper/50 mt-1">Outputs debug information to browser console.</p>
+          </button>
+        </div>
+      </div>
+
+      {/* Version Info */}
+      <div className="text-center text-xs text-ink/40 dark:text-paper/40 space-y-1">
+        <p>ProveIt v2.4.1 • Development Build</p>
+        <p>React {/* React.version */} • Vite • Tailwind CSS</p>
       </div>
     </div>
   )

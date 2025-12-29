@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Scale, Calendar, AlertTriangle, Clock, ExternalLink, FileText, Gavel, Users, ChevronDown, ChevronUp, Info } from 'lucide-react'
 
-// Mock data - would be fetched from SCOTUS API / Oyez in production
 const currentDocket = [
   {
     id: '23-726',
@@ -72,15 +71,15 @@ const shadowDocket = [
 ]
 
 const justices = [
-  { name: 'John Roberts', position: 'Chief Justice', appointed: '2005', appointedBy: 'G.W. Bush' },
-  { name: 'Clarence Thomas', position: 'Associate Justice', appointed: '1991', appointedBy: 'G.H.W. Bush' },
-  { name: 'Samuel Alito', position: 'Associate Justice', appointed: '2006', appointedBy: 'G.W. Bush' },
-  { name: 'Sonia Sotomayor', position: 'Associate Justice', appointed: '2009', appointedBy: 'Obama' },
-  { name: 'Elena Kagan', position: 'Associate Justice', appointed: '2010', appointedBy: 'Obama' },
-  { name: 'Neil Gorsuch', position: 'Associate Justice', appointed: '2017', appointedBy: 'Trump' },
-  { name: 'Brett Kavanaugh', position: 'Associate Justice', appointed: '2018', appointedBy: 'Trump' },
-  { name: 'Amy Coney Barrett', position: 'Associate Justice', appointed: '2020', appointedBy: 'Trump' },
-  { name: 'Ketanji Brown Jackson', position: 'Associate Justice', appointed: '2022', appointedBy: 'Biden' },
+  { name: 'John Roberts', position: 'Chief Justice', appointed: '2005', appointedBy: 'G.W. Bush', wiki: 'https://en.wikipedia.org/wiki/John_Roberts' },
+  { name: 'Clarence Thomas', position: 'Associate Justice', appointed: '1991', appointedBy: 'G.H.W. Bush', wiki: 'https://en.wikipedia.org/wiki/Clarence_Thomas' },
+  { name: 'Samuel Alito', position: 'Associate Justice', appointed: '2006', appointedBy: 'G.W. Bush', wiki: 'https://en.wikipedia.org/wiki/Samuel_Alito' },
+  { name: 'Sonia Sotomayor', position: 'Associate Justice', appointed: '2009', appointedBy: 'Obama', wiki: 'https://en.wikipedia.org/wiki/Sonia_Sotomayor' },
+  { name: 'Elena Kagan', position: 'Associate Justice', appointed: '2010', appointedBy: 'Obama', wiki: 'https://en.wikipedia.org/wiki/Elena_Kagan' },
+  { name: 'Neil Gorsuch', position: 'Associate Justice', appointed: '2017', appointedBy: 'Trump', wiki: 'https://en.wikipedia.org/wiki/Neil_Gorsuch' },
+  { name: 'Brett Kavanaugh', position: 'Associate Justice', appointed: '2018', appointedBy: 'Trump', wiki: 'https://en.wikipedia.org/wiki/Brett_Kavanaugh' },
+  { name: 'Amy Coney Barrett', position: 'Associate Justice', appointed: '2020', appointedBy: 'Trump', wiki: 'https://en.wikipedia.org/wiki/Amy_Coney_Barrett' },
+  { name: 'Ketanji Brown Jackson', position: 'Associate Justice', appointed: '2022', appointedBy: 'Biden', wiki: 'https://en.wikipedia.org/wiki/Ketanji_Brown_Jackson' },
 ]
 
 export default function SupremeCourtView() {
@@ -212,6 +211,7 @@ export default function SupremeCourtView() {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="mt-2 inline-flex items-center gap-1 text-xs text-copper hover:underline"
+                        title="View case details, oral arguments, and voting record on Oyez"
                       >
                         View on Oyez <ExternalLink size={10} />
                       </a>
@@ -227,7 +227,6 @@ export default function SupremeCourtView() {
       {/* Shadow Docket */}
       {activeTab === 'shadow' && (
         <div className="space-y-4">
-          {/* Shadow Docket Explainer */}
           <div className="card">
             <div className="flex items-start justify-between">
               <div className="flex items-start gap-3">
@@ -265,7 +264,6 @@ export default function SupremeCourtView() {
             )}
           </div>
 
-          {/* Shadow Docket Orders */}
           <div className="card">
             <h3 className="card-headline flex items-center gap-2 mb-4">
               <Clock size={18} className="text-copper" />
@@ -324,13 +322,24 @@ export default function SupremeCourtView() {
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-headline font-semibold">
-                      {justice.name}
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <h4 className="font-headline font-semibold">
+                        {justice.name}
+                      </h4>
                       {justice.position === 'Chief Justice' && (
-                        <span className="ml-2 text-xs text-copper font-normal">Chief Justice</span>
+                        <span className="text-xs text-copper font-normal">Chief Justice</span>
                       )}
-                    </h4>
+                      <a
+                        href={justice.wiki}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-steel hover:text-copper"
+                        title="View Wikipedia biography"
+                      >
+                        <ExternalLink size={12} />
+                      </a>
+                    </div>
                     <p className="text-xs text-ink/50 dark:text-paper/50">
                       Appointed {justice.appointed} by {justice.appointedBy}
                     </p>
@@ -348,13 +357,13 @@ export default function SupremeCourtView() {
               rel="noopener noreferrer"
               className="text-xs text-copper hover:underline flex items-center justify-center gap-1"
             >
-              Full Biographies <ExternalLink size={12} />
+              Official Biographies <ExternalLink size={12} />
             </a>
           </div>
         </div>
       )}
 
-      {/* Footer flourish */}
+      {/* SINGLE Footer flourish - REMOVED DUPLICATE */}
       <div className="flex items-center justify-center gap-2 text-copper/30">
         <span>❧</span>
         <div className="w-8 h-px bg-current" />

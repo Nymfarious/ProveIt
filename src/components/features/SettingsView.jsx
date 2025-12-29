@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { Key, Database, Bell, Trash2, Download, AlertCircle, CheckCircle, Shield, Info, X, FileText, Upload, Printer, HelpCircle, Calendar } from 'lucide-react'
+import { Database, Bell, Trash2, Download, Shield, Info, X, FileText, Upload, Printer, HelpCircle, Calendar, Mail } from 'lucide-react'
+
+// NOTE: API Keys section MOVED to DevTools
 
 export default function SettingsView() {
-  const [apiKeys, setApiKeys] = useState({ newsdata: '', gemini: '', claude: '', openai: '' })
-  const [saved, setSaved] = useState(false)
   const [privacy, setPrivacy] = useState({ analyticsEnabled: true, dataRetentionDays: 30, autoSnapshot: false })
   const [showPrivacyInfo, setShowPrivacyInfo] = useState(false)
   const [showClearConfirm, setShowClearConfirm] = useState(false)
@@ -11,16 +11,16 @@ export default function SettingsView() {
   const [clearPeriod, setClearPeriod] = useState(null)
   const [activeTab, setActiveTab] = useState('privacy')
 
-  const handleSaveKeys = () => { setSaved(true); setTimeout(() => setSaved(false), 2000) }
   const handleClearData = (period) => { setClearPeriod(period); setShowClearConfirm(true) }
   const confirmClear = () => { console.log(`Clearing: ${clearPeriod}`); setShowClearConfirm(false); setClearPeriod(null) }
 
   const dataSummary = { articlesRead: 156, sourcesTracked: 24, oldestEntry: '2024-12-01', storageUsed: '2.4 MB' }
+  
+  // REMOVED API tab - now only 3 tabs
   const tabs = [
     { id: 'privacy', label: 'Privacy', icon: Shield },
     { id: 'mydata', label: 'My Data', icon: Database },
-    { id: 'api', label: 'API Keys', icon: Key },
-    { id: 'email', label: 'Email', icon: Bell },
+    { id: 'email', label: 'Email', icon: Mail },
   ]
 
   return (
@@ -60,10 +60,6 @@ export default function SettingsView() {
               </div>
               <p><strong className="text-ink dark:text-paper">Want to keep historical data?</strong></p>
               <p>Use <strong>Export</strong> to download your data before it expires for WoW, MoM, or QoQ analysis.</p>
-              <div className="p-3 bg-copper/10 rounded-lg border border-copper/20">
-                <p className="text-copper font-medium mb-1">💡 Pro Tip</p>
-                <p className="text-copper/80 text-xs">Enable "Auto Snapshot" to automatically save weekly reports.</p>
-              </div>
             </div>
             <button onClick={() => setShowRetentionInfo(false)} className="btn-primary w-full mt-6">Got It</button>
           </div>
@@ -167,26 +163,10 @@ export default function SettingsView() {
         </div>
       )}
 
-      {/* API Keys Tab */}
-      {activeTab === 'api' && (
-        <div className="card">
-          <h3 className="card-headline flex items-center gap-2 mb-4"><Key size={18} className="text-copper" />API Configuration</h3>
-          <div className="p-3 rounded-lg bg-steel/10 border border-steel/20 mb-4">
-            <div className="flex items-start gap-2"><AlertCircle size={16} className="text-steel mt-0.5 flex-shrink-0" /><p className="text-sm text-steel">API keys should be set in your <code className="bg-steel/20 px-1 rounded">.env</code> file for security.</p></div>
-          </div>
-          <div className="space-y-4">
-            {[{ key: 'newsdata', label: 'NewsData.io', placeholder: 'VITE_NEWSDATA_KEY' }, { key: 'gemini', label: 'Google Gemini', placeholder: 'VITE_GEMINI_API_KEY' }, { key: 'claude', label: 'Anthropic Claude', placeholder: 'Coming soon...', disabled: true }, { key: 'openai', label: 'OpenAI', placeholder: 'Coming soon...', disabled: true }].map((api) => (
-              <div key={api.key}><label className="block text-sm font-medium mb-1">{api.label}</label><input type="password" value={apiKeys[api.key]} onChange={(e) => setApiKeys({ ...apiKeys, [api.key]: e.target.value })} placeholder={api.placeholder} disabled={api.disabled} className="search-input text-sm disabled:opacity-50 disabled:cursor-not-allowed" /></div>
-            ))}
-          </div>
-          <button onClick={handleSaveKeys} className="btn-primary mt-4">{saved ? <><CheckCircle size={16} />Saved!</> : 'Save API Keys'}</button>
-        </div>
-      )}
-
       {/* Email Tab */}
       {activeTab === 'email' && (
         <div className="card">
-          <h3 className="card-headline flex items-center gap-2 mb-4"><Bell size={18} className="text-copper" />Email Reports</h3>
+          <h3 className="card-headline flex items-center gap-2 mb-4"><Mail size={18} className="text-copper" />Email Reports</h3>
           <div className="p-3 rounded-lg bg-ink/5 dark:bg-paper/5 border border-ink/10 dark:border-paper/10 mb-4"><p className="text-sm text-ink/60 dark:text-paper/60"><Info size={14} className="inline mr-1" />Email reports send a summary directly to you. Your email is never shared.</p></div>
           <div className="space-y-4">
             <div><label className="block text-sm font-medium mb-1">Primary Email</label><input type="email" placeholder="your@email.com" className="search-input text-sm" /></div>
@@ -201,7 +181,6 @@ export default function SettingsView() {
 
       {/* About - WITH PROPER FLOURISH */}
       <div className="card text-center">
-        {/* Flourish - matching Header */}
         <div className="flex items-center justify-center gap-2 mb-3 text-copper/50">
           <span className="text-sm">❧</span>
           <div className="w-12 h-px bg-current" />
@@ -211,16 +190,14 @@ export default function SettingsView() {
         </div>
         
         <div className="font-masthead text-2xl tracking-widest mb-1">P R O V E I T</div>
-        <p className="text-sm text-ink/50 dark:text-paper/50">Version 2.4.0 • Personal Edition</p>
+        <p className="text-sm text-ink/50 dark:text-paper/50">Version 2.4.1 • Personal Edition</p>
         
-        {/* Tagline with flourish */}
         <div className="flex items-center justify-center gap-3 mt-2">
           <div className="w-8 h-px bg-ink/20 dark:bg-paper/20" />
           <p className="text-xs text-ink/30 dark:text-paper/30 italic font-headline">"Veritas Lux" — Truth is Light</p>
           <div className="w-8 h-px bg-ink/20 dark:bg-paper/20" />
         </div>
         
-        {/* Bottom flourish */}
         <div className="flex items-center justify-center gap-2 mt-3 text-ink/15 dark:text-paper/15">
           <span className="text-xs">❧</span>
           <span className="text-xs">☙</span>
