@@ -1,34 +1,81 @@
 import { useState, useEffect } from 'react'
-import { Newspaper, TrendingUp, Clock, ExternalLink, Loader2, RefreshCw } from 'lucide-react'
+import { RefreshCw, ExternalLink, AlertTriangle, Clock } from 'lucide-react'
 import { fetchHeadlines } from '../../lib/news'
+import { useAnalyticsContext } from '../../App'
 import BiasBar from '../ui/BiasBar'
 
-const categories = [
-  { id: 'top', label: 'Top' },
-  { id: 'politics', label: 'Politics' },
-  { id: 'business', label: 'Business' },
-  { id: 'technology', label: 'Tech' },
-  { id: 'science', label: 'Science' },
-  { id: 'health', label: 'Health' },
-]
+// Mock bias ratings for demo - in production, this would come from MBFC database
+const SOURCE_BIAS = {
+  'reuters.com': 'center',
+  'apnews.com': 'center',
+  'bbc.com': 'center',
+  'npr.org': 'lean-left',
+  'nytimes.com': 'lean-left',
+  'washingtonpost.com': 'lean-left',
+  'cnn.com': 'left',
+  'msnbc.com': 'left',
+  'foxnews.com': 'right',
+  'wsj.com': 'lean-right',
+  'nypost.com': 'right',
+  'breitbart.com': 'far-right',
+  'dailywire.com': 'right',
+  'huffpost.com': 'left',
+  'theguardian.com': 'lean-left',
+  'default': 'center'
+}
+
+const getBiasForSource = (sourceUrl) => {
+  if (!sourceUrl) return 'center'
+  const domain = sourceUrl.toLowerCase()
+  for (const [key, value] of Object.entries(SOURCE_BIAS)) {
+    if (domain.includes(key)) return value
+  }
+  return 'center'
+}
+
+const BIAS_COLORS = {
+  'far-left': 'bg-blue-900',
+  'left': 'bg-blue-600',
+  'lean-left': 'bg-blue-400',
+  'center': 'bg-gray-400',
+  'lean-right': 'bg-red-400',
+  'right': 'bg-red-600',
+  'far-right': 'bg-red-900',
+}
 
 export default function FeedView() {
   const [articles, setArticles] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [category, setCategory] = useState('top')
+  
+  const analytics = useAnalyticsContext()
+
+  const categories = [
+    { id: 'top', label: 'Top' },
+    { id: 'politics', label: 'Politics' },
+    { id: 'business', label: 'Business' },
+    { id: 'technology', label: 'Tech' },
+    { id: 'science', label: 'Science' },
+    { id: 'health', label: 'Health' },
+  ]
 
   const loadNews = async () => {
-    setIsLoading(true)
+    setLoading(true)
     setError(null)
     try {
-      const data = await fetchHeadlines(category, 'us')
-      setArticles(data)
+      const data = await fetchHeadlines(category)
+      // Add bias ratings to articles
+      const articlesWithBias = data.map(article => ({
+        ...article,
+        biasRating: getBiasForSource(article.source_url || article.link),
+      }))
+      setArticles(articlesWithBias)
     } catch (err) {
-      console.error('Feed error:', err)
-      setError('Failed to load news. Check your NewsData.io API key.')
+      console.error('News fetch error:', err)
+      setError('Failed to load news. Check your API key in Settings.')
     } finally {
-      setIsLoading(false)
+      setLoading(false)
     }
   }
 
@@ -36,42 +83,33 @@ export default function FeedView() {
     loadNews()
   }, [category])
 
-  // Mock balance for now
-  const todayBalance = {
-    left: 2,
-    leanLeft: 4,
-    center: 6,
-    leanRight: 3,
-    right: 1,
+  // Handle article click - TRACK IT!
+  const handleArticleClick = (article) => {
+    if (analytics?.trackView) {
+      analytics.trackView({
+        title: article.title,
+        source: article.source_id || article.source_name || 'Unknown',
+        url: article.link,
+        biasRating: article.biasRating,
+        timestamp: new Date().toISOString(),
+      })
+    }
+    // Open in new tab
+    window.open(article.link, '_blank', 'noopener,noreferrer')
   }
 
-  const formatDate = (dateString) => {
-    if (!dateString) return ''
-    const date = new Date(dateString)
-    const now = new Date()
-    const diffHours = Math.floor((now - date) / (1000 * 60 * 60))
-    
-    if (diffHours < 1) return 'Just now'
-    if (diffHours < 24) return `${diffHours}h ago`
-    return date.toLocaleDateString()
+  // Calculate today's reading distribution from tracked articles
+  const getTodaysBias = () => {
+    if (!analytics?.stats?.biasDistribution) {
+      return { left: 0, 'lean-left': 0, center: 0, 'lean-right': 0, right: 0 }
+    }
+    return analytics.stats.biasDistribution
   }
 
   return (
     <div className="space-y-6">
-      {/* Today's Balance */}
-      <div className="card">
-        <h3 className="card-headline flex items-center gap-2">
-          <TrendingUp size={18} className="text-copper" />
-          Today's Balance
-        </h3>
-        <p className="text-sm text-ink/50 dark:text-paper/50 mb-4">
-          Reading distribution across the spectrum (demo)
-        </p>
-        <BiasBar sources={todayBalance} />
-      </div>
-
       {/* Category Tabs */}
-      <div className="flex gap-2 overflow-x-auto pb-2">
+      <div className="flex items-center gap-2 overflow-x-auto pb-2">
         {categories.map((cat) => (
           <button
             key={cat.id}
@@ -85,112 +123,109 @@ export default function FeedView() {
             {cat.label}
           </button>
         ))}
+        
+        <button
+          onClick={loadNews}
+          disabled={loading}
+          className="ml-auto p-2 rounded-lg bg-ink/5 dark:bg-paper/5 hover:bg-ink/10 dark:hover:bg-paper/10 transition-colors"
+          title="Refresh"
+        >
+          <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
+        </button>
       </div>
 
-      {/* News Feed */}
+      {/* Today's Balance */}
       <div className="card">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="card-headline flex items-center gap-2">
-            <Newspaper size={18} className="text-copper" />
-            {categories.find(c => c.id === category)?.label} News
-          </h3>
-          <button 
-            onClick={loadNews} 
-            disabled={isLoading}
-            className="nav-icon p-2"
-            data-tooltip="Refresh"
-          >
-            <RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} />
-          </button>
-        </div>
+        <h3 className="card-headline mb-3">Today's Reading Balance</h3>
+        <BiasBar sources={getTodaysBias()} />
+        <p className="text-xs text-ink/40 dark:text-paper/40 text-center mt-2">
+          {analytics?.stats?.totalReads || 0} articles tracked
+        </p>
+      </div>
 
-        {isLoading ? (
-          <div className="py-12 text-center">
-            <Loader2 size={32} className="mx-auto animate-spin text-copper" />
-            <p className="mt-2 text-sm text-ink/50 dark:text-paper/50">Loading news...</p>
-          </div>
-        ) : error ? (
-          <div className="py-8 text-center text-burgundy">
+      {/* Error State */}
+      {error && (
+        <div className="card border-burgundy/30 bg-burgundy/5">
+          <div className="flex items-center gap-3 text-burgundy">
+            <AlertTriangle size={20} />
             <p>{error}</p>
-            <button onClick={loadNews} className="btn-ghost mt-2">
-              Try Again
-            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Articles Grid */}
+      <div className="space-y-4">
+        {loading ? (
+          <div className="text-center py-12">
+            <RefreshCw size={32} className="mx-auto animate-spin text-copper mb-3" />
+            <p className="text-ink/50 dark:text-paper/50">Loading headlines...</p>
           </div>
         ) : articles.length === 0 ? (
-          <div className="py-8 text-center text-ink/50 dark:text-paper/50">
-            <p>No articles found. Try a different category.</p>
+          <div className="text-center py-12">
+            <p className="text-ink/50 dark:text-paper/50">No articles found</p>
           </div>
         ) : (
-          <div className="divide-y divide-ink/10 dark:divide-paper/10">
-            {articles.slice(0, 10).map((article) => (
-              <article key={article.id} className="py-4 first:pt-0 last:pb-0">
-                <a 
-                  href={article.url} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="block group"
-                >
-                  <div className="flex gap-4">
-                    {/* Thumbnail */}
-                    {article.image && (
-                      <div className="hidden sm:block w-24 h-16 flex-shrink-0 rounded overflow-hidden bg-ink/5 dark:bg-paper/5">
-                        <img 
-                          src={article.image} 
-                          alt="" 
-                          className="w-full h-full object-cover"
-                          onError={(e) => e.target.style.display = 'none'}
-                        />
-                      </div>
-                    )}
-                    
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-headline font-semibold leading-tight mb-1 group-hover:text-copper transition-colors line-clamp-2">
-                        {article.title}
-                      </h4>
-                      
-                      {article.description && (
-                        <p className="text-sm text-ink/60 dark:text-paper/60 line-clamp-2 mb-2">
-                          {article.description}
-                        </p>
-                      )}
-                      
-                      <div className="flex items-center gap-3 text-xs">
-                        <span className="bias-badge center">
-                          {article.sourceName || article.source}
-                        </span>
-                        <span className="text-ink/40 dark:text-paper/40 flex items-center gap-1">
-                          <Clock size={12} />
-                          {formatDate(article.date)}
-                        </span>
-                        <ExternalLink size={12} className="text-ink/30 dark:text-paper/30" />
-                      </div>
-                    </div>
+          articles.map((article, index) => (
+            <article 
+              key={index}
+              onClick={() => handleArticleClick(article)}
+              className="card hover:border-copper/30 cursor-pointer transition-all group"
+            >
+              <div className="flex gap-4">
+                {/* Thumbnail */}
+                {article.image_url && (
+                  <div className="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-ink/10 dark:bg-paper/10">
+                    <img 
+                      src={article.image_url} 
+                      alt="" 
+                      className="w-full h-full object-cover"
+                      onError={(e) => e.target.style.display = 'none'}
+                    />
                   </div>
-                </a>
-              </article>
-            ))}
-          </div>
+                )}
+                
+                {/* Content */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <h3 className="font-headline text-lg font-semibold leading-tight group-hover:text-copper transition-colors line-clamp-2">
+                      {article.title}
+                    </h3>
+                    <ExternalLink size={16} className="flex-shrink-0 opacity-0 group-hover:opacity-50 transition-opacity" />
+                  </div>
+                  
+                  {article.description && (
+                    <p className="text-sm text-ink/60 dark:text-paper/60 line-clamp-2 mb-2">
+                      {article.description}
+                    </p>
+                  )}
+                  
+                  <div className="flex items-center gap-3 text-xs text-ink/40 dark:text-paper/40">
+                    {/* Bias indicator */}
+                    <span className={`px-2 py-0.5 rounded-full text-white text-[10px] uppercase font-bold ${BIAS_COLORS[article.biasRating]}`}>
+                      {article.biasRating?.replace('-', ' ')}
+                    </span>
+                    
+                    <span>{article.source_id || article.source_name}</span>
+                    
+                    {article.pubDate && (
+                      <span className="flex items-center gap-1">
+                        <Clock size={12} />
+                        {new Date(article.pubDate).toLocaleDateString()}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </article>
+          ))
         )}
       </div>
 
-      {/* Fringe Watch Preview */}
-      <div className="card">
-        <h3 className="card-headline mb-4">Fringe Watch</h3>
-        <div className="grid sm:grid-cols-2 gap-4">
-          <div className="fringe-panel right-fringe">
-            <p className="font-mono text-xs text-red-800 dark:text-red-300 mb-1">FAR RIGHT</p>
-            <p className="text-sm text-ink/70 dark:text-paper/70">
-              Immigration, election integrity claims trending
-            </p>
-          </div>
-          <div className="fringe-panel left-fringe">
-            <p className="font-mono text-xs text-blue-800 dark:text-blue-300 mb-1">FAR LEFT</p>
-            <p className="text-sm text-ink/70 dark:text-paper/70">
-              Corporate accountability, climate urgency focus
-            </p>
-          </div>
-        </div>
-      </div>
+      {/* Tracking Notice */}
+      <p className="text-center text-xs text-ink/30 dark:text-paper/30">
+        📊 Click tracking {analytics?.preferences?.trackingEnabled ? 'enabled' : 'disabled'}. 
+        Your reading history stays on your device.
+      </p>
     </div>
   )
 }

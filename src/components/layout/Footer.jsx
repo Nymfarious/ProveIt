@@ -1,4 +1,19 @@
-export default function Footer() {
+export default function Footer({ lastLogin }) {
+  const formatLastLogin = (timestamp) => {
+    if (!timestamp) return null
+    try {
+      const date = new Date(timestamp)
+      return date.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit'
+      })
+    } catch {
+      return null
+    }
+  }
+
   return (
     <footer className="border-t border-ink/10 dark:border-paper/10 mt-auto">
       <div className="bg-ink/[0.02] dark:bg-paper/[0.02] py-6">
@@ -47,15 +62,21 @@ export default function Footer() {
             </a>
           </div>
 
-          {/* Version */}
-          <div className="flex items-center justify-center gap-4 text-ink/20 dark:text-paper/20">
+          {/* Version & Last Login */}
+          <div className="flex items-center justify-between text-ink/20 dark:text-paper/20">
             <span className="font-mono text-[10px] uppercase tracking-wider">
-              ProveIt v2.2.0
+              ProveIt v2.3.0
             </span>
-            <span>✦</span>
+            
             <span className="font-mono text-[10px] uppercase tracking-wider">
               Personal Edition
             </span>
+
+            {lastLogin && (
+              <span className="font-mono text-[10px] opacity-60" title="Last session">
+                Last: {formatLastLogin(lastLogin)}
+              </span>
+            )}
           </div>
         </div>
       </div>

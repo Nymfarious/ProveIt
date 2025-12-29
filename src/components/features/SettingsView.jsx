@@ -1,42 +1,49 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { 
   Shield, 
-  Key, 
   Mail, 
   Trash2, 
   Download, 
+  Upload,
   CheckCircle, 
   AlertTriangle,
   Loader2,
   Lock,
-  Upload,
-  FileText
+  FileText,
+  Palette,
+  Eye,
+  Info
 } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
+import { useAnalyticsContext } from '../../App'
 
 export default function SettingsView() {
-  const [activeTab, setActiveTab] = useState('privacy')
+  const [activeTab, setActiveTab] = useState('preferences')
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [session, setSession] = useState(null)
   const [reportStatus, setReportStatus] = useState(null)
+  const [importResult, setImportResult] = useState(null)
+  const fileInputRef = useRef(null)
 
+  const analytics = useAnalyticsContext()
+
+  // Check Supabase session
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
       if (session?.user?.email) setEmail(session.user.email)
     })
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
     })
 
     return () => subscription.unsubscribe()
   }, [])
 
+  // Handle email verification
   const handleVerifyEmail = async (e) => {
     e.preventDefault()
     setLoading(true)
@@ -50,63 +57,88 @@ export default function SettingsView() {
     if (error) {
       alert(error.message)
     } else {
-      alert('Verification link sent! Check your inbox to confirm.')
+      alert('Verification link sent! Check your inbox.')
     }
     setLoading(false)
   }
 
+  // Handle report sending
   const handleSendReport = async () => {
     if (!session) return
+    
+    // Check for stale security (30+ days)
+    if (analytics?.isStale) {
+      alert('For your security, please re-verify your email. It has been 30+ days since your last report.')
+      await supabase.auth.signOut()
+      setSession(null)
+      return
+    }
+
     setReportStatus('sending')
 
     const { error } = await supabase
       .from('proveit_reports')
-      .insert([
-        { 
-          user_id: session.user.id,
-          report_type: 'instant', 
-          content_summary: 'Manual trigger from Settings' 
-        }
-      ])
+      .insert([{ 
+        user_id: session.user.id,
+        report_type: 'instant', 
+        content_summary: JSON.stringify(analytics?.stats || {})
+      }])
 
     if (error) {
       console.error('Report error:', error)
       setReportStatus('error')
     } else {
-      setTimeout(() => setReportStatus('success'), 1500)
+      analytics?.markReportSent?.()
+      setReportStatus('success')
       setTimeout(() => setReportStatus(null), 4000)
     }
   }
 
+  // Handle data clear
   const handleClearData = (duration) => {
-    if (confirm(`Are you sure you want to clear tracking data for the last ${duration}?`)) {
-      localStorage.removeItem('proveit_stats')
-      localStorage.removeItem('proveit_history')
-      alert('Data wiped from local device.')
+    if (confirm(`Clear tracking data for the last ${duration}?`)) {
+      analytics?.clearHistory?.(duration === 'all time' ? 'all' : duration)
     }
   }
 
-  const handleExportData = () => {
-    const data = {
-      stats: JSON.parse(localStorage.getItem('proveit_stats') || '{}'),
-      history: JSON.parse(localStorage.getItem('proveit_history') || '[]'),
-      exportDate: new Date().toISOString(),
-      version: '2.3.0'
-    }
-    
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `proveit-export-${new Date().toISOString().split('T')[0]}.json`
-    a.click()
-    URL.revokeObjectURL(url)
+  // Handle export
+  const handleExport = () => {
+    analytics?.exportData?.()
   }
 
+  // Handle import
+  const handleImportClick = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleFileImport = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      try {
+        const result = analytics?.importData?.(event.target.result)
+        setImportResult(result)
+        setTimeout(() => setImportResult(null), 5000)
+      } catch (err) {
+        setImportResult({ success: false, error: err.message })
+      }
+    }
+    reader.readAsText(file)
+    e.target.value = '' // Reset input
+  }
+
+  // Handle sign out
   const handleSignOut = async () => {
     await supabase.auth.signOut()
     setSession(null)
     setEmail('')
+  }
+
+  // Handle preference changes
+  const handlePreferenceChange = (key, value) => {
+    analytics?.updatePreferences?.({ [key]: value })
   }
 
   return (
@@ -114,9 +146,9 @@ export default function SettingsView() {
       {/* Tabs */}
       <div className="flex rounded-lg overflow-hidden border border-ink/10 dark:border-paper/10">
         {[
-          { id: 'privacy', label: 'Privacy & Data' },
+          { id: 'preferences', label: 'Preferences' },
+          { id: 'data', label: 'My Data' },
           { id: 'reports', label: 'Email Reports' },
-          { id: 'api', label: 'API Keys' },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -132,13 +164,102 @@ export default function SettingsView() {
         ))}
       </div>
 
-      {/* PRIVACY TAB */}
-      {activeTab === 'privacy' && (
+      {/* PREFERENCES TAB */}
+      {activeTab === 'preferences' && (
         <motion.div 
           initial={{ opacity: 0, y: 10 }} 
           animate={{ opacity: 1, y: 0 }}
           className="space-y-6"
         >
+          {/* Visual Preferences */}
+          <div className="card">
+            <h3 className="card-headline flex items-center gap-2 mb-4">
+              <Palette size={18} className="text-copper" />
+              Display
+            </h3>
+            
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium">Theme</p>
+                  <p className="text-sm text-ink/50 dark:text-paper/50">
+                    Choose light or dark mode
+                  </p>
+                </div>
+                <select 
+                  value={analytics?.preferences?.theme || 'dark'}
+                  onChange={(e) => handlePreferenceChange('theme', e.target.value)}
+                  className="px-3 py-2 rounded-lg bg-ink/5 dark:bg-paper/5 border border-ink/10 dark:border-paper/10"
+                >
+                  <option value="dark">Dark</option>
+                  <option value="light">Light</option>
+                </select>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium">Font Size</p>
+                  <p className="text-sm text-ink/50 dark:text-paper/50">
+                    Adjust text size
+                  </p>
+                </div>
+                <select 
+                  value={analytics?.preferences?.fontSize || 'medium'}
+                  onChange={(e) => handlePreferenceChange('fontSize', e.target.value)}
+                  className="px-3 py-2 rounded-lg bg-ink/5 dark:bg-paper/5 border border-ink/10 dark:border-paper/10"
+                >
+                  <option value="small">Small</option>
+                  <option value="medium">Medium</option>
+                  <option value="large">Large</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Privacy Preferences */}
+          <div className="card">
+            <h3 className="card-headline flex items-center gap-2 mb-4">
+              <Eye size={18} className="text-copper" />
+              Privacy
+            </h3>
+            
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium">Reading Analytics</p>
+                  <p className="text-sm text-ink/50 dark:text-paper/50">
+                    Track your reading patterns locally
+                  </p>
+                </div>
+                <button
+                  onClick={() => handlePreferenceChange('trackingEnabled', !analytics?.preferences?.trackingEnabled)}
+                  className={`toggle ${analytics?.preferences?.trackingEnabled ? 'active' : ''}`}
+                >
+                  <span className="toggle-knob" />
+                </button>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium">Data Retention</p>
+                  <p className="text-sm text-ink/50 dark:text-paper/50">
+                    How long to keep history
+                  </p>
+                </div>
+                <select 
+                  value={analytics?.preferences?.retentionDays || 30}
+                  onChange={(e) => handlePreferenceChange('retentionDays', parseInt(e.target.value))}
+                  className="px-3 py-2 rounded-lg bg-ink/5 dark:bg-paper/5 border border-ink/10 dark:border-paper/10"
+                >
+                  <option value={7}>7 days</option>
+                  <option value={14}>14 days</option>
+                  <option value={30}>30 days (max)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Privacy Notice */}
           <div className="card bg-forest/10 border border-forest/30">
             <div className="flex gap-4">
               <Shield className="w-8 h-8 text-forest flex-shrink-0" />
@@ -147,20 +268,93 @@ export default function SettingsView() {
                   Your Data Stays Here
                 </h4>
                 <p className="text-sm text-ink/70 dark:text-paper/70 mt-1">
-                  We do not track you across the web. All analysis happens locally on your device 
-                  or via secure, encrypted channels. Your "lean" score is for your eyes only.
+                  All analytics are calculated locally. We don't track you across the web 
+                  or sell your data. Your lean score is for your eyes only.
                 </p>
               </div>
             </div>
           </div>
+        </motion.div>
+      )}
 
+      {/* DATA TAB */}
+      {activeTab === 'data' && (
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }} 
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-6"
+        >
+          {/* Export/Import */}
+          <div className="card">
+            <h3 className="card-headline flex items-center gap-2 mb-4">
+              <FileText size={18} className="text-copper" />
+              Data Portability
+            </h3>
+            
+            <div className="grid grid-cols-2 gap-3">
+              <button 
+                onClick={handleExport}
+                className="btn-secondary flex items-center justify-center gap-2"
+              >
+                <Download size={16} />
+                Export Data
+              </button>
+              <button 
+                onClick={handleImportClick}
+                className="btn-secondary flex items-center justify-center gap-2"
+              >
+                <Upload size={16} />
+                Import Data
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".json"
+                onChange={handleFileImport}
+                className="hidden"
+              />
+            </div>
+
+            {/* Import Result */}
+            {importResult && (
+              <div className={`mt-4 p-3 rounded-lg ${
+                importResult.success 
+                  ? 'bg-forest/10 border border-forest/20 text-forest' 
+                  : 'bg-burgundy/10 border border-burgundy/20 text-burgundy'
+              }`}>
+                <div className="flex items-center gap-2">
+                  {importResult.success ? <CheckCircle size={16} /> : <AlertTriangle size={16} />}
+                  <span className="font-medium">
+                    {importResult.success ? 'Import successful!' : `Import failed: ${importResult.error}`}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            <div className="mt-4 p-3 bg-ink/5 dark:bg-paper/5 rounded-lg">
+              <div className="flex items-start gap-2 text-xs text-ink/60 dark:text-paper/60">
+                <Info size={14} className="mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="font-medium mb-1">What's in the export?</p>
+                  <ul className="space-y-0.5">
+                    <li>• Your preferences (theme, tracking settings)</li>
+                    <li>• Statistics (lean score, distribution)</li>
+                    <li>• Reading history (up to 1,000 entries)</li>
+                    <li>• Summary for quick reference</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Clear Data */}
           <div className="card">
             <h3 className="card-headline flex items-center gap-2 mb-4">
               <Trash2 size={18} className="text-burgundy" /> 
               Clear Tracking Data
             </h3>
             <p className="text-sm text-ink/60 dark:text-paper/60 mb-4">
-              Wipe your local reading history and statistics. This cannot be undone.
+              Permanently delete your reading history. This cannot be undone.
             </p>
             
             <div className="grid grid-cols-2 gap-3">
@@ -184,33 +378,30 @@ export default function SettingsView() {
             </button>
           </div>
 
-          <div className="card">
-            <h3 className="card-headline flex items-center gap-2 mb-4">
-              <FileText size={18} className="text-steel" />
-              Data Portability
-            </h3>
-            
-            <div className="grid grid-cols-2 gap-3">
-              <button 
-                onClick={handleExportData}
-                className="btn-secondary flex items-center justify-center gap-2"
-              >
-                <Download size={16} />
-                Export Data
-              </button>
-              <button 
-                className="btn-ghost flex items-center justify-center gap-2 opacity-50 cursor-not-allowed"
-                disabled
-                title="Coming in v2.4.0"
-              >
-                <Upload size={16} />
-                Import Data
-              </button>
+          {/* Current Stats Summary */}
+          {analytics?.stats?.totalReads > 0 && (
+            <div className="card bg-ink/5 dark:bg-paper/5">
+              <h3 className="card-headline mb-3">Current Data Summary</h3>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span className="text-ink/50 dark:text-paper/50">Articles tracked:</span>
+                  <span className="ml-2 font-bold">{analytics.stats.totalReads}</span>
+                </div>
+                <div>
+                  <span className="text-ink/50 dark:text-paper/50">Lean score:</span>
+                  <span className="ml-2 font-bold">{analytics.stats.leanScore}</span>
+                </div>
+                <div>
+                  <span className="text-ink/50 dark:text-paper/50">Sources:</span>
+                  <span className="ml-2 font-bold">{analytics.stats.topSources?.length || 0}</span>
+                </div>
+                <div>
+                  <span className="text-ink/50 dark:text-paper/50">Diversity:</span>
+                  <span className="ml-2 font-bold">{analytics.stats.sourceDiversity}%</span>
+                </div>
+              </div>
             </div>
-            <p className="text-xs text-ink/40 dark:text-paper/40 mt-3 text-center">
-              Export your stats as JSON. Import feature coming in v2.4.0 for historical analysis.
-            </p>
-          </div>
+          )}
         </motion.div>
       )}
 
@@ -221,27 +412,29 @@ export default function SettingsView() {
           animate={{ opacity: 1, y: 0 }}
           className="space-y-6"
         >
+          {/* Security Notice */}
           <div className="card bg-copper/10 border border-copper/30">
             <div className="flex items-start gap-3">
-              <Lock size={20} className="text-copper dark:text-copper-light mt-0.5" />
+              <Lock size={20} className="text-copper mt-0.5" />
               <div className="text-sm text-ink/70 dark:text-paper/70">
-                <strong className="text-copper dark:text-copper-light">Security Notice:</strong> Any email 
-                used in this app must be verified as owned by you. This protects you from spam and ensures 
-                your report data is not available to anyone except you.
+                <strong className="text-copper">Security Notice:</strong> Email verification 
+                ensures only you can receive reports. For added security, you'll need to 
+                re-verify after 30 days of inactivity.
               </div>
             </div>
           </div>
 
+          {/* Email Verification */}
           <div className="card">
             <h3 className="card-headline flex items-center gap-2 mb-4">
               <Mail size={18} className="text-steel" />
-              Delivery Address
+              Report Delivery
             </h3>
 
             {!session ? (
               <div className="space-y-4">
                 <p className="text-sm text-ink/60 dark:text-paper/60">
-                  Verify your email to enable daily reports.
+                  Verify your email to enable reports.
                 </p>
                 <div className="flex gap-2">
                   <input 
@@ -260,7 +453,7 @@ export default function SettingsView() {
                   </button>
                 </div>
                 <p className="text-xs text-ink/40 dark:text-paper/40">
-                  We'll send a Magic Link to your inbox. No password needed.
+                  We'll send a Magic Link. No password needed.
                 </p>
               </div>
             ) : (
@@ -272,20 +465,31 @@ export default function SettingsView() {
                   </div>
                   <button 
                     onClick={handleSignOut}
-                    className="text-xs text-ink/50 dark:text-paper/50 hover:text-burgundy transition-colors"
+                    className="text-xs text-ink/50 hover:text-burgundy transition-colors"
                   >
                     Sign Out
                   </button>
                 </div>
+
+                {/* Stale Warning */}
+                {analytics?.isStale && (
+                  <div className="p-3 bg-burgundy/10 border border-burgundy/20 rounded-lg">
+                    <div className="flex items-center gap-2 text-burgundy text-sm">
+                      <AlertTriangle size={16} />
+                      <span>It's been 30+ days. Re-verify for security.</span>
+                    </div>
+                  </div>
+                )}
                 
                 <div className="pt-4 border-t border-ink/10 dark:border-paper/10">
-                  <h4 className="font-bold text-sm mb-3">Manual Actions</h4>
+                  <h4 className="font-bold text-sm mb-3">Send Report</h4>
                   <button 
                     onClick={handleSendReport}
-                    disabled={reportStatus === 'sending'}
+                    disabled={reportStatus === 'sending' || analytics?.isStale}
                     className={`w-full py-3 rounded-lg flex items-center justify-center gap-2 font-bold transition-all ${
                       reportStatus === 'success' ? 'bg-forest text-white' : 
                       reportStatus === 'error' ? 'bg-burgundy text-white' :
+                      analytics?.isStale ? 'bg-ink/20 text-ink/50 cursor-not-allowed' :
                       'bg-copper text-white hover:bg-copper-dark'
                     }`}
                   >
@@ -293,83 +497,18 @@ export default function SettingsView() {
                     {reportStatus === 'success' && <CheckCircle size={18} />}
                     {reportStatus === 'error' && <AlertTriangle size={18} />}
                     
-                    {reportStatus === 'sending' ? 'Generating Report...' : 
+                    {reportStatus === 'sending' ? 'Generating...' : 
                      reportStatus === 'success' ? 'Report Sent!' : 
-                     reportStatus === 'error' ? 'Error Sending' : 
-                     'Trigger Instant Report'}
+                     reportStatus === 'error' ? 'Error' : 
+                     analytics?.isStale ? 'Re-verify First' :
+                     'Send Instant Report'}
                   </button>
                   <p className="text-xs text-center text-ink/40 dark:text-paper/40 mt-2">
-                    Sends a snapshot of your current stats to your verified email.
+                    Sends a summary of your current stats to {session.user.email}
                   </p>
-                </div>
-
-                <div className="mt-4 pt-4 border-t border-ink/10 dark:border-paper/10 opacity-50">
-                  <label className="text-xs font-bold uppercase tracking-wider text-ink/50 dark:text-paper/50 block mb-2">
-                    Secondary Recovery Email (v3.0)
-                  </label>
-                  <div className="flex gap-2">
-                    <input 
-                      disabled 
-                      type="text" 
-                      placeholder="Coming soon..." 
-                      className="search-input flex-1 opacity-50 cursor-not-allowed" 
-                    />
-                    <button disabled className="btn-ghost opacity-50 cursor-not-allowed">Add</button>
-                  </div>
                 </div>
               </div>
             )}
-          </div>
-        </motion.div>
-      )}
-
-      {/* API TAB */}
-      {activeTab === 'api' && (
-        <motion.div 
-          initial={{ opacity: 0, y: 10 }} 
-          animate={{ opacity: 1, y: 0 }}
-          className="space-y-6"
-        >
-          <div className="card bg-burgundy/10 border border-burgundy/30">
-            <div className="flex gap-4">
-              <AlertTriangle className="w-8 h-8 text-burgundy flex-shrink-0" />
-              <div>
-                <h4 className="font-bold text-burgundy dark:text-burgundy-light font-headline text-lg">
-                  Developer Zone
-                </h4>
-                <p className="text-sm text-ink/70 dark:text-paper/70 mt-1">
-                  API keys are set via environment variables for security. 
-                  See <code className="bg-ink/10 dark:bg-paper/10 px-1 rounded">.env.example</code> for the format.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="card space-y-4">
-            {[
-              { key: 'newsdata', label: 'NewsData.io', status: !!import.meta.env.VITE_NEWSDATA_KEY },
-              { key: 'gemini', label: 'Google Gemini', status: !!import.meta.env.VITE_GEMINI_API_KEY },
-              { key: 'supabase', label: 'Supabase', status: !!import.meta.env.VITE_SUPABASE_URL },
-              { key: 'claude', label: 'Anthropic Claude', status: false, coming: true },
-              { key: 'openai', label: 'OpenAI', status: false, coming: true },
-            ].map((api) => (
-              <div key={api.key} className="flex items-center justify-between p-3 bg-ink/5 dark:bg-paper/5 rounded-lg">
-                <span className="font-medium">{api.label}</span>
-                {api.coming ? (
-                  <span className="text-xs text-ink/40 dark:text-paper/40">Coming Soon</span>
-                ) : api.status ? (
-                  <span className="flex items-center gap-1 text-sm text-forest">
-                    <CheckCircle size={14} />
-                    Configured
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-1 text-sm text-burgundy">
-                    <AlertTriangle size={14} />
-                    Missing
-                  </span>
-                )}
-              </div>
-            ))}
           </div>
         </motion.div>
       )}
