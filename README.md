@@ -1,195 +1,181 @@
-# ProveIt v3.3.0 - Major Content & UX Update
+# ProveIt v3.4.1 - Bug Fix Patch
 
-## 🔌 COMPLETE STATUS BRIEFING
+## 📋 ADDENDUM TO v3.4.0
 
-### ✅ FULLY WORKING (No API Needed)
-| Feature | Status | Notes |
-|---------|--------|-------|
-| All UI Views | ✅ | 11 navigation views |
-| Dark/Light Mode | ✅ | Saves to localStorage |
-| Navigation Overflow | ✅ | "More" menu for excess icons |
-| Rate Limiting | ✅ | 5/day, localStorage tracked |
-| Source Category Toggles | ✅ | Enable/disable Political, Legal, Medical |
-| Individual Source Hiding | ✅ NEW | Hide ANY source (including CDC, NIH) |
-| SCOTUS Justice Data | ✅ | Static, accurate bias meters |
-| All 27 Amendments | ✅ | Complete text |
-| Founding Documents | ✅ | 8 sections now |
-| Political Party Platforms | ✅ NEW | 5 parties with official links |
-| Project 2025 Info | ✅ NEW | Credible sources only |
-| AI Critical Thinking Questions | ✅ NEW | 5 questions for media analysis |
-| DevTools Unlock | ✅ | Unlimited fact-checks |
-
-### ⚠️ NEEDS API KEYS (Currently Mock/Demo Data)
-| Feature | API Needed | How to Add | Current Fallback |
-|---------|------------|------------|------------------|
-| **Fact-checking AI** | Google Gemini | DevTools → Add key, OR `.env` file | Shows error |
-| **Live News Feed** | NewsData.io | `.env` → `VITE_NEWSDATA_KEY` | 3 demo articles |
-| **AI Media Detection** | Gemini Vision | Future integration | Random mock results |
-
-### 🔧 API KEY SETUP
-
-**Option 1: DevTools (User)**
-1. Navigate to wrench icon (CTRL+ALT+V)
-2. Paste Gemini API key
-3. Saves to localStorage
-
-**Option 2: Environment File (Developer)**
-```bash
-# .env file
-VITE_GEMINI_KEY=your_gemini_api_key_here
-VITE_NEWSDATA_KEY=your_newsdata_key_here
-```
+This patch fixes bugs discovered before v3.4.0 launch.
 
 ---
 
-## 🆕 What's New in v3.3.0
+## 🐛 BUGS FIXED IN v3.4.1
 
-### 1. Political Party Platforms
-- **5 major parties** with official "what we believe" statements
-- Democratic, Republican, Libertarian, Green, Constitution
-- Links to official platforms on each party's website
+### 1. Duplicate Flourish on Supreme Court Tab
+- **Issue:** Two decorative flourishes appeared at bottom of SCOTUS view
+- **Fix:** Removed duplicate, kept only the scales (⚖) version
 
-### 2. Project 2025 Section
-- Credible sources ONLY:
-  - Heritage Foundation official site
-  - Full PDF document
-  - AP News, Reuters, Ballotpedia explainers
-- No editorializing—just sources for user to evaluate
+### 2. Duplicate Flourish on Founding Documents Tab
+- **Issue:** Same double-flourish problem
+- **Fix:** Kept single flourish with star (✦) center
 
-### 3. English Bill of Rights (1689)
-- Protestant/Catholic historical context explained
-- Glorious Revolution background
-- Direct influences on American Bill of Rights mapped
+### 3. Navigation Order Changed
+- **Old:** Search, Feed, Research, SCOTUS, Sources, Flagged, Media, Founding...
+- **New:** Search, Feed, Media Checker, My Stats, Trusted Sources, Flagged Sources, Supreme Court, Founding Documents...
+- **Note:** "Founding Docs" → "Founding Documents" in hover tooltip
 
-### 4. Emancipation Proclamation (1863)
-- What it DID vs. what it DID NOT do
-- Historical context (why Lincoln waited)
-- Famous quote included
+### 4. Broken Project 2025 Links Fixed
+- **Reuters link:** Was broken → Replaced with Wikipedia
+- **AP link:** Was broken → Removed
+- **Prominence reduced:** Now just a small "Also:" note at bottom of Political Parties, not a featured section
+- **Just the facts:** Three links (Official, Wikipedia, Ballotpedia) - no editorializing
 
-### 5. Federalist Papers Expanded (8 → from 5)
-- Added #1 (Introduction), #2 (Foreign Dangers), #39 (Republican Government)
-- **9th Grade Reading Level explanations** for each
-- TL;DR summaries
-- Famous quotes
-
-### 6. AI Critical Thinking Questions
-- 5 questions added to Media Checker results:
-  1. Where did this image originate?
-  2. Who benefits if believed?
-  3. Why is it appearing now?
-  4. Do other sources corroborate?
-  5. Is it physically possible?
-
-### 7. Individual Source Hiding
-- Click eye icon to hide ANY source
-- Works on CDC, NIH, any medical source
-- Preferences saved locally
-- "Show all" button to reset
-
-### 8. Softer Medical Disclaimer
-- Changed from "Do not self-diagnose" to gentler wording
-- "Information found here should not be used to self-diagnose"
-- User trust preferences respected
-
-### 9. Navigation Fixes
-- Trusted Sources (Shield) and Flagged Sources (FolderX) now adjacent
-- "More" menu simplified: icons only, no redundant text
-- All icons have hover tooltips
-
-### 10. Dark Mode Fixes
-- Fixed black text on dark backgrounds in:
-  - Media Checker detection list
-  - All dropdown menus
-  - All modal dialogs
+### 5. Research Mode Improvements
+- **Side-by-side columns:** Left, Center, Right clearly separated
+- **Fringe exclusion:** Breitbart, InfoWars, OAN, Newsmax, Jacobin excluded by default
+- **Actionable bias slider:**
+  - Checkbox to enable/disable filtering
+  - Dual sliders for Left bound and Right bound
+  - Visual range indicator on gradient bar
+  - Preset buttons: "Left Only", "Center Only", "Right Only", "All Sources"
+  - "Refresh Results with New Range" button
 
 ---
 
-## 📁 Files Changed
+## 🔧 FILES CHANGED IN v3.4.1
 
-```
-v3.3.0/
-├── Navigation.jsx      ← Reordered icons, simplified More menu
-├── MediaCheckerView.jsx ← AI questions, dark mode fixes, softer buttons
-├── SourcesView.jsx     ← Individual hiding, softer disclaimer
-├── FoundingDocsView.jsx ← Political parties, Project 2025, English Bill, 
-│                          Emancipation, 8 Federalist essays
-└── trustedSources.js   ← Updated disclaimer text
-```
+| File | Change |
+|------|--------|
+| Navigation.jsx | Reordered icons, "Founding Documents" spelled out |
+| SupremeCourtView.jsx | Removed duplicate flourish, kept scales version |
+| FoundingDocsView.jsx | Fixed Project 2025 links, removed duplicate flourish |
+| ResearchView.jsx | Side-by-side columns, actionable bias slider |
+| Footer.jsx | Version bump 3.4.0 → 3.4.1 |
+| SettingsView.jsx | Version bump |
+| DevToolsView.jsx | Version bump |
 
 ---
 
-## 🧪 Testing Checklist
+## 📊 NAVIGATION ORDER (v3.4.1)
+
+| Position | Icon | View | Hover Text |
+|----------|------|------|------------|
+| 1 | 🔍 | search | Fact Check |
+| 2 | 📰 | feed | My Feed |
+| 3 | 📷 | mediachecker | Media Checker |
+| 4 | 📊 | stats | My Stats |
+| 5 | 🛡️ | sources | Trusted Sources |
+| 6 | 📁 | ignored | Flagged Sources |
+| 7 | ⚖️ | scotus | Supreme Court |
+| 8 | 📖 | founding | **Founding Documents** |
+| (overflow) | ↔️ | research | Research Mode |
+| (overflow) | ❓ | help | How to Use |
+| (overflow) | ⚙️ | settings | Settings |
+| (overflow) | 🔧 | devtools | DevTools (CTRL+ALT+V) |
+
+---
+
+## 🔗 PROJECT 2025 (Minimal, Factual)
+
+Just a small "Also:" note with three links - not prominently featured:
+- Official Site
+- Wikipedia  
+- Ballotpedia
+
+---
+
+## ⚖️ RESEARCH MODE - BIAS SLIDER
+
+### How It Works
+
+1. **Enable filter:** Check the "Enable bias range filter" checkbox
+2. **Set range:** Use sliders to set Left bound (-3 to +3) and Right bound (-3 to +3)
+3. **Visual feedback:** Gradient bar shows your selected range
+4. **Presets:** Quick buttons for common filters
+5. **Refresh:** Click "Refresh Results with New Range" to apply
+
+### Bias Scale
+```
+-3      -2      -1       0      +1      +2      +3
+|       |       |        |       |       |       |
+Far    Left   Lean    Center  Lean   Right   Far
+Left          Left            Right          Right
+```
+
+### Excluded Fringe Sources
+These are NEVER included regardless of bias settings:
+- Breitbart
+- InfoWars  
+- OAN
+- Newsmax
+- Jacobin
+- The Intercept
+
+---
+
+## ✅ COMPLETE FEATURE STATUS
+
+### Working (No API Needed)
+- ✅ All 12 navigation views
+- ✅ Dark/Light mode
+- ✅ Rate limiting (5/day)
+- ✅ Source toggles & hiding
+- ✅ SCOTUS justice data
+- ✅ 27 Amendments
+- ✅ Founding Documents (8 sections)
+- ✅ Political parties (5)
+- ✅ Audio/Voice AI detection
+- ✅ Feedback system
+- ✅ Score tracking
+- ✅ Research Mode with bias slider
+
+### Needs API Keys
+- ⚠️ Fact-checking: Gemini API
+- ⚠️ Live news: NewsData.io API
+
+---
+
+## 🧪 TESTING CHECKLIST FOR v3.4.1
 
 ### Navigation
-- [ ] Shield (Trusted) and FolderX (Flagged) are adjacent
-- [ ] More menu shows icons only (no text labels)
-- [ ] Wrench tooltip shows "DevTools (CTRL+ALT+V)"
+- [ ] Order is: Search, Feed, Media, Stats, Trusted, Flagged, SCOTUS, Founding
+- [ ] Hover on Founding shows "Founding Documents" (not "Founding Docs")
+- [ ] Research Mode is in overflow menu
 
-### Media Checker
-- [ ] After analysis, "Critical Thinking Questions" section appears
-- [ ] 5 questions visible with hints
-- [ ] Detection list text is readable in dark mode
-- [ ] Buttons at bottom are subtle (not btn-primary)
+### Flourishes
+- [ ] Supreme Court: SINGLE flourish with ⚖ scales
+- [ ] Founding Documents: SINGLE flourish with ✦ star
+- [ ] No double flourishes anywhere
 
-### Trusted Sources
-- [ ] Can hide individual sources with eye icon
-- [ ] Hidden sources show strikethrough
-- [ ] "X hidden by your preference" notice appears
-- [ ] Medical disclaimer is softer tone
-- [ ] Can hide CDC, NIH (user choice respected)
+### Project 2025 Links
+- [ ] PBS News link works
+- [ ] Wikipedia link works
+- [ ] All 5 sources accessible
 
-### Founding Docs
-- [ ] "Political Parties" tab works
-- [ ] 5 parties shown with beliefs and links
-- [ ] Project 2025 section has 5 credible sources
-- [ ] English Bill of Rights shows Protestant context
-- [ ] Emancipation Proclamation shows DID vs DID NOT
-- [ ] Federalist Papers shows 8 essays
-- [ ] Each essay has 9th grade explanation
-
-### Dark Mode
-- [ ] No black text on dark backgrounds anywhere
-- [ ] All modals readable
-- [ ] All dropdowns readable
+### Research Mode
+- [ ] Side-by-side columns (Left, Center, Right)
+- [ ] Bias filter checkbox works
+- [ ] Sliders adjust range
+- [ ] Presets apply correctly
+- [ ] Refresh button updates results
+- [ ] Fringe sources never appear
 
 ---
 
-## 📜 Political Parties Included
+## 📝 INHERITED FROM v3.4.0
 
-| Party | Color | Platform Link |
-|-------|-------|---------------|
-| Democratic | Blue | democrats.org/where-we-stand |
-| Republican | Red | gop.com/platform |
-| Libertarian | Gold | lp.org/platform |
-| Green | Green | gp.org/platform |
-| Constitution | Purple | constitutionparty.com/our-principles |
+All features from v3.4.0 are included:
+- Audio/Voice AI detection (MP3, WAV, M4A, OGG)
+- Feedback system (Settings → DevTools)
+- Score tracking foundation
+- Research Mode (now improved with bias slider)
 
 ---
 
-## 📚 Federalist Papers - 8 Key Essays
+## 🔜 REMAINING FOR FUTURE VERSIONS
 
-| # | Author | Topic | Famous Quote |
-|---|--------|-------|--------------|
-| 1 | Hamilton | Introduction | "societies capable of good government from reflection and choice" |
-| 2 | Jay | Foreign Dangers | "Providence has given this one connected country" |
-| 10 | Madison | Factions | "causes of faction are sown in the nature of man" |
-| 39 | Madison | Republican Gov | "derives all its powers from the people" |
-| 51 | Madison | Separation | "If men were angels, no government necessary" |
-| 70 | Hamilton | Executive | "Energy in the Executive" |
-| 78 | Hamilton | Judiciary | "neither FORCE nor WILL, but merely judgment" |
-| 84 | Hamilton | No Bill of Rights | "Why declare things shall not be done" |
+See WISHLIST.md for full roadmap:
+- v3.5.0: Real Vision API integration
+- v4.0.0: Full Research Mode with live aggregation
+- Future: Quote cycling, mobile app, browser extension
 
 ---
 
-## 🔜 Still Pending
-
-| Feature | Target | Notes |
-|---------|--------|-------|
-| Research Mode | v3.4.0 | Side-by-side comparison |
-| Quote Cycling | v3.4.0 | Rotating footer quotes |
-| Vision API Integration | v3.5.0 | Real AI media detection |
-| Score Tracking | v3.4.0 | Week-over-week trends |
-
----
-
-*ProveIt v3.3.0 - "Veritas Lux" • Truth is Light*
+*ProveIt v3.4.1 - "Veritas Lux" • Truth is Light*

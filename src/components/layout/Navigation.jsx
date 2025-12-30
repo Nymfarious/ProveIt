@@ -1,16 +1,17 @@
 import { useState, useRef, useEffect } from 'react'
-import { Search, Newspaper, BarChart3, FolderX, Settings, Wrench, HelpCircle, Scale, Shield, Camera, BookOpen, MoreHorizontal, X } from 'lucide-react'
+import { Search, Newspaper, BarChart3, FolderX, Settings, Wrench, HelpCircle, Scale, Shield, Camera, BookOpen, MoreHorizontal, X, ArrowLeftRight } from 'lucide-react'
 
-// Reordered: Shield (Trusted) and FolderX (Flagged) now together
+// REORDERED per user request
 const allNavItems = [
   { id: 'search', icon: Search, tooltip: 'Fact Check' },
   { id: 'feed', icon: Newspaper, tooltip: 'My Feed' },
-  { id: 'scotus', icon: Scale, tooltip: 'Supreme Court' },
+  { id: 'mediachecker', icon: Camera, tooltip: 'Media Checker' },
+  { id: 'stats', icon: BarChart3, tooltip: 'My Stats' },
   { id: 'sources', icon: Shield, tooltip: 'Trusted Sources' },
   { id: 'ignored', icon: FolderX, tooltip: 'Flagged Sources' },
-  { id: 'mediachecker', icon: Camera, tooltip: 'Media Checker' },
-  { id: 'founding', icon: BookOpen, tooltip: 'Founding Docs' },
-  { id: 'stats', icon: BarChart3, tooltip: 'My Stats' },
+  { id: 'scotus', icon: Scale, tooltip: 'Supreme Court' },
+  { id: 'founding', icon: BookOpen, tooltip: 'Founding Documents' },
+  { id: 'research', icon: ArrowLeftRight, tooltip: 'Research Mode' },
   { id: 'help', icon: HelpCircle, tooltip: 'How to Use' },
   { id: 'settings', icon: Settings, tooltip: 'Settings' },
   { id: 'devtools', icon: Wrench, tooltip: 'DevTools', shortcut: 'CTRL+ALT+V' },
@@ -87,7 +88,6 @@ export default function Navigation({ activeView, setActiveView }) {
                 </span>
               </button>
 
-              {/* Simplified dropdown - icons only with hover tooltips, no redundant text */}
               {showMore && (
                 <div className="absolute top-full right-0 mt-2 
                               bg-paper dark:bg-ink border border-ink/20 dark:border-paper/20 
