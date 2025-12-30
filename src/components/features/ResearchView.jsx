@@ -159,7 +159,7 @@ export default function ResearchView() {
             </li>
             <li className="flex items-start gap-2">
               <span className="text-copper font-bold">4.</span>
-              Look for facts that all sides agree on—that's likely the truth
+              Look for facts that all sides agree on—that is likely the truth
             </li>
           </ul>
         </div>

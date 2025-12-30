@@ -103,8 +103,8 @@ export default function StatsView() {
 
         {showVarianceInfo && (
           <div className="mb-4 p-3 rounded-lg bg-steel/10 border border-steel/20 text-sm text-ink/70 dark:text-paper/70">
-            <p className="mb-2"><strong>Source Variance</strong> measures how many different perspectives you're exposed to across the political spectrum.</p>
-            <p>A higher score means you're reading from a wider range of sources.</p>
+            <p className="mb-2"><strong>Source Variance</strong> measures how many different perspectives you are exposed to across the political spectrum.</p>
+            <p>A higher score means you are reading from a wider range of sources.</p>
           </div>
         )}
         

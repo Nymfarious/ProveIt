@@ -100,7 +100,7 @@ When testing, please note:
 1. **Mock data:** Without API keys, some features show demo/mock results
 2. **Feedback:** Submit via Settings → Send Feedback (stored locally)
 3. **DevTools:** Unlock with code "VERITAS"
-4. **Breaking anything:** Feel free to try breaking things - that's the point!
+4. **Breaking anything:** Feel free to try breaking things - that is the point!
 
 Priority areas to test:
 - Flow from search → result → sources

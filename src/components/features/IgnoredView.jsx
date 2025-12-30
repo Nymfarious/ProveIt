@@ -209,7 +209,7 @@ export default function IgnoredView() {
               {showTimerInfo && (
                 <div className="mt-3 pt-3 border-t border-steel/20 text-xs text-ink/60 dark:text-paper/60">
                   <div className="flex items-center gap-2 mb-1"><Clock size={12} /><strong>2-Minute Review Timer</strong></div>
-                  <p>Ratings are only counted if you've viewed an article for at least 2 minutes.</p>
+                  <p>Ratings are only counted if you have viewed an article for at least 2 minutes.</p>
                 </div>
               )}
             </div>

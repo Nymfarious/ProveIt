@@ -12,7 +12,7 @@ The medical sources listed here are provided for informational purposes only. Pl
 • Always consult with a licensed healthcare provider for medical decisions
 • When in doubt, seek professional medical advice
 
-You have the option to hide any source you don't trust by clicking the eye icon. Your preferences are saved locally.
+You have the option to hide any source you do not trust by clicking the eye icon. Your preferences are saved locally.
 
 ProveIt aims to help you find reliable information, but medical decisions should always involve qualified professionals.`
 
@@ -111,7 +111,7 @@ export default function SourcesView() {
           Active Source Categories
         </h3>
         <p className="text-xs text-ink/50 dark:text-paper/50 mb-4">
-          Turn off categories you don't want included in fact-check analysis and feed filtering.
+          Turn off categories you do not want included in fact-check analysis and feed filtering.
         </p>
         
         <div className="grid sm:grid-cols-3 gap-3">
@@ -145,7 +145,7 @@ export default function SourcesView() {
         
         <div className="mt-4 p-3 rounded-lg bg-steel/10 border border-steel/20 text-xs text-ink/60 dark:text-paper/60">
           <Info size={12} className="inline mr-1" />
-          Disabled categories won't be used when checking sources in fact-checks or news feeds.
+          Disabled categories will not be used when checking sources in fact-checks or news feeds.
         </div>
       </div>
 
@@ -210,7 +210,7 @@ export default function SourcesView() {
           <AlertTriangle size={20} className="text-burgundy flex-shrink-0" />
           <div>
             <p className="text-sm font-medium text-burgundy">This category is disabled</p>
-            <p className="text-xs text-burgundy/70">Sources below won't be used in analysis. Toggle above to re-enable.</p>
+            <p className="text-xs text-burgundy/70">Sources below will not be used in analysis. Toggle above to re-enable.</p>
           </div>
         </div>
       )}

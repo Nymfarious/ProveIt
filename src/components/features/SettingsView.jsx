@@ -158,7 +158,7 @@ export default function SettingsView() {
               <Shield size={16} className="text-forest mt-0.5" />
               <div>
                 <p className="font-medium text-sm text-forest">Your data stays on your device</p>
-                <p className="text-xs text-forest/80">ProveIt doesn't send your reading history or preferences to any server. Everything is stored locally in your browser.</p>
+                <p className="text-xs text-forest/80">ProveIt does not send your reading history or preferences to any server. Everything is stored locally in your browser.</p>
               </div>
             </div>
           </div>

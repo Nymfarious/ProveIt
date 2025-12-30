@@ -1,5 +1,60 @@
 import { useState, useEffect } from 'react'
-import { Wrench, Key, Unlock, Lock, AlertTriangle, CheckCircle, Trash2, RefreshCw, Eye, EyeOff, MessageSquare, ChevronDown, ChevronUp, TrendingUp, Calendar, Zap, Database } from 'lucide-react'
+import { Wrench, Key, Unlock, Lock, AlertTriangle, CheckCircle, Trash2, RefreshCw, Eye, EyeOff, MessageSquare, ChevronDown, ChevronUp, TrendingUp, Calendar, Zap, Database, TestTube, Info } from 'lucide-react'
+
+// 7-DAY TEST DATA GENERATOR
+const generateTestData = () => {
+  const data = []
+  const now = new Date()
+  
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date(now)
+    date.setDate(date.getDate() - i)
+    
+    // Simulate realistic usage patterns
+    // More activity on weekdays, less on weekends
+    const isWeekend = date.getDay() === 0 || date.getDay() === 6
+    const activityMultiplier = isWeekend ? 0.5 : 1
+    
+    // Slight left-leaning tendency with some variation
+    const leftBase = Math.floor((3 + Math.random() * 5) * activityMultiplier)
+    const centerBase = Math.floor((5 + Math.random() * 8) * activityMultiplier)
+    const rightBase = Math.floor((2 + Math.random() * 4) * activityMultiplier)
+    
+    data.push({
+      id: Date.now() - (i * 86400000) + Math.random() * 1000,
+      date: date.toISOString(),
+      leftReads: leftBase,
+      centerReads: centerBase,
+      rightReads: rightBase,
+      factChecks: Math.floor((1 + Math.random() * 3) * activityMultiplier),
+      mediaChecks: Math.floor(Math.random() * 2 * activityMultiplier),
+      researchSessions: Math.floor(Math.random() * 2 * activityMultiplier),
+    })
+  }
+  
+  return data
+}
+
+// Generate test feedback data
+const generateTestFeedback = () => {
+  const types = ['bug', 'suggestion', 'content', 'ux']
+  const samples = [
+    { type: 'bug', text: 'Dark mode flickers briefly when switching pages' },
+    { type: 'suggestion', text: 'Would love to see a comparison view for two articles side by side' },
+    { type: 'content', text: 'The Federalist Paper summaries are excellent! Could you add Anti-Federalist papers too?' },
+    { type: 'ux', text: 'The bias bar could use labels for colorblind users' },
+    { type: 'suggestion', text: 'Export to PDF would be amazing for the founding documents' },
+  ]
+  
+  return samples.slice(0, 3 + Math.floor(Math.random() * 3)).map((sample, i) => ({
+    id: Date.now() - i * 100000,
+    type: sample.type,
+    text: sample.text,
+    timestamp: new Date(Date.now() - i * 86400000).toISOString(),
+    version: '3.4.2',
+    userAgent: 'Mozilla/5.0 Chrome/120.0.0.0 Safari/537.36'
+  }))
+}
 
 export default function DevToolsView() {
   const [isUnlocked, setIsUnlocked] = useState(false)
@@ -11,6 +66,7 @@ export default function DevToolsView() {
   const [showFeedback, setShowFeedback] = useState(false)
   const [scoreHistory, setScoreHistory] = useState([])
   const [showScores, setShowScores] = useState(false)
+  const [showTestDataInfo, setShowTestDataInfo] = useState(false)
 
   useEffect(() => {
     const unlocked = localStorage.getItem('proveit-dev-unlocked') === 'true'
@@ -45,7 +101,7 @@ export default function DevToolsView() {
 
   const handleSaveKey = () => {
     localStorage.setItem('proveit-gemini-key', geminiKey)
-    alert('API key saved!')
+    alert('API key saved to browser localStorage!')
   }
 
   const handleResetRateLimit = () => {
@@ -67,6 +123,7 @@ export default function DevToolsView() {
     setFeedback(updated)
   }
 
+  // Single mock score (legacy)
   const addMockScore = () => {
     const newScore = {
       id: Date.now(),
@@ -81,10 +138,36 @@ export default function DevToolsView() {
     setScoreHistory(updated)
   }
 
+  // NEW: Load 7 days of realistic test data
+  const loadSevenDayTestData = () => {
+    const testScores = generateTestData()
+    const testFeedback = generateTestFeedback()
+    
+    localStorage.setItem('proveit-score-history', JSON.stringify(testScores))
+    localStorage.setItem('proveit-feedback', JSON.stringify(testFeedback))
+    
+    setScoreHistory(testScores)
+    setFeedback(testFeedback)
+    
+    alert('Loaded 7 days of test data! Check Score Tracking and Feedback sections.')
+  }
+
   const clearScoreHistory = () => {
     if (confirm('Clear score history?')) {
       localStorage.removeItem('proveit-score-history')
       setScoreHistory([])
+    }
+  }
+
+  // Clear ALL test data
+  const clearAllTestData = () => {
+    if (confirm('Clear ALL test data (scores, feedback, rate limits)?')) {
+      localStorage.removeItem('proveit-score-history')
+      localStorage.removeItem('proveit-feedback')
+      localStorage.removeItem('proveit-rate-limit')
+      setScoreHistory([])
+      setFeedback([])
+      setRateLimit(null)
     }
   }
 
@@ -164,6 +247,46 @@ export default function DevToolsView() {
         </div>
       </div>
 
+      {/* TEST DATA GENERATOR - NEW */}
+      <div className="card border-2 border-dashed border-copper/40 bg-copper/5">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="card-headline flex items-center gap-2 text-ink dark:text-paper">
+            <TestTube size={18} className="text-copper" />
+            Test Data Generator
+          </h3>
+          <button 
+            onClick={() => setShowTestDataInfo(!showTestDataInfo)}
+            className="text-ink/40 dark:text-paper/40 hover:text-copper"
+          >
+            <Info size={16} />
+          </button>
+        </div>
+
+        {showTestDataInfo && (
+          <div className="mb-4 p-3 rounded-lg bg-paper dark:bg-ink border border-steel/20 text-xs text-ink/70 dark:text-paper/70">
+            <p className="mb-2"><strong>For testers:</strong> This generates realistic sample data to see how the app behaves with a week of usage.</p>
+            <p>Includes: Reading history across bias spectrum, fact-checks, media checks, and sample feedback entries.</p>
+          </div>
+        )}
+
+        <div className="flex flex-wrap gap-2">
+          <button 
+            onClick={loadSevenDayTestData} 
+            className="btn-primary flex items-center gap-2"
+          >
+            <Calendar size={16} />
+            Load 7 Days of Test Data
+          </button>
+          <button 
+            onClick={clearAllTestData} 
+            className="px-4 py-2 text-sm text-burgundy border border-burgundy/30 rounded-lg hover:bg-burgundy/10 flex items-center gap-2"
+          >
+            <Trash2 size={16} />
+            Clear All Test Data
+          </button>
+        </div>
+      </div>
+
       {/* API Configuration */}
       <div className="card">
         <h3 className="card-headline flex items-center gap-2 mb-4 text-ink dark:text-paper">
@@ -195,13 +318,28 @@ export default function DevToolsView() {
               </button>
             </div>
             <p className="text-xs text-ink/40 dark:text-paper/40 mt-2">
-              Get a key at <a href="https://makersuite.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-copper hover:underline">Google AI Studio</a>
+              Get a key at <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" className="text-copper hover:underline">Google AI Studio</a>
             </p>
           </div>
 
+          {/* IMPORTANT: localStorage vs .env explanation */}
           <div className="p-3 rounded-lg bg-steel/10 border border-steel/20">
+            <p className="text-xs text-ink/60 dark:text-paper/60 mb-2">
+              <strong className="text-ink dark:text-paper">Where are keys stored?</strong>
+            </p>
+            <ul className="text-xs text-ink/60 dark:text-paper/60 space-y-1">
+              <li>• <strong>DevTools key</strong> → Saved in your browser (localStorage)</li>
+              <li>• <strong>.env file</strong> → Used at build time only (for deployment)</li>
+              <li>• <strong>Supabase secrets</strong> → Backup for deployed app</li>
+            </ul>
+            <p className="text-xs text-ink/50 dark:text-paper/50 mt-2 italic">
+              Keys entered here do NOT modify any files. They persist in this browser only.
+            </p>
+          </div>
+
+          <div className="p-3 rounded-lg bg-forest/10 border border-forest/20">
             <p className="text-xs text-ink/60 dark:text-paper/60">
-              <strong className="text-ink dark:text-paper">NewsData.io:</strong> Set VITE_NEWSDATA_KEY in your .env file for live news feeds.
+              <strong className="text-forest">NewsData.io:</strong> Set <code className="bg-ink/10 px-1 rounded">VITE_NEWSDATA_KEY</code> in your .env file for live news feeds.
             </p>
           </div>
         </div>
@@ -257,7 +395,7 @@ export default function DevToolsView() {
           <div className="mt-4 space-y-3">
             <div className="flex gap-2">
               <button onClick={addMockScore} className="text-xs px-3 py-1 bg-copper/20 text-copper rounded-lg hover:bg-copper/30">
-                <Zap size={12} className="inline mr-1" /> Add Mock Data
+                <Zap size={12} className="inline mr-1" /> Add Single Entry
               </button>
               <button onClick={clearScoreHistory} className="text-xs px-3 py-1 bg-burgundy/20 text-burgundy rounded-lg hover:bg-burgundy/30">
                 <Trash2 size={12} className="inline mr-1" /> Clear
@@ -265,7 +403,7 @@ export default function DevToolsView() {
             </div>
 
             {scoreHistory.length === 0 ? (
-              <p className="text-sm text-ink/50 dark:text-paper/50">No score history. Data will be collected as users read articles.</p>
+              <p className="text-sm text-ink/50 dark:text-paper/50">No score history. Use "Load 7 Days of Test Data" above or collect data as users read articles.</p>
             ) : (
               <div className="max-h-64 overflow-y-auto space-y-2">
                 {scoreHistory.slice(-10).reverse().map((score) => (
@@ -309,7 +447,7 @@ export default function DevToolsView() {
         {showFeedback && (
           <div className="mt-4 space-y-3">
             {feedback.length === 0 ? (
-              <p className="text-sm text-ink/50 dark:text-paper/50">No feedback yet. Users can submit via Settings.</p>
+              <p className="text-sm text-ink/50 dark:text-paper/50">No feedback yet. Users can submit via Settings, or use "Load 7 Days of Test Data" above.</p>
             ) : (
               <>
                 <div className="flex justify-end">
@@ -354,11 +492,12 @@ export default function DevToolsView() {
           System Info
         </h3>
         <div className="space-y-2 text-xs font-mono text-ink/60 dark:text-paper/60">
-          <p>Version: 3.4.1</p>
+          <p>Version: 3.4.2</p>
           <p>Build: {new Date().toISOString().split('T')[0]}</p>
           <p>Theme: {localStorage.getItem('proveit-theme') || 'system'}</p>
           <p>Storage: localStorage</p>
-          <p>Gemini Key: {geminiKey ? '✓ Configured' : '✗ Not set'}</p>
+          <p>Gemini Key: {geminiKey ? '✓ Configured (localStorage)' : '✗ Not set'}</p>
+          <p>Env Key: {import.meta.env.VITE_GEMINI_API_KEY ? '✓ Found (.env)' : '○ Not in .env'}</p>
         </div>
       </div>
 
@@ -368,7 +507,7 @@ export default function DevToolsView() {
           <AlertTriangle size={18} className="text-burgundy flex-shrink-0 mt-0.5" />
           <div>
             <p className="text-sm font-medium text-burgundy">Developer Mode Active</p>
-            <p className="text-xs text-burgundy/80">Rate limits disabled. API keys stored in localStorage (not secure for production).</p>
+            <p className="text-xs text-burgundy/80">Rate limits disabled. API keys stored in localStorage (browser only, not synced).</p>
           </div>
         </div>
       </div>
