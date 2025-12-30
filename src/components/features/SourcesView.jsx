@@ -1,13 +1,27 @@
 import { useState, useEffect } from 'react'
-import { Shield, Scale, Stethoscope, Newspaper, ExternalLink, AlertTriangle, CheckCircle, Info, X, Search, Power } from 'lucide-react'
+import { Shield, Scale, Stethoscope, Newspaper, ExternalLink, AlertTriangle, CheckCircle, Info, X, Search, Power, Eye, EyeOff } from 'lucide-react'
 import { TRUSTED_SOURCES, getBiasLabel, getCredibilityBadge, MEDICAL_DISCLAIMER } from '../../lib/trustedSources'
+
+// Softer medical disclaimer
+const SOFT_MEDICAL_DISCLAIMER = `⚕️ MEDICAL INFORMATION NOTICE
+
+The medical sources listed here are provided for informational purposes only. Please keep in mind:
+
+• Information found or linked through this app should not be used to self-diagnose conditions
+• Medical test results should be interpreted by qualified healthcare professionals, not through online resources
+• Always consult with a licensed healthcare provider for medical decisions
+• When in doubt, seek professional medical advice
+
+You have the option to hide any source you don't trust by clicking the eye icon. Your preferences are saved locally.
+
+ProveIt aims to help you find reliable information, but medical decisions should always involve qualified professionals.`
 
 export default function SourcesView() {
   const [activeTab, setActiveTab] = useState('political')
   const [showMedicalDisclaimer, setShowMedicalDisclaimer] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   
-  // BUG FIX: Allow users to toggle source categories on/off
+  // Category enable/disable
   const [enabledCategories, setEnabledCategories] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('proveit-enabled-sources')
@@ -16,14 +30,36 @@ export default function SourcesView() {
     return { political: true, legal: true, medical: true }
   })
 
-  // Save preferences
+  // Individual source hiding (user can hide CDC, NIH, etc.)
+  const [hiddenSources, setHiddenSources] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('proveit-hidden-sources')
+      if (saved) return JSON.parse(saved)
+    }
+    return []
+  })
+
   useEffect(() => {
     localStorage.setItem('proveit-enabled-sources', JSON.stringify(enabledCategories))
   }, [enabledCategories])
 
+  useEffect(() => {
+    localStorage.setItem('proveit-hidden-sources', JSON.stringify(hiddenSources))
+  }, [hiddenSources])
+
   const toggleCategory = (category) => {
     setEnabledCategories(prev => ({ ...prev, [category]: !prev[category] }))
   }
+
+  const toggleSourceVisibility = (sourceName) => {
+    setHiddenSources(prev => 
+      prev.includes(sourceName) 
+        ? prev.filter(s => s !== sourceName)
+        : [...prev, sourceName]
+    )
+  }
+
+  const isSourceHidden = (sourceName) => hiddenSources.includes(sourceName)
 
   const tabs = [
     { id: 'political', label: 'Political', icon: Newspaper, color: 'text-copper' },
@@ -60,7 +96,7 @@ export default function SourcesView() {
             <Shield size={24} className="text-copper" />
           </div>
           <div>
-            <h2 className="font-headline text-xl font-semibold">Pre-Approved Sources</h2>
+            <h2 className="font-headline text-xl font-semibold text-ink dark:text-paper">Pre-Approved Sources</h2>
             <p className="text-sm text-ink/60 dark:text-paper/60">
               Trusted sources for politics, law, and medical information with bias ratings
             </p>
@@ -68,9 +104,9 @@ export default function SourcesView() {
         </div>
       </div>
 
-      {/* Category Enable/Disable Controls - BUG FIX */}
+      {/* Category Enable/Disable Controls */}
       <div className="card border-copper/30">
-        <h3 className="card-headline flex items-center gap-2 mb-4">
+        <h3 className="card-headline flex items-center gap-2 mb-4 text-ink dark:text-paper">
           <Power size={18} className="text-copper" />
           Active Source Categories
         </h3>
@@ -93,10 +129,10 @@ export default function SourcesView() {
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <Icon size={20} className={isEnabled ? tab.color : 'text-ink/40'} />
-                  <div className={`w-3 h-3 rounded-full ${isEnabled ? 'bg-forest' : 'bg-ink/30'}`} />
+                  <Icon size={20} className={isEnabled ? tab.color : 'text-ink/40 dark:text-paper/40'} />
+                  <div className={`w-3 h-3 rounded-full ${isEnabled ? 'bg-forest' : 'bg-ink/30 dark:bg-paper/30'}`} />
                 </div>
-                <p className={`font-medium text-left ${isEnabled ? '' : 'text-ink/50 dark:text-paper/50'}`}>
+                <p className={`font-medium text-left ${isEnabled ? 'text-ink dark:text-paper' : 'text-ink/50 dark:text-paper/50'}`}>
                   {tab.label}
                 </p>
                 <p className="text-xs text-left text-ink/40 dark:text-paper/40 mt-1">
@@ -112,6 +148,24 @@ export default function SourcesView() {
           Disabled categories won't be used when checking sources in fact-checks or news feeds.
         </div>
       </div>
+
+      {/* Hidden Sources Notice */}
+      {hiddenSources.length > 0 && (
+        <div className="p-3 rounded-lg bg-copper/10 border border-copper/20 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <EyeOff size={16} className="text-copper" />
+            <span className="text-xs text-ink/70 dark:text-paper/70">
+              {hiddenSources.length} source{hiddenSources.length > 1 ? 's' : ''} hidden by your preference
+            </span>
+          </div>
+          <button 
+            onClick={() => setHiddenSources([])}
+            className="text-xs text-copper hover:underline"
+          >
+            Show all
+          </button>
+        </div>
+      )}
 
       {/* Tab Navigation */}
       <div className="flex gap-1 p-1 bg-ink/5 dark:bg-paper/5 rounded-lg">
@@ -138,7 +192,7 @@ export default function SourcesView() {
 
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/40" size={18} />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/40 dark:text-paper/40" size={18} />
         <input
           type="text"
           value={searchTerm}
@@ -164,18 +218,18 @@ export default function SourcesView() {
       {/* Medical Disclaimer Modal */}
       {showMedicalDisclaimer && (
         <div className="fixed inset-0 bg-ink/50 dark:bg-ink/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-paper dark:bg-ink-light rounded-xl max-w-lg w-full p-6 shadow-xl">
+          <div className="bg-paper dark:bg-ink rounded-xl max-w-lg w-full p-6 shadow-xl border border-ink/20 dark:border-paper/20">
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-2">
-                <AlertTriangle className="text-burgundy" size={24} />
-                <h3 className="font-headline text-xl font-semibold">Medical Disclaimer</h3>
+                <AlertTriangle className="text-copper" size={24} />
+                <h3 className="font-headline text-xl font-semibold text-ink dark:text-paper">Medical Information Notice</h3>
               </div>
-              <button onClick={() => setShowMedicalDisclaimer(false)} className="p-1 hover:bg-ink/10 rounded">
+              <button onClick={() => setShowMedicalDisclaimer(false)} className="p-1 hover:bg-ink/10 dark:hover:bg-paper/10 rounded text-ink/60 dark:text-paper/60">
                 <X size={20} />
               </button>
             </div>
             <div className="text-sm text-ink/70 dark:text-paper/70 space-y-3 whitespace-pre-line">
-              {MEDICAL_DISCLAIMER}
+              {SOFT_MEDICAL_DISCLAIMER}
             </div>
             <button onClick={() => setShowMedicalDisclaimer(false)} className="btn-primary w-full mt-6">
               I Understand
@@ -187,7 +241,7 @@ export default function SourcesView() {
       {/* POLITICAL SOURCES */}
       {activeTab === 'political' && (
         <div className="card">
-          <h3 className="card-headline flex items-center gap-2 mb-4">
+          <h3 className="card-headline flex items-center gap-2 mb-4 text-ink dark:text-paper">
             <Newspaper size={18} className="text-copper" />
             Political News Sources
           </h3>
@@ -200,10 +254,14 @@ export default function SourcesView() {
             {filterSources(TRUSTED_SOURCES.political).map((source) => {
               const bias = getBiasLabel(source.bias)
               const cred = getCredibilityBadge(source.credibility)
+              const hidden = isSourceHidden(source.name)
               return (
-                <div key={source.name} className="flex items-center justify-between p-3 rounded-lg bg-ink/5 dark:bg-paper/5">
+                <div key={source.name} className={`flex items-center justify-between p-3 rounded-lg ${hidden ? 'bg-ink/10 dark:bg-paper/10 opacity-50' : 'bg-ink/5 dark:bg-paper/5'}`}>
                   <div className="flex items-center gap-3">
-                    <span className="font-medium text-sm">{source.name}</span>
+                    <button onClick={() => toggleSourceVisibility(source.name)} className="text-ink/40 dark:text-paper/40 hover:text-copper">
+                      {hidden ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                    <span className={`font-medium text-sm ${hidden ? 'line-through text-ink/40 dark:text-paper/40' : 'text-ink dark:text-paper'}`}>{source.name}</span>
                     <span className={`text-xs px-2 py-0.5 rounded-full ${cred.color}`}>{cred.label}</span>
                   </div>
                   <div className="flex items-center gap-3">
@@ -220,7 +278,7 @@ export default function SourcesView() {
       {/* LEGAL SOURCES */}
       {activeTab === 'legal' && (
         <div className="card">
-          <h3 className="card-headline flex items-center gap-2 mb-4">
+          <h3 className="card-headline flex items-center gap-2 mb-4 text-ink dark:text-paper">
             <Scale size={18} className="text-steel" />
             Legal & Court Sources
           </h3>
@@ -233,22 +291,28 @@ export default function SourcesView() {
           </div>
 
           <div className="space-y-3">
-            {filterSources(TRUSTED_SOURCES.legal).map((source) => (
-              <div key={source.name} className="p-4 rounded-lg bg-ink/5 dark:bg-paper/5 border border-ink/10 dark:border-paper/10">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-medium">{source.name}</span>
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-forest/10 text-forest">✓✓ Trusted</span>
+            {filterSources(TRUSTED_SOURCES.legal).map((source) => {
+              const hidden = isSourceHidden(source.name)
+              return (
+                <div key={source.name} className={`p-4 rounded-lg border ${hidden ? 'bg-ink/10 dark:bg-paper/10 opacity-50 border-ink/10' : 'bg-ink/5 dark:bg-paper/5 border-ink/10 dark:border-paper/10'}`}>
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <button onClick={() => toggleSourceVisibility(source.name)} className="text-ink/40 dark:text-paper/40 hover:text-copper">
+                          {hidden ? <EyeOff size={14} /> : <Eye size={14} />}
+                        </button>
+                        <span className={`font-medium ${hidden ? 'line-through text-ink/40 dark:text-paper/40' : 'text-ink dark:text-paper'}`}>{source.name}</span>
+                        {!hidden && <span className="text-xs px-2 py-0.5 rounded-full bg-forest/10 text-forest">✓✓ Trusted</span>}
+                      </div>
+                      <p className="text-xs text-ink/50 dark:text-paper/50 ml-6">{source.description}</p>
                     </div>
-                    <p className="text-xs text-ink/50 dark:text-paper/50">{source.description}</p>
+                    <a href={source.url} target="_blank" rel="noopener noreferrer" className="text-steel hover:text-copper flex-shrink-0">
+                      <ExternalLink size={16} />
+                    </a>
                   </div>
-                  <a href={source.url} target="_blank" rel="noopener noreferrer" className="text-steel hover:text-copper flex-shrink-0">
-                    <ExternalLink size={16} />
-                  </a>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       )}
@@ -256,32 +320,40 @@ export default function SourcesView() {
       {/* MEDICAL SOURCES */}
       {activeTab === 'medical' && (
         <div className="space-y-4">
-          {/* Disclaimer Banner */}
-          <div className="card border-burgundy/30 bg-burgundy/5">
+          {/* Disclaimer Banner - Softer tone */}
+          <div className="card border-copper/30 bg-copper/5">
             <div className="flex items-start gap-3">
-              <AlertTriangle size={24} className="text-burgundy flex-shrink-0" />
+              <Info size={24} className="text-copper flex-shrink-0" />
               <div className="flex-1">
-                <h4 className="font-semibold text-burgundy mb-1">Important Medical Disclaimer</h4>
-                <p className="text-sm text-burgundy/80 mb-2">
-                  This is NOT medical advice. Do not self-diagnose or interpret test results.
+                <h4 className="font-semibold text-copper mb-1">Medical Information Notice</h4>
+                <p className="text-sm text-copper/80 mb-2">
+                  Information here is for reference only—please consult healthcare professionals for medical decisions.
                 </p>
-                <button onClick={() => setShowMedicalDisclaimer(true)} className="text-xs text-burgundy underline">
-                  Read Full Disclaimer
+                <button onClick={() => setShowMedicalDisclaimer(true)} className="text-xs text-copper underline">
+                  Read Full Notice
                 </button>
               </div>
             </div>
           </div>
 
+          {/* User Control Notice */}
+          <div className="p-3 rounded-lg bg-steel/10 border border-steel/20 flex items-center gap-2">
+            <EyeOff size={14} className="text-steel" />
+            <span className="text-xs text-ink/60 dark:text-paper/60">
+              Click the eye icon on any source to hide it. Your trust preferences are saved locally.
+            </span>
+          </div>
+
           <div className="card">
-            <h3 className="card-headline flex items-center gap-2 mb-4">
+            <h3 className="card-headline flex items-center gap-2 mb-4 text-ink dark:text-paper">
               <Stethoscope size={18} className="text-forest" />
               Medical Sources by Tier
             </h3>
 
             <div className="mb-4 p-3 rounded-lg bg-steel/10 border border-steel/20 text-xs text-ink/60 dark:text-paper/60">
-              <p><strong>Tier 1:</strong> Government & academic (highest credibility)</p>
-              <p><strong>Tier 2:</strong> Reputable medical news (verify claims)</p>
-              <p><strong>Tier 3:</strong> Mixed quality (cross-reference with Tier 1)</p>
+              <p><strong className="text-ink dark:text-paper">Tier 1:</strong> Government & academic (highest credibility)</p>
+              <p><strong className="text-ink dark:text-paper">Tier 2:</strong> Reputable medical news (verify claims)</p>
+              <p><strong className="text-ink dark:text-paper">Tier 3:</strong> Mixed quality (cross-reference with Tier 1)</p>
             </div>
 
             {/* Tier 1 */}
@@ -291,20 +363,26 @@ export default function SourcesView() {
                 Tier 1 - Government & Academic
               </h4>
               <div className="space-y-2">
-                {filterSources(TRUSTED_SOURCES.medical.filter(s => s.tier === 1)).map((source) => (
-                  <div key={source.name} className="flex items-center justify-between p-3 rounded-lg bg-forest/10 border border-forest/20">
-                    <div className="flex items-center gap-3">
-                      <CheckCircle size={16} className="text-forest" />
-                      <div>
-                        <span className="font-medium text-sm">{source.name}</span>
-                        <p className="text-xs text-ink/50 dark:text-paper/50">{source.note}</p>
+                {filterSources(TRUSTED_SOURCES.medical.filter(s => s.tier === 1)).map((source) => {
+                  const hidden = isSourceHidden(source.name)
+                  return (
+                    <div key={source.name} className={`flex items-center justify-between p-3 rounded-lg ${hidden ? 'bg-ink/10 dark:bg-paper/10 opacity-50' : 'bg-forest/10'} border border-forest/20`}>
+                      <div className="flex items-center gap-3">
+                        <button onClick={() => toggleSourceVisibility(source.name)} className="text-ink/40 dark:text-paper/40 hover:text-copper">
+                          {hidden ? <EyeOff size={16} /> : <Eye size={16} />}
+                        </button>
+                        {!hidden && <CheckCircle size={16} className="text-forest" />}
+                        <div>
+                          <span className={`font-medium text-sm ${hidden ? 'line-through text-ink/40 dark:text-paper/40' : 'text-ink dark:text-paper'}`}>{source.name}</span>
+                          <p className="text-xs text-ink/50 dark:text-paper/50">{source.note}</p>
+                        </div>
                       </div>
+                      <a href={source.url} target="_blank" rel="noopener noreferrer" className="text-forest hover:text-copper">
+                        <ExternalLink size={16} />
+                      </a>
                     </div>
-                    <a href={source.url} target="_blank" rel="noopener noreferrer" className="text-forest hover:text-copper">
-                      <ExternalLink size={16} />
-                    </a>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             </div>
 
@@ -315,20 +393,26 @@ export default function SourcesView() {
                 Tier 2 - Reputable Medical News
               </h4>
               <div className="space-y-2">
-                {filterSources(TRUSTED_SOURCES.medical.filter(s => s.tier === 2)).map((source) => (
-                  <div key={source.name} className="flex items-center justify-between p-3 rounded-lg bg-steel/10 border border-steel/20">
-                    <div className="flex items-center gap-3">
-                      <Info size={16} className="text-steel" />
-                      <div>
-                        <span className="font-medium text-sm">{source.name}</span>
-                        <p className="text-xs text-ink/50 dark:text-paper/50">{source.note}</p>
+                {filterSources(TRUSTED_SOURCES.medical.filter(s => s.tier === 2)).map((source) => {
+                  const hidden = isSourceHidden(source.name)
+                  return (
+                    <div key={source.name} className={`flex items-center justify-between p-3 rounded-lg ${hidden ? 'bg-ink/10 dark:bg-paper/10 opacity-50' : 'bg-steel/10'} border border-steel/20`}>
+                      <div className="flex items-center gap-3">
+                        <button onClick={() => toggleSourceVisibility(source.name)} className="text-ink/40 dark:text-paper/40 hover:text-copper">
+                          {hidden ? <EyeOff size={16} /> : <Eye size={16} />}
+                        </button>
+                        {!hidden && <Info size={16} className="text-steel" />}
+                        <div>
+                          <span className={`font-medium text-sm ${hidden ? 'line-through text-ink/40 dark:text-paper/40' : 'text-ink dark:text-paper'}`}>{source.name}</span>
+                          <p className="text-xs text-ink/50 dark:text-paper/50">{source.note}</p>
+                        </div>
                       </div>
+                      <a href={source.url} target="_blank" rel="noopener noreferrer" className="text-steel hover:text-copper">
+                        <ExternalLink size={16} />
+                      </a>
                     </div>
-                    <a href={source.url} target="_blank" rel="noopener noreferrer" className="text-steel hover:text-copper">
-                      <ExternalLink size={16} />
-                    </a>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             </div>
 
@@ -339,20 +423,26 @@ export default function SourcesView() {
                 Tier 3 - Mixed Quality
               </h4>
               <div className="space-y-2">
-                {filterSources(TRUSTED_SOURCES.medical.filter(s => s.tier === 3)).map((source) => (
-                  <div key={source.name} className="flex items-center justify-between p-3 rounded-lg bg-copper/10 border border-copper/20">
-                    <div className="flex items-center gap-3">
-                      <AlertTriangle size={16} className="text-copper" />
-                      <div>
-                        <span className="font-medium text-sm">{source.name}</span>
-                        <p className="text-xs text-ink/50 dark:text-paper/50">{source.note}</p>
+                {filterSources(TRUSTED_SOURCES.medical.filter(s => s.tier === 3)).map((source) => {
+                  const hidden = isSourceHidden(source.name)
+                  return (
+                    <div key={source.name} className={`flex items-center justify-between p-3 rounded-lg ${hidden ? 'bg-ink/10 dark:bg-paper/10 opacity-50' : 'bg-copper/10'} border border-copper/20`}>
+                      <div className="flex items-center gap-3">
+                        <button onClick={() => toggleSourceVisibility(source.name)} className="text-ink/40 dark:text-paper/40 hover:text-copper">
+                          {hidden ? <EyeOff size={16} /> : <Eye size={16} />}
+                        </button>
+                        {!hidden && <AlertTriangle size={16} className="text-copper" />}
+                        <div>
+                          <span className={`font-medium text-sm ${hidden ? 'line-through text-ink/40 dark:text-paper/40' : 'text-ink dark:text-paper'}`}>{source.name}</span>
+                          <p className="text-xs text-ink/50 dark:text-paper/50">{source.note}</p>
+                        </div>
                       </div>
+                      <a href={source.url} target="_blank" rel="noopener noreferrer" className="text-copper hover:text-copper">
+                        <ExternalLink size={16} />
+                      </a>
                     </div>
-                    <a href={source.url} target="_blank" rel="noopener noreferrer" className="text-copper hover:text-copper">
-                      <ExternalLink size={16} />
-                    </a>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             </div>
 

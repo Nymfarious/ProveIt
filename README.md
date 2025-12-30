@@ -1,222 +1,195 @@
-# ProveIt v3.2.0 - Founding Documents Expansion
+# ProveIt v3.3.0 - Major Content & UX Update
 
-## 📚 New Documents Added
+## 🔌 COMPLETE STATUS BRIEFING
 
-### 1. Magna Carta (1215)
-- Full historical context
-- Key clauses → American influence mapping
-- Timeline from 1215 to Bill of Rights
-- "Still in force" facts
-- Links to British Library, UK National Archives, LOC
-
-### 2. Mayflower Compact (1620)
-- Complete original text
-- Plain English explanation
-- Significance to self-government
-- Links to Pilgrim Hall Museum, LOC
-
-### 3. Articles of Confederation (1781-1789)
-- 6 key weaknesses explained
-- 3 crises that proved reform necessary (Shays' Rebellion, Trade Wars, Currency)
-- Why it failed → led to Constitutional Convention
-- Links to National Archives
-
-### 4. Federalist Papers Briefing (1787-1788)
-- All 3 authors with essay counts and focus areas
-- 5 key essays summarized (#10, #51, #70, #78, #84)
-- Anti-Federalist response section
-- Links to LOC, Yale Avalon Project, Constitution Center
-
-### 5. Bill of Rights: Three Attempts History
-- **Attempt 1 (1787):** Constitutional Convention - REJECTED
-  - George Mason proposed, defeated 10-0
-  - Why it failed: delegates tired, feared omissions
-- **Attempt 2 (1787-88):** Ratification Debates - PROMISED
-  - Anti-Federalists demanded, Federalists promised
-  - States submitted 200+ proposed amendments
-- **Attempt 3 (1789-91):** First Congress - RATIFIED
-  - Madison introduced 19, House approved 17, Senate reduced to 12, states ratified 10
-  - Drew from Virginia Declaration of Rights
-- The 2 that weren't ratified (one became 27th Amendment 203 years later!)
-
-### 6. All 27 Amendments (unchanged from v3.1.2)
-- Complete text, searchable
-- REPEALED badge on 18th
-
----
-
-## 🔌 SYSTEM STATUS BRIEFING
-
-### ✅ FULLY HOOKED UP & WORKING
-
-| Feature | Status | Storage |
-|---------|--------|---------|
-| Dark/Light Mode | ✅ Working | localStorage |
-| Navigation + Overflow | ✅ Working | - |
-| Rate Limiting (5/day) | ✅ Working | localStorage |
-| Source Category Toggles | ✅ Working | localStorage |
-| Feed History (30 days) | ✅ Working | In-memory |
-| SCOTUS Justice Data | ✅ Static data | - |
-| All 27 Amendments | ✅ Complete text | - |
-| All Founding Documents | ✅ NEW in v3.2.0 | - |
-| Bias Meters | ✅ Working | - |
-| POV Analysis | ✅ Working | - |
-| DevTools Unlock | ✅ Working | localStorage |
-
-### ⚠️ NEEDS API KEYS (Demo mode until configured)
-
-| Feature | API Needed | How to Enable | Current Fallback |
-|---------|------------|---------------|------------------|
-| **Fact-checking AI** | Google Gemini | Add key in DevTools or .env | Shows error message |
-| **Live News Feed** | NewsData.io | Add `VITE_NEWSDATA_KEY` | Returns 3 demo articles |
-| **SCOTUS News** | (none needed) | Static mock data | Shows mock headlines |
-
-### 🔧 HOOKING UP IN v3.2.0
-
-| Feature | What Changed |
-|---------|--------------|
-| Founding Docs Hub | Complete rewrite with 7 document sections |
-| External Links | Every section now has "Comprehensive Resources" |
-| Bill of Rights History | Full 3-attempts narrative |
-| Federalist Briefing | Key essays with summaries |
-
-### 🔜 STILL PENDING (Future Versions)
-
-| Feature | Target | Notes |
+### ✅ FULLY WORKING (No API Needed)
+| Feature | Status | Notes |
 |---------|--------|-------|
-| Research Mode | v3.3.0 | Side-by-side source comparison |
-| Quote Cycling | v3.3.0 | Rotating footer quotes |
-| Magic Link Invites | v3.4.0 | Email-based unlimited access |
-| Real Media AI Detection | v3.5.0 | Needs vision API integration |
-| Score Change Tracking | v3.4.0 | Week-over-week bias trends |
-| Narrative Match Detection | v4.0.0 | Advanced NLP feature |
-| Auto-Snapshots | v4.0.0 | WoW/MoM/QoQ reports |
+| All UI Views | ✅ | 11 navigation views |
+| Dark/Light Mode | ✅ | Saves to localStorage |
+| Navigation Overflow | ✅ | "More" menu for excess icons |
+| Rate Limiting | ✅ | 5/day, localStorage tracked |
+| Source Category Toggles | ✅ | Enable/disable Political, Legal, Medical |
+| Individual Source Hiding | ✅ NEW | Hide ANY source (including CDC, NIH) |
+| SCOTUS Justice Data | ✅ | Static, accurate bias meters |
+| All 27 Amendments | ✅ | Complete text |
+| Founding Documents | ✅ | 8 sections now |
+| Political Party Platforms | ✅ NEW | 5 parties with official links |
+| Project 2025 Info | ✅ NEW | Credible sources only |
+| AI Critical Thinking Questions | ✅ NEW | 5 questions for media analysis |
+| DevTools Unlock | ✅ | Unlimited fact-checks |
 
----
+### ⚠️ NEEDS API KEYS (Currently Mock/Demo Data)
+| Feature | API Needed | How to Add | Current Fallback |
+|---------|------------|------------|------------------|
+| **Fact-checking AI** | Google Gemini | DevTools → Add key, OR `.env` file | Shows error |
+| **Live News Feed** | NewsData.io | `.env` → `VITE_NEWSDATA_KEY` | 3 demo articles |
+| **AI Media Detection** | Gemini Vision | Future integration | Random mock results |
 
-## 📜 What's in the Founding Documents Hub
+### 🔧 API KEY SETUP
 
-```
-Overview ─────────── Timeline from Magna Carta to 27th Amendment
-│
-├── Magna Carta (1215)
-│   ├── Historical context
-│   ├── 4 key clauses → American influence
-│   ├── Timeline (1215-1791)
-│   └── Resources: British Library, UK Archives, LOC
-│
-├── Mayflower Compact (1620)
-│   ├── Full original text
-│   ├── Plain English
-│   ├── 4 significance points
-│   └── Resources: Pilgrim Hall, LOC
-│
-├── Articles of Confederation (1781)
-│   ├── 6 key weaknesses
-│   ├── 3 crises
-│   └── Resources: National Archives
-│
-├── Federalist Papers (1787-88)
-│   ├── 3 authors with focus areas
-│   ├── 5 key essays (#10, 51, 70, 78, 84)
-│   ├── Anti-Federalist response
-│   └── Resources: LOC, Yale Avalon, Constitution Center
-│
-├── Bill of Rights History
-│   ├── Attempt 1: 1787 Convention (REJECTED)
-│   ├── Attempt 2: 1787-88 Ratification (PROMISED)
-│   ├── Attempt 3: 1789-91 Congress (RATIFIED)
-│   ├── The 2 not ratified
-│   └── Resources: Archives, LOC, Constitution Center
-│
-└── All 27 Amendments (1791-1992)
-    ├── Searchable
-    ├── Full text + plain English
-    └── REPEALED badge on 18th
+**Option 1: DevTools (User)**
+1. Navigate to wrench icon (CTRL+ALT+V)
+2. Paste Gemini API key
+3. Saves to localStorage
+
+**Option 2: Environment File (Developer)**
+```bash
+# .env file
+VITE_GEMINI_KEY=your_gemini_api_key_here
+VITE_NEWSDATA_KEY=your_newsdata_key_here
 ```
 
 ---
 
-## 🔗 External Resource Links Added
+## 🆕 What's New in v3.3.0
 
-### Magna Carta
-- https://www.bl.uk/magna-carta (British Library)
-- https://www.nationalarchives.gov.uk/education/resources/magna-carta/
-- https://www.loc.gov/exhibits/magna-carta-muse-and-mentor/
+### 1. Political Party Platforms
+- **5 major parties** with official "what we believe" statements
+- Democratic, Republican, Libertarian, Green, Constitution
+- Links to official platforms on each party's website
 
-### Mayflower Compact
-- https://www.pilgrimhall.org/mayflower_compact.htm
-- https://www.loc.gov/item/90898037/
+### 2. Project 2025 Section
+- Credible sources ONLY:
+  - Heritage Foundation official site
+  - Full PDF document
+  - AP News, Reuters, Ballotpedia explainers
+- No editorializing—just sources for user to evaluate
 
-### Articles of Confederation
-- https://www.archives.gov/milestone-documents/articles-of-confederation
-- https://www.loc.gov/item/90898154/
+### 3. English Bill of Rights (1689)
+- Protestant/Catholic historical context explained
+- Glorious Revolution background
+- Direct influences on American Bill of Rights mapped
 
-### Federalist Papers
-- https://guides.loc.gov/federalist-papers
-- https://avalon.law.yale.edu/subject_menus/fed.asp (Yale Avalon)
-- https://constitutioncenter.org/the-constitution/historic-document-library/detail/the-federalist-papers
+### 4. Emancipation Proclamation (1863)
+- What it DID vs. what it DID NOT do
+- Historical context (why Lincoln waited)
+- Famous quote included
 
-### Bill of Rights
-- https://www.archives.gov/founding-docs/bill-of-rights
-- https://www.loc.gov/exhibits/creating-the-united-states/creating-the-bill-of-rights.html
-- https://constitutioncenter.org/the-constitution/amendments
+### 5. Federalist Papers Expanded (8 → from 5)
+- Added #1 (Introduction), #2 (Foreign Dangers), #39 (Republican Government)
+- **9th Grade Reading Level explanations** for each
+- TL;DR summaries
+- Famous quotes
 
-### Declaration & Constitution
-- https://www.archives.gov/founding-docs/declaration-transcript
-- https://www.archives.gov/founding-docs/constitution-transcript
-- https://constitutioncenter.org/the-constitution
-- https://constitution.congress.gov/
+### 6. AI Critical Thinking Questions
+- 5 questions added to Media Checker results:
+  1. Where did this image originate?
+  2. Who benefits if believed?
+  3. Why is it appearing now?
+  4. Do other sources corroborate?
+  5. Is it physically possible?
 
----
+### 7. Individual Source Hiding
+- Click eye icon to hide ANY source
+- Works on CDC, NIH, any medical source
+- Preferences saved locally
+- "Show all" button to reset
 
-## 🧪 Testing Checklist
+### 8. Softer Medical Disclaimer
+- Changed from "Do not self-diagnose" to gentler wording
+- "Information found here should not be used to self-diagnose"
+- User trust preferences respected
 
-### New Document Sections
-- [ ] Overview → shows timeline from 1215 to 1992
-- [ ] Magna Carta → 4 clauses with American influence
-- [ ] Mayflower → full text + plain English
-- [ ] Articles → 6 weaknesses + 3 crises
-- [ ] Federalist → 3 authors + 5 key essays
-- [ ] Bill of Rights History → 3 attempts with outcomes
-- [ ] All Amendments → searchable, 27 entries
+### 9. Navigation Fixes
+- Trusted Sources (Shield) and Flagged Sources (FolderX) now adjacent
+- "More" menu simplified: icons only, no redundant text
+- All icons have hover tooltips
 
-### External Links
-- [ ] All "Comprehensive Resources" links open in new tab
-- [ ] Links in Overview "Quick Links" section work
-- [ ] Constitution Center, LOC, Archives all accessible
-
-### Existing Features (Regression)
-- [ ] Dark mode toggle works
-- [ ] Nav overflow "More" menu works
-- [ ] Rate limiting counter shows
-- [ ] Source toggles save preferences
-- [ ] SCOTUS bias meters display
+### 10. Dark Mode Fixes
+- Fixed black text on dark backgrounds in:
+  - Media Checker detection list
+  - All dropdown menus
+  - All modal dialogs
 
 ---
 
 ## 📁 Files Changed
 
 ```
-ProveIt-v3.2.0/
-└── src/components/features/
-    └── FoundingDocsView.jsx  ← MAJOR REWRITE (700+ lines)
+v3.3.0/
+├── Navigation.jsx      ← Reordered icons, simplified More menu
+├── MediaCheckerView.jsx ← AI questions, dark mode fixes, softer buttons
+├── SourcesView.jsx     ← Individual hiding, softer disclaimer
+├── FoundingDocsView.jsx ← Political parties, Project 2025, English Bill, 
+│                          Emancipation, 8 Federalist essays
+└── trustedSources.js   ← Updated disclaimer text
 ```
 
-All other files: version bump only (3.1.2 → 3.2.0)
+---
+
+## 🧪 Testing Checklist
+
+### Navigation
+- [ ] Shield (Trusted) and FolderX (Flagged) are adjacent
+- [ ] More menu shows icons only (no text labels)
+- [ ] Wrench tooltip shows "DevTools (CTRL+ALT+V)"
+
+### Media Checker
+- [ ] After analysis, "Critical Thinking Questions" section appears
+- [ ] 5 questions visible with hints
+- [ ] Detection list text is readable in dark mode
+- [ ] Buttons at bottom are subtle (not btn-primary)
+
+### Trusted Sources
+- [ ] Can hide individual sources with eye icon
+- [ ] Hidden sources show strikethrough
+- [ ] "X hidden by your preference" notice appears
+- [ ] Medical disclaimer is softer tone
+- [ ] Can hide CDC, NIH (user choice respected)
+
+### Founding Docs
+- [ ] "Political Parties" tab works
+- [ ] 5 parties shown with beliefs and links
+- [ ] Project 2025 section has 5 credible sources
+- [ ] English Bill of Rights shows Protestant context
+- [ ] Emancipation Proclamation shows DID vs DID NOT
+- [ ] Federalist Papers shows 8 essays
+- [ ] Each essay has 9th grade explanation
+
+### Dark Mode
+- [ ] No black text on dark backgrounds anywhere
+- [ ] All modals readable
+- [ ] All dropdowns readable
 
 ---
 
-## 🎯 What Else Is Relevant?
+## 📜 Political Parties Included
 
-Documents we could add in future versions:
-- **Virginia Declaration of Rights (1776)** - Mason's template for Bill of Rights
-- **Northwest Ordinance (1787)** - Banned slavery in new territories
-- **English Bill of Rights (1689)** - Direct Magna Carta → US influence link
-- **Declaration of the Rights of Man (1789)** - French parallel, Lafayette + Jefferson
-- **Emancipation Proclamation (1863)** - Led to 13th Amendment
-- **Civil Rights Act (1964)** - 14th Amendment enforcement
+| Party | Color | Platform Link |
+|-------|-------|---------------|
+| Democratic | Blue | democrats.org/where-we-stand |
+| Republican | Red | gop.com/platform |
+| Libertarian | Gold | lp.org/platform |
+| Green | Green | gp.org/platform |
+| Constitution | Purple | constitutionparty.com/our-principles |
 
 ---
 
-*ProveIt v3.2.0 - "Veritas Lux" • Truth is Light*
+## 📚 Federalist Papers - 8 Key Essays
+
+| # | Author | Topic | Famous Quote |
+|---|--------|-------|--------------|
+| 1 | Hamilton | Introduction | "societies capable of good government from reflection and choice" |
+| 2 | Jay | Foreign Dangers | "Providence has given this one connected country" |
+| 10 | Madison | Factions | "causes of faction are sown in the nature of man" |
+| 39 | Madison | Republican Gov | "derives all its powers from the people" |
+| 51 | Madison | Separation | "If men were angels, no government necessary" |
+| 70 | Hamilton | Executive | "Energy in the Executive" |
+| 78 | Hamilton | Judiciary | "neither FORCE nor WILL, but merely judgment" |
+| 84 | Hamilton | No Bill of Rights | "Why declare things shall not be done" |
+
+---
+
+## 🔜 Still Pending
+
+| Feature | Target | Notes |
+|---------|--------|-------|
+| Research Mode | v3.4.0 | Side-by-side comparison |
+| Quote Cycling | v3.4.0 | Rotating footer quotes |
+| Vision API Integration | v3.5.0 | Real AI media detection |
+| Score Tracking | v3.4.0 | Week-over-week trends |
+
+---
+
+*ProveIt v3.3.0 - "Veritas Lux" • Truth is Light*

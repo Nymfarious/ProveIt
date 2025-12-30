@@ -1,106 +1,92 @@
 import { useState } from 'react'
-import { BookOpen, ExternalLink, ChevronDown, ChevronUp, FileText, Scale, Users, Info, Scroll, AlertTriangle, Search, History, Globe, Feather, Shield, Link } from 'lucide-react'
+import { BookOpen, ExternalLink, ChevronDown, ChevronUp, FileText, Scale, Users, Info, Scroll, AlertTriangle, Search, History, Globe, Feather, Shield, Flag, Vote } from 'lucide-react'
 
-// BILL OF RIGHTS - THE THREE ATTEMPTS HISTORY
-const BILL_OF_RIGHTS_HISTORY = {
-  title: 'The Bill of Rights: Three Attempts',
-  summary: 'The Bill of Rights wasn\'t part of the original Constitution. It took three attempts and fierce debate between Federalists and Anti-Federalists before the first 10 amendments were ratified.',
-  attempts: [
+// POLITICAL PARTIES - Mission Statements/Platforms
+const POLITICAL_PARTIES = {
+  title: 'Major Political Parties',
+  description: 'Official platforms and "what we believe" statements from major U.S. political parties.',
+  parties: [
     {
-      attempt: 1,
-      year: '1787',
-      title: 'Constitutional Convention - Rejected',
-      description: 'George Mason of Virginia proposed adding a bill of rights to the Constitution at the end of the Convention. The motion was defeated 10-0 by state delegations who felt it was unnecessary since the federal government only had enumerated (listed) powers.',
-      outcome: 'REJECTED',
-      keyFigures: ['George Mason (proposed)', 'Roger Sherman (opposed)'],
-      whyFailed: 'Delegates were tired after months of debate, and many believed listing rights was dangerous—what if they forgot one?',
-    },
-    {
-      attempt: 2,
-      year: '1787-1788',
-      title: 'Ratification Debates - Promised',
-      description: 'During state ratification, Anti-Federalists (Patrick Henry, George Mason) demanded a bill of rights. Federalists (Madison, Hamilton) argued it was unnecessary but eventually promised to add one if states ratified the Constitution.',
-      outcome: 'CONDITIONAL ACCEPTANCE',
-      keyFigures: ['Patrick Henry (demanded)', 'James Madison (promised)', 'Alexander Hamilton'],
-      keyDifference: 'Several states ratified only after receiving assurances that a bill of rights would be added. Massachusetts, Virginia, and New York submitted over 200 proposed amendments.',
+      name: 'Democratic Party',
+      color: 'blue',
+      beliefs: [
+        'Healthcare should be accessible and affordable for all Americans',
+        'Strong support for workers\' rights and unions',
+        'Climate change is an urgent threat requiring government action',
+        'Support for civil rights, voting rights, and social equality',
+        'Government programs can help reduce poverty and inequality',
+      ],
+      platformUrl: 'https://democrats.org/where-we-stand/',
+      officialUrl: 'https://democrats.org',
     },
     {
-      attempt: 3,
-      year: '1789-1791',
-      title: 'First Congress - RATIFIED',
-      description: 'James Madison, honoring his promise, introduced 19 amendments to Congress. The House approved 17, the Senate reduced them to 12, and the states ratified 10 of those—becoming the Bill of Rights on December 15, 1791.',
-      outcome: 'RATIFIED',
-      keyFigures: ['James Madison (primary author)', 'Roger Sherman', 'Fisher Ames'],
-      whatChanged: 'Madison drew from Virginia\'s Declaration of Rights (written by George Mason), state ratification proposals, and Enlightenment philosophy. The final version focused on individual liberties rather than structural changes.',
+      name: 'Republican Party',
+      color: 'red',
+      beliefs: [
+        'Lower taxes and limited government promote economic growth',
+        'Strong national defense and border security',
+        'Second Amendment rights should be protected',
+        'Free market solutions over government programs',
+        'Traditional values and religious liberty',
+      ],
+      platformUrl: 'https://www.gop.com/platform/',
+      officialUrl: 'https://www.gop.com',
+    },
+    {
+      name: 'Libertarian Party',
+      color: 'gold',
+      beliefs: [
+        'Maximum individual liberty in both personal and economic matters',
+        'Minimal government intervention in daily life',
+        'Free markets without subsidies or bailouts',
+        'Non-interventionist foreign policy',
+        'Civil liberties protection across the board',
+      ],
+      platformUrl: 'https://www.lp.org/platform/',
+      officialUrl: 'https://www.lp.org',
+    },
+    {
+      name: 'Green Party',
+      color: 'green',
+      beliefs: [
+        'Ecological wisdom and environmental sustainability',
+        'Social justice and equal opportunity',
+        'Grassroots democracy and decentralization',
+        'Non-violence and peace',
+        'Community-based economics',
+      ],
+      platformUrl: 'https://www.gp.org/platform',
+      officialUrl: 'https://www.gp.org',
+    },
+    {
+      name: 'Constitution Party',
+      color: 'purple',
+      beliefs: [
+        'Strict interpretation of the Constitution',
+        'States\' rights and limited federal power',
+        'Pro-life policies',
+        'Abolition of the Federal Reserve',
+        'Non-interventionist foreign policy',
+      ],
+      platformUrl: 'https://www.constitutionparty.com/our-principles/',
+      officialUrl: 'https://www.constitutionparty.com',
     },
   ],
-  twoNotRatified: [
-    { 
-      title: 'Congressional Apportionment', 
-      text: 'Would have required one representative per 50,000 people (never ratified)',
-      note: 'Would make the House impossibly large today (~6,600 members)'
-    },
-    { 
-      title: 'Congressional Compensation', 
-      text: 'Pay changes can\'t take effect until after an election',
-      note: 'Finally ratified in 1992 as the 27th Amendment—203 years later!'
-    },
-  ],
-  resources: [
-    { name: 'National Archives - Bill of Rights', url: 'https://www.archives.gov/founding-docs/bill-of-rights' },
-    { name: 'Library of Congress - Creating the Bill of Rights', url: 'https://www.loc.gov/exhibits/creating-the-united-states/creating-the-bill-of-rights.html' },
-    { name: 'Constitution Center - Bill of Rights', url: 'https://constitutioncenter.org/the-constitution/amendments' },
-  ],
+  project2025: {
+    title: 'About Project 2025',
+    description: 'A policy blueprint published by the Heritage Foundation for a potential conservative administration.',
+    credibleSources: [
+      { name: 'Project 2025 Official Site (Heritage Foundation)', url: 'https://www.project2025.org' },
+      { name: 'Read the Full Document (PDF)', url: 'https://www.project2025.org/playbook/' },
+      { name: 'AP News Explainer', url: 'https://apnews.com/article/project-2025-trump-heritage-foundation' },
+      { name: 'Reuters Fact Check', url: 'https://www.reuters.com/world/us/what-is-project-2025/' },
+      { name: 'Ballotpedia Overview', url: 'https://ballotpedia.org/Project_2025' },
+    ],
+    note: 'ProveIt recommends reading primary sources and cross-referencing with nonpartisan fact-checkers.',
+  },
 }
 
-// MAGNA CARTA
-const MAGNA_CARTA = {
-  title: 'Magna Carta (1215)',
-  year: '1215',
-  origin: 'England',
-  fullTitle: 'Magna Carta Libertatum (Great Charter of Freedoms)',
-  summary: 'A peace treaty between King John and rebellious English barons that became the foundation of constitutional law. Many of its principles directly influenced the U.S. Constitution and Bill of Rights.',
-  historicalContext: 'King John\'s heavy taxation, military failures, and conflicts with the Pope led English barons to rebel. They captured London and forced the King to negotiate at Runnymede.',
-  keyPrinciples: [
-    {
-      clause: 'Clause 39',
-      original: 'No free man shall be seized, imprisoned, dispossessed, outlawed, exiled, or ruined in any way... except by the lawful judgment of his peers or by the law of the land.',
-      influence: '5th Amendment (due process), 6th Amendment (trial by jury)',
-    },
-    {
-      clause: 'Clause 40',
-      original: 'To no one will we sell, to no one will we refuse or delay, right or justice.',
-      influence: '6th Amendment (speedy trial), Equal Protection',
-    },
-    {
-      clause: 'Clause 12',
-      original: 'No taxation without the common consent of the realm.',
-      influence: 'No taxation without representation (Revolutionary rallying cry)',
-    },
-    {
-      clause: 'Clause 20',
-      original: 'A free man shall be amerced [fined] for a small offence only according to the degree of the offence.',
-      influence: '8th Amendment (no excessive fines)',
-    },
-  ],
-  timeline: [
-    { year: 1215, event: 'Original Magna Carta signed at Runnymede (annulled within weeks by Pope)' },
-    { year: 1216, event: 'Reissued after King John\'s death' },
-    { year: 1217, event: 'Reissued again with revisions' },
-    { year: 1225, event: 'Final "definitive" version issued by Henry III' },
-    { year: 1297, event: 'Confirmed by Edward I and entered into statute law' },
-    { year: 1776, event: 'Founders cite Magna Carta principles in Declaration' },
-    { year: 1791, event: 'Bill of Rights incorporates Magna Carta concepts' },
-  ],
-  stillInForce: 'Three clauses remain in English law today: freedom of the English Church, the "ancient liberties" of London, and the right to due process.',
-  resources: [
-    { name: 'British Library - Magna Carta', url: 'https://www.bl.uk/magna-carta' },
-    { name: 'National Archives (UK)', url: 'https://www.nationalarchives.gov.uk/education/resources/magna-carta/' },
-    { name: 'Library of Congress - Magna Carta Legacy', url: 'https://www.loc.gov/exhibits/magna-carta-muse-and-mentor/' },
-  ],
-}
-
-// FEDERALIST PAPERS
+// FEDERALIST PAPERS - Expanded to 8 with 9th grade explanations
 const FEDERALIST_PAPERS = {
   title: 'The Federalist Papers',
   years: '1787-1788',
@@ -112,15 +98,74 @@ const FEDERALIST_PAPERS = {
   ],
   summary: 'A series of 85 essays written to persuade New York to ratify the Constitution. Published under the pseudonym "Publius," they remain the most authoritative explanation of the Constitution\'s meaning and intent.',
   keyEssays: [
-    { number: 10, author: 'Madison', title: 'Factions', summary: 'A large republic can control the dangers of factions (interest groups) better than a small one. Diversity of interests prevents any one group from dominating.' },
-    { number: 51, author: 'Madison', title: 'Separation of Powers', summary: '"Ambition must be made to counteract ambition." Each branch must have means to check the others. "If men were angels, no government would be necessary."' },
-    { number: 70, author: 'Hamilton', title: 'Executive Energy', summary: 'A single executive (President) is necessary for "energy" in government—decisiveness, secrecy, and accountability.' },
-    { number: 78, author: 'Hamilton', title: 'Judicial Review', summary: 'The judiciary is the "least dangerous branch" but must have power to declare laws unconstitutional. Basis for Marbury v. Madison (1803).' },
-    { number: 84, author: 'Hamilton', title: 'Against Bill of Rights', summary: 'Argued a bill of rights was unnecessary and potentially dangerous—listing some rights might imply others don\'t exist. (Later addressed by 9th Amendment)' },
+    {
+      number: 1,
+      author: 'Hamilton',
+      title: 'Introduction',
+      tldr: 'The stakes couldn\'t be higher—we\'re deciding whether good government can come from choice, not accident or force.',
+      ninthGrade: 'Hamilton says this is a huge moment in history. Can people actually choose their own government that works well? Or do governments only happen by luck or by someone forcing them on people? America is the experiment to find out. If we mess this up, it might prove that humans can\'t govern themselves.',
+      famousQuote: '"It has been frequently remarked that it seems to have been reserved to the people of this country... to decide the important question, whether societies of men are really capable or not of establishing good government from reflection and choice."',
+    },
+    {
+      number: 2,
+      author: 'Jay',
+      title: 'Dangers from Foreign Force',
+      tldr: 'We\'re safer together. Thirteen separate countries would invite foreign powers to pick us apart.',
+      ninthGrade: 'John Jay says imagine if we broke into 13 separate little countries. Britain, France, and Spain would love that—they could play us against each other. But united, we\'re too big and strong. It\'s like how a family is safer together than if each kid lived alone.',
+      famousQuote: '"Providence has been pleased to give this one connected country to one united people."',
+    },
+    {
+      number: 10,
+      author: 'Madison',
+      title: 'Factions',
+      tldr: 'A big republic is actually better at controlling selfish groups than a small one.',
+      ninthGrade: 'Madison knows people form groups (factions) to push their own interests, sometimes unfairly. You can\'t stop people from having different opinions—that would be like removing air to prevent fire. But in a BIG country with MANY groups, no single group can bully everyone else. They have to compromise. It\'s safer than a small town where one clique can take over.',
+      famousQuote: '"The latent causes of faction are thus sown in the nature of man."',
+    },
+    {
+      number: 39,
+      author: 'Madison',
+      title: 'Republican Government',
+      tldr: 'Yes, the new Constitution is actually republican (power from the people), not some sneaky monarchy.',
+      ninthGrade: 'Some people worried the Constitution would create a king in disguise. Madison explains: everything in this government comes from the people. Representatives are elected, not born into power. Power is limited and checked. This is definitely a republic—government by elected representatives, not a dictatorship.',
+      famousQuote: '"We may define a republic to be... a government which derives all its powers directly or indirectly from the great body of the people."',
+    },
+    {
+      number: 51,
+      author: 'Madison',
+      title: 'Separation of Powers',
+      tldr: 'Don\'t trust anyone with too much power. Make the branches check each other.',
+      ninthGrade: 'This is maybe the most famous Federalist paper. Madison says: if people were perfect angels, we wouldn\'t need government. But we\'re not. So we set up government where each part (Congress, President, Courts) can stop the others from going too far. It\'s like rock-paper-scissors—nobody always wins. "Ambition must be made to counteract ambition."',
+      famousQuote: '"If men were angels, no government would be necessary."',
+    },
+    {
+      number: 70,
+      author: 'Hamilton',
+      title: 'Executive Energy',
+      tldr: 'One President, not a committee. Decisive leadership requires a single person in charge.',
+      ninthGrade: 'Some wanted multiple presidents or a council. Hamilton says no way—that leads to endless arguing while nothing gets done. In emergencies, you need ONE person who can act fast and be held responsible. If things go wrong, we know exactly who to blame. With a committee, they\'d just point fingers at each other.',
+      famousQuote: '"Energy in the Executive is a leading character in the definition of good government."',
+    },
+    {
+      number: 78,
+      author: 'Hamilton',
+      title: 'Judicial Review',
+      tldr: 'Courts are the weakest branch, but they MUST be able to strike down unconstitutional laws.',
+      ninthGrade: 'Hamilton calls the judiciary the "least dangerous branch" because it has no army (like the President) or money control (like Congress). But it has one superpower: it can say "this law violates the Constitution, so it\'s invalid." This protects your rights even if Congress passes a bad law. This idea became the basis for Marbury v. Madison (1803).',
+      famousQuote: '"The judiciary... has no influence over either the sword or the purse... it may truly be said to have neither FORCE nor WILL, but merely judgment."',
+    },
+    {
+      number: 84,
+      author: 'Hamilton',
+      title: 'Against a Bill of Rights',
+      tldr: 'A bill of rights might actually be dangerous—what if we forget to list a right?',
+      ninthGrade: 'This one\'s controversial! Hamilton argued AGAINST adding a Bill of Rights. His logic: if we list specific rights, it might imply those are the ONLY rights we have. What if we forget one? Also, why list things the government can\'t do when we never gave it that power anyway? The 9th Amendment later addressed this concern: "just because we didn\'t list a right doesn\'t mean you don\'t have it."',
+      famousQuote: '"Why declare that things shall not be done which there is no power to do?"',
+    },
   ],
   antifederalistResponse: {
     title: 'Anti-Federalist Papers',
-    description: 'Responses by "Brutus," "Cato," "Federal Farmer" and others arguing for states\' rights and a bill of rights. Their concerns led to the Bill of Rights.',
+    description: 'Responses by "Brutus," "Cato," "Federal Farmer" and others arguing for states\' rights and a bill of rights.',
     keyArguments: [
       'Federal government too powerful',
       'No bill of rights to protect individuals',
@@ -130,126 +175,139 @@ const FEDERALIST_PAPERS = {
   },
   resources: [
     { name: 'Library of Congress - Federalist Papers', url: 'https://guides.loc.gov/federalist-papers' },
-    { name: 'Yale Law - Avalon Project', url: 'https://avalon.law.yale.edu/subject_menus/fed.asp' },
-    { name: 'Constitution Center - Federalist Papers', url: 'https://constitutioncenter.org/the-constitution/historic-document-library/detail/the-federalist-papers' },
+    { name: 'Yale Law - Avalon Project (Full Text)', url: 'https://avalon.law.yale.edu/subject_menus/fed.asp' },
+    { name: 'Constitution Center', url: 'https://constitutioncenter.org/the-constitution/historic-document-library/detail/the-federalist-papers' },
   ],
 }
 
-// ARTICLES OF CONFEDERATION
-const ARTICLES_OF_CONFEDERATION = {
-  title: 'Articles of Confederation',
-  years: '1781-1789',
-  summary: 'America\'s first constitution. Created a "firm league of friendship" between states but gave Congress almost no power. Its failures led directly to the Constitutional Convention.',
-  keyWeaknesses: [
-    { issue: 'No executive branch', consequence: 'No one to enforce laws or conduct foreign policy consistently' },
-    { issue: 'No power to tax', consequence: 'Congress had to request money from states (who often refused)' },
-    { issue: 'No power to regulate commerce', consequence: 'States imposed tariffs on each other, economic chaos' },
-    { issue: 'Unanimous consent for amendments', consequence: 'Impossible to fix problems (all 13 states had to agree)' },
-    { issue: 'One vote per state', consequence: 'Rhode Island had same power as Virginia' },
-    { issue: 'No national judiciary', consequence: 'No way to resolve interstate disputes' },
-  ],
-  crises: [
-    { name: 'Shays\' Rebellion (1786-87)', description: 'Farmers in Massachusetts rebelled over debt. Congress couldn\'t raise an army to respond. This crisis convinced many that a stronger government was needed.' },
-    { name: 'Trade Wars', description: 'States taxed each other\'s goods. New York taxed New Jersey vegetables, New Jersey taxed New York firewood.' },
-    { name: 'Worthless Currency', description: 'Each state printed its own money. Continental dollars became so worthless it spawned the phrase "not worth a Continental."' },
+// ENGLISH BILL OF RIGHTS (1689)
+const ENGLISH_BILL_OF_RIGHTS = {
+  title: 'English Bill of Rights',
+  year: '1689',
+  fullTitle: 'An Act Declaring the Rights and Liberties of the Subject and Settling the Succession of the Crown',
+  religiousContext: {
+    background: 'Protestant document following the Glorious Revolution',
+    explanation: 'When Catholic King James II tried to promote Catholicism and rule without Parliament, English nobles invited Protestant William of Orange (from the Netherlands) and his wife Mary (James\'s daughter) to take the throne. This "Glorious Revolution" was bloodless in England. Parliament then wrote this Bill of Rights to limit royal power forever.',
+    keyCatholicProtestantIssue: 'The Bill specifically banned Catholics from the throne and required monarchs to be Protestant. This reflected centuries of religious conflict in England.',
+  },
+  summary: 'A foundational document that limited the power of the English monarchy and established Parliament\'s supremacy. Many of its principles were adopted almost word-for-word in the U.S. Bill of Rights.',
+  keyProvisions: [
+    { provision: 'No royal interference with law', americanInfluence: 'Separation of powers' },
+    { provision: 'No taxation without Parliament\'s consent', americanInfluence: '"No taxation without representation"' },
+    { provision: 'Freedom to petition the monarch', americanInfluence: '1st Amendment right to petition' },
+    { provision: 'No standing army in peacetime without consent', americanInfluence: '3rd Amendment, distrust of standing armies' },
+    { provision: 'Right to bear arms for Protestants', americanInfluence: '2nd Amendment (broadened to all citizens)' },
+    { provision: 'Free elections and free speech in Parliament', americanInfluence: '1st Amendment, Congressional immunity' },
+    { provision: 'No excessive bail or cruel punishment', americanInfluence: '8th Amendment (nearly identical wording)' },
+    { provision: 'Right to jury trial', americanInfluence: '6th and 7th Amendments' },
   ],
   resources: [
-    { name: 'National Archives - Articles of Confederation', url: 'https://www.archives.gov/milestone-documents/articles-of-confederation' },
-    { name: 'Library of Congress', url: 'https://www.loc.gov/item/90898154/' },
+    { name: 'UK Parliament - Bill of Rights 1689', url: 'https://www.parliament.uk/about/living-heritage/evolutionofparliament/parliamentaryauthority/revolution/collections1/collections-glorious-revolution/billofrights/' },
+    { name: 'Yale Avalon Project - Full Text', url: 'https://avalon.law.yale.edu/17th_century/england.asp' },
+    { name: 'British Library', url: 'https://www.bl.uk/collection-items/the-bill-of-rights' },
   ],
 }
 
-// MAYFLOWER COMPACT
-const MAYFLOWER_COMPACT = {
-  title: 'Mayflower Compact',
-  year: '1620',
-  summary: 'The first governing document of Plymouth Colony, signed by 41 male passengers on the Mayflower. Established the principle of self-government and majority rule in America.',
-  significance: [
-    'First written framework for self-government in the New World',
-    'Established consent of the governed as basis for authority',
-    'Created precedent for written constitutions',
-    'Influenced later colonial charters and eventually the Constitution',
+// EMANCIPATION PROCLAMATION
+const EMANCIPATION_PROCLAMATION = {
+  title: 'Emancipation Proclamation',
+  year: '1863',
+  issuedBy: 'President Abraham Lincoln',
+  summary: 'Executive order that declared slaves in Confederate states "forever free." A crucial step toward the 13th Amendment\'s total abolition of slavery.',
+  whatItDid: [
+    'Declared slaves in rebelling states to be free',
+    'Allowed Black men to serve in the Union Army and Navy',
+    'Changed the war\'s purpose from "preserve the Union" to "end slavery"',
+    'Did NOT free slaves in border states loyal to the Union (strategic decision)',
   ],
-  fullText: 'In the name of God, Amen. We whose names are underwritten, the loyal subjects of our dread Sovereign Lord King James... Having undertaken, for the Glory of God and advancement of the Christian Faith and Honour of our King and Country, a Voyage to plant the First Colony in the Northern Parts of Virginia, do by these presents solemnly and mutually in the presence of God and one of another, Covenant and Combine ourselves together in a Civil Body Politic, for our better ordering and preservation... and by virtue hereof to enact, constitute and frame such just and equal Laws, Ordinances, Acts, Constitutions and Offices from time to time, as shall be thought most meet and convenient for the general good of the Colony, unto which we promise all due submission and obedience.',
-  laymans: 'We\'re agreeing to form our own government and make fair laws for everyone. We\'ll all follow these laws. This was revolutionary—ordinary people deciding to govern themselves by mutual agreement.',
+  whatItDidNot: [
+    'Did not immediately free any slaves (only applied to Confederate territory Lincoln didn\'t control)',
+    'Did not abolish slavery everywhere (that required the 13th Amendment in 1865)',
+    'Did not grant citizenship or voting rights (that came with 14th and 15th Amendments)',
+  ],
+  famousQuote: '"All persons held as slaves within any State or designated part of a State, the people whereof shall then be in rebellion against the United States, shall be then, thenceforward, and forever free."',
+  historicalContext: 'Lincoln waited until the Union won a battle (Antietam) so it wouldn\'t look like a desperate move. It kept Britain and France from supporting the Confederacy—they couldn\'t back a slave nation after this.',
   resources: [
-    { name: 'Pilgrim Hall Museum', url: 'https://www.pilgrimhall.org/mayflower_compact.htm' },
-    { name: 'Library of Congress', url: 'https://www.loc.gov/item/90898037/' },
+    { name: 'National Archives (Full Text + Image)', url: 'https://www.archives.gov/exhibits/featured-documents/emancipation-proclamation' },
+    { name: 'Library of Congress', url: 'https://www.loc.gov/item/scsm000512/' },
   ],
 }
 
-// ALL 27 AMENDMENTS (keeping from v3.1.2)
+// BILL OF RIGHTS HISTORY
+const BILL_OF_RIGHTS_HISTORY = {
+  title: 'The Bill of Rights: Three Attempts',
+  summary: 'The Bill of Rights wasn\'t part of the original Constitution. It took three attempts and fierce debate.',
+  attempts: [
+    { attempt: 1, year: '1787', title: 'Constitutional Convention - Rejected', description: 'George Mason proposed adding a bill of rights. Defeated 10-0.', outcome: 'REJECTED', whyFailed: 'Delegates were tired; feared listing rights might imply unlisted rights don\'t exist.' },
+    { attempt: 2, year: '1787-1788', title: 'Ratification Debates - Promised', description: 'Anti-Federalists demanded it. Federalists promised to add one if Constitution ratified.', outcome: 'CONDITIONAL', keyDifference: 'States submitted 200+ proposed amendments.' },
+    { attempt: 3, year: '1789-1791', title: 'First Congress - RATIFIED', description: 'Madison introduced 19 amendments. House: 17. Senate: 12. States ratified: 10.', outcome: 'RATIFIED', whatChanged: 'Drew from Virginia Declaration of Rights, state proposals, Enlightenment philosophy.' },
+  ],
+  resources: [
+    { name: 'National Archives', url: 'https://www.archives.gov/founding-docs/bill-of-rights' },
+    { name: 'Library of Congress', url: 'https://www.loc.gov/exhibits/creating-the-united-states/creating-the-bill-of-rights.html' },
+  ],
+}
+
+// MAGNA CARTA
+const MAGNA_CARTA = {
+  title: 'Magna Carta (1215)',
+  summary: 'Peace treaty between King John and rebellious barons that became the foundation of constitutional law.',
+  keyPrinciples: [
+    { clause: 'Clause 39', original: 'No free man shall be seized or imprisoned... except by lawful judgment of his peers or by the law of the land.', influence: '5th Amendment (due process), 6th Amendment (jury trial)' },
+    { clause: 'Clause 40', original: 'To no one will we sell, refuse, or delay right or justice.', influence: '6th Amendment (speedy trial)' },
+    { clause: 'Clause 12', original: 'No taxation without common consent of the realm.', influence: 'No taxation without representation' },
+  ],
+  resources: [
+    { name: 'British Library', url: 'https://www.bl.uk/magna-carta' },
+    { name: 'National Archives (UK)', url: 'https://www.nationalarchives.gov.uk/education/resources/magna-carta/' },
+  ],
+}
+
+// ALL 27 AMENDMENTS (abbreviated for space)
 const ALL_AMENDMENTS = [
-  { number: 1, year: 1791, title: 'Freedom of Religion, Speech, Press, Assembly, Petition', status: 'active', fullText: 'Congress shall make no law respecting an establishment of religion, or prohibiting the free exercise thereof; or abridging the freedom of speech, or of the press; or the right of the people peaceably to assemble, and to petition the Government for a redress of grievances.', laymans: 'The government cannot: establish an official religion, stop you from practicing your religion, limit your free speech, restrict the press, prevent peaceful protests, or stop you from asking the government to fix problems.' },
-  { number: 2, year: 1791, title: 'Right to Bear Arms', status: 'active', fullText: 'A well regulated Militia, being necessary to the security of a free State, the right of the people to keep and bear Arms, shall not be infringed.', laymans: 'Because a trained citizen military is important for a free country\'s security, people have the right to own and carry weapons. This is one of the most debated amendments.' },
-  { number: 3, year: 1791, title: 'Quartering of Soldiers', status: 'active', fullText: 'No Soldier shall, in time of peace be quartered in any house, without the consent of the Owner, nor in time of war, but in a manner to be prescribed by law.', laymans: 'The government can\'t force you to let soldiers live in your home during peacetime.' },
-  { number: 4, year: 1791, title: 'Search and Seizure', status: 'active', fullText: 'The right of the people to be secure in their persons, houses, papers, and effects, against unreasonable searches and seizures, shall not be violated, and no Warrants shall issue, but upon probable cause, supported by Oath or affirmation, and particularly describing the place to be searched, and the persons or things to be seized.', laymans: 'Police need a warrant with probable cause to search your home or belongings.' },
-  { number: 5, year: 1791, title: 'Grand Jury, Double Jeopardy, Self-Incrimination, Due Process', status: 'active', fullText: 'No person shall be held to answer for a capital, or otherwise infamous crime, unless on a presentment or indictment of a Grand Jury, except in cases arising in the land or naval forces, or in the Militia, when in actual service in time of War or public danger; nor shall any person be subject for the same offence to be twice put in jeopardy of life or limb; nor shall be compelled in any criminal case to be a witness against himself, nor be deprived of life, liberty, or property, without due process of law; nor shall private property be taken for public use, without just compensation.', laymans: 'Grand jury for serious crimes. No double jeopardy. Right to remain silent. Due process required. Fair payment if government takes your property.' },
-  { number: 6, year: 1791, title: 'Right to Speedy Trial, Witnesses, Counsel', status: 'active', fullText: 'In all criminal prosecutions, the accused shall enjoy the right to a speedy and public trial, by an impartial jury of the State and district wherein the crime shall have been committed...', laymans: 'Fast public trial, impartial jury, right to a lawyer, right to face your accusers.' },
-  { number: 7, year: 1791, title: 'Civil Trial by Jury', status: 'active', fullText: 'In Suits at common law, where the value in controversy shall exceed twenty dollars, the right of trial by jury shall be preserved...', laymans: 'Jury trial right in civil cases over $20.' },
-  { number: 8, year: 1791, title: 'Excessive Bail, Cruel and Unusual Punishment', status: 'active', fullText: 'Excessive bail shall not be required, nor excessive fines imposed, nor cruel and unusual punishments inflicted.', laymans: 'No extreme bail or fines. No cruel or unusual punishment.' },
-  { number: 9, year: 1791, title: 'Rights Retained by the People', status: 'active', fullText: 'The enumeration in the Constitution, of certain rights, shall not be construed to deny or disparage others retained by the people.', laymans: 'Just because a right isn\'t listed doesn\'t mean you don\'t have it.' },
-  { number: 10, year: 1791, title: 'Powers Reserved to States', status: 'active', fullText: 'The powers not delegated to the United States by the Constitution, nor prohibited by it to the States, are reserved to the States respectively, or to the people.', laymans: 'Powers not given to federal government belong to states or people.' },
-  { number: 11, year: 1795, title: 'Suits Against States', status: 'active', fullText: 'The Judicial power of the United States shall not be construed to extend to any suit in law or equity, commenced or prosecuted against one of the United States by Citizens of another State, or by Citizens or Subjects of any Foreign State.', laymans: 'You can\'t sue a state in federal court if you\'re from another state.' },
-  { number: 12, year: 1804, title: 'Election of President and Vice President', status: 'active', fullText: 'The Electors shall meet in their respective states and vote by ballot for President and Vice-President, one of whom, at least, shall not be an inhabitant of the same state with themselves...', laymans: 'Electors vote separately for President and VP (fixing a flaw where the runner-up became VP).' },
-  { number: 13, year: 1865, title: 'Abolition of Slavery', status: 'active', fullText: 'Section 1. Neither slavery nor involuntary servitude, except as a punishment for crime whereof the party shall have been duly convicted, shall exist within the United States, or any place subject to their jurisdiction.', laymans: 'Slavery abolished. Only exception: prison labor for convicted criminals.' },
-  { number: 14, year: 1868, title: 'Citizenship, Due Process, Equal Protection', status: 'active', fullText: 'Section 1. All persons born or naturalized in the United States, and subject to the jurisdiction thereof, are citizens of the United States and of the State wherein they reside...', laymans: 'Born here = citizen. States must provide equal protection and due process to everyone.' },
-  { number: 15, year: 1870, title: 'Voting Rights (Race)', status: 'active', fullText: 'Section 1. The right of citizens of the United States to vote shall not be denied or abridged by the United States or by any State on account of race, color, or previous condition of servitude.', laymans: 'Can\'t deny voting based on race, color, or former slavery.' },
-  { number: 16, year: 1913, title: 'Income Tax', status: 'active', fullText: 'The Congress shall have power to lay and collect taxes on incomes, from whatever source derived, without apportionment among the several States, and without regard to any census or enumeration.', laymans: 'Congress can collect income tax directly.' },
-  { number: 17, year: 1913, title: 'Direct Election of Senators', status: 'active', fullText: 'The Senate of the United States shall be composed of two Senators from each State, elected by the people thereof, for six years...', laymans: 'Senators elected by the people, not state legislatures.' },
-  { number: 18, year: 1919, title: 'Prohibition of Alcohol', status: 'REPEALED', fullText: 'Section 1. After one year from the ratification of this article the manufacture, sale, or transportation of intoxicating liquors within, the importation thereof into, or the exportation thereof from the United States and all territory subject to the jurisdiction thereof for beverage purposes is hereby prohibited.', laymans: '⚠️ REPEALED: Banned alcohol. Repealed by 21st Amendment in 1933 after Prohibition failed.' },
-  { number: 19, year: 1920, title: 'Women\'s Suffrage', status: 'active', fullText: 'The right of citizens of the United States to vote shall not be denied or abridged by the United States or by any State on account of sex.', laymans: 'Women have the right to vote.' },
-  { number: 20, year: 1933, title: 'Presidential Terms and Succession', status: 'active', fullText: 'Section 1. The terms of the President and the Vice President shall end at noon on the 20th day of January...', laymans: 'President\'s term ends January 20th at noon (shortened "lame duck" period).' },
-  { number: 21, year: 1933, title: 'Repeal of Prohibition', status: 'active', fullText: 'Section 1. The eighteenth article of amendment to the Constitution of the United States is hereby repealed.', laymans: 'Repeals 18th Amendment. Alcohol is legal again. Only amendment that repeals another.' },
-  { number: 22, year: 1951, title: 'Presidential Term Limits', status: 'active', fullText: 'Section 1. No person shall be elected to the office of the President more than twice...', laymans: 'President limited to two terms (8 years max). Passed after FDR served four terms.' },
-  { number: 23, year: 1961, title: 'Washington D.C. Electoral Votes', status: 'active', fullText: 'Section 1. The District constituting the seat of Government of the United States shall appoint in such manner as Congress may direct: A number of electors of President and Vice President...', laymans: 'D.C. residents can vote for President (gets 3 electoral votes).' },
-  { number: 24, year: 1964, title: 'Abolition of Poll Tax', status: 'active', fullText: 'Section 1. The right of citizens of the United States to vote in any primary or other election for President or Vice President... shall not be denied or abridged by the United States or any State by reason of failure to pay poll tax or other tax.', laymans: 'Can\'t require payment to vote. Banned poll taxes used to suppress minority voting.' },
-  { number: 25, year: 1967, title: 'Presidential Succession and Disability', status: 'active', fullText: 'Section 1. In case of the removal of the President from office or of his death or resignation, the Vice President shall become President...', laymans: 'VP becomes President if President dies/resigns. Process for replacing VP and handling presidential disability.' },
-  { number: 26, year: 1971, title: 'Voting Age (18)', status: 'active', fullText: 'Section 1. The right of citizens of the United States, who are eighteen years of age or older, to vote shall not be denied or abridged by the United States or by any State on account of age.', laymans: '18-year-olds can vote. "Old enough to fight, old enough to vote."' },
-  { number: 27, year: 1992, title: 'Congressional Compensation', status: 'active', fullText: 'No law, varying the compensation for the services of the Senators and Representatives, shall take effect, until an election of Representatives shall have intervened.', laymans: 'Congress pay raises don\'t take effect until after next election. Proposed 1789, ratified 1992—203 years!' },
+  { number: 1, year: 1791, title: 'Religion, Speech, Press, Assembly, Petition', status: 'active' },
+  { number: 2, year: 1791, title: 'Right to Bear Arms', status: 'active' },
+  { number: 3, year: 1791, title: 'Quartering of Soldiers', status: 'active' },
+  { number: 4, year: 1791, title: 'Search and Seizure', status: 'active' },
+  { number: 5, year: 1791, title: 'Grand Jury, Double Jeopardy, Self-Incrimination', status: 'active' },
+  { number: 6, year: 1791, title: 'Speedy Trial, Witnesses, Counsel', status: 'active' },
+  { number: 7, year: 1791, title: 'Civil Trial by Jury', status: 'active' },
+  { number: 8, year: 1791, title: 'Excessive Bail, Cruel Punishment', status: 'active' },
+  { number: 9, year: 1791, title: 'Rights Retained by People', status: 'active' },
+  { number: 10, year: 1791, title: 'Powers Reserved to States', status: 'active' },
+  { number: 11, year: 1795, title: 'Suits Against States', status: 'active' },
+  { number: 12, year: 1804, title: 'Election of President/VP', status: 'active' },
+  { number: 13, year: 1865, title: 'Abolition of Slavery', status: 'active' },
+  { number: 14, year: 1868, title: 'Citizenship, Due Process, Equal Protection', status: 'active' },
+  { number: 15, year: 1870, title: 'Voting Rights (Race)', status: 'active' },
+  { number: 16, year: 1913, title: 'Income Tax', status: 'active' },
+  { number: 17, year: 1913, title: 'Direct Election of Senators', status: 'active' },
+  { number: 18, year: 1919, title: 'Prohibition', status: 'REPEALED' },
+  { number: 19, year: 1920, title: 'Women\'s Suffrage', status: 'active' },
+  { number: 20, year: 1933, title: 'Presidential Terms', status: 'active' },
+  { number: 21, year: 1933, title: 'Repeal of Prohibition', status: 'active' },
+  { number: 22, year: 1951, title: 'Presidential Term Limits', status: 'active' },
+  { number: 23, year: 1961, title: 'D.C. Electoral Votes', status: 'active' },
+  { number: 24, year: 1964, title: 'Abolition of Poll Tax', status: 'active' },
+  { number: 25, year: 1967, title: 'Presidential Succession', status: 'active' },
+  { number: 26, year: 1971, title: 'Voting Age (18)', status: 'active' },
+  { number: 27, year: 1992, title: 'Congressional Compensation', status: 'active' },
 ]
-
-const DECLARATION_DATA = {
-  title: 'Declaration of Independence',
-  year: '1776',
-  summary: 'The document that announced America\'s independence from Britain and articulated the philosophical basis for the new nation.',
-  resources: [
-    { name: 'National Archives (Full Text + Image)', url: 'https://www.archives.gov/founding-docs/declaration-transcript' },
-    { name: 'Library of Congress', url: 'https://www.loc.gov/item/mtjbib000159/' },
-  ],
-}
-
-const CONSTITUTION_DATA = {
-  title: 'U.S. Constitution',
-  year: '1787',
-  summary: 'The supreme law of the United States establishing the structure of the federal government and the rights of citizens.',
-  resources: [
-    { name: 'National Archives (Full Text)', url: 'https://www.archives.gov/founding-docs/constitution-transcript' },
-    { name: 'Constitution Center (Interactive)', url: 'https://constitutioncenter.org/the-constitution' },
-    { name: 'Congress.gov (Annotated)', url: 'https://constitution.congress.gov/' },
-  ],
-}
 
 export default function FoundingDocsView() {
   const [activeDoc, setActiveDoc] = useState('overview')
   const [expandedSection, setExpandedSection] = useState(null)
-  const [amendmentSearch, setAmendmentSearch] = useState('')
 
   const documents = [
     { id: 'overview', label: 'Overview', icon: BookOpen },
+    { id: 'parties', label: 'Political Parties', icon: Vote },
     { id: 'magnacarta', label: 'Magna Carta', icon: Globe },
-    { id: 'mayflower', label: 'Mayflower', icon: Feather },
-    { id: 'articles', label: 'Articles', icon: FileText },
-    { id: 'federalist', label: 'Federalist', icon: Feather },
-    { id: 'billhistory', label: 'Bill of Rights History', icon: History },
-    { id: 'amendments', label: 'All Amendments', icon: Scale },
+    { id: 'english1689', label: 'English Bill 1689', icon: Shield },
+    { id: 'federalist', label: 'Federalist Papers', icon: Feather },
+    { id: 'billhistory', label: 'Bill of Rights', icon: History },
+    { id: 'emancipation', label: 'Emancipation', icon: Flag },
+    { id: 'amendments', label: 'Amendments', icon: Scale },
   ]
-
-  const filteredAmendments = ALL_AMENDMENTS.filter(a => 
-    !amendmentSearch || 
-    a.title.toLowerCase().includes(amendmentSearch.toLowerCase()) ||
-    a.number.toString() === amendmentSearch
-  )
 
   return (
     <div className="space-y-6">
@@ -260,9 +318,9 @@ export default function FoundingDocsView() {
             <BookOpen size={24} className="text-copper" />
           </div>
           <div>
-            <h2 className="font-headline text-xl font-semibold text-ink dark:text-paper">Founding Documents</h2>
+            <h2 className="font-headline text-xl font-semibold text-ink dark:text-paper">Founding Documents & Civics</h2>
             <p className="text-sm text-ink/60 dark:text-paper/60">
-              From Magna Carta to the 27th Amendment—the documents that shaped American liberty
+              From Magna Carta to modern political parties
             </p>
           </div>
         </div>
@@ -272,7 +330,7 @@ export default function FoundingDocsView() {
       <div className="p-3 rounded-lg bg-steel/10 border border-steel/20 flex items-center gap-2">
         <Search size={16} className="text-steel" />
         <span className="text-xs text-ink/60 dark:text-paper/60">
-          Use <strong>Research Mode</strong> (coming soon) for safe comparison of sources and scholarly interpretations.
+          Use <strong className="text-ink dark:text-paper">Research Mode</strong> (coming soon) for safe comparison of sources and interpretations.
         </span>
       </div>
 
@@ -300,51 +358,90 @@ export default function FoundingDocsView() {
       {/* OVERVIEW */}
       {activeDoc === 'overview' && (
         <div className="card">
-          <h3 className="card-headline mb-4">The Chain of Liberty</h3>
-          <p className="text-sm text-ink/70 dark:text-paper/70 mb-6">
-            American constitutional government didn't appear from nowhere. It evolved over 575+ years through these key documents:
-          </p>
-          
-          <div className="space-y-4">
+          <h3 className="card-headline mb-4 text-ink dark:text-paper">The Chain of Liberty</h3>
+          <div className="space-y-3">
             {[
-              { year: '1215', title: 'Magna Carta', desc: 'Established rule of law over kings. Due process, jury trials, no taxation without consent.', link: 'magnacarta' },
-              { year: '1620', title: 'Mayflower Compact', desc: 'First self-government in America. Consent of the governed.', link: 'mayflower' },
-              { year: '1776', title: 'Declaration of Independence', desc: 'Natural rights, equality, right to revolution.', link: null },
-              { year: '1781', title: 'Articles of Confederation', desc: 'First constitution. Too weak—showed what NOT to do.', link: 'articles' },
-              { year: '1787-88', title: 'Federalist Papers', desc: '85 essays explaining and defending the Constitution.', link: 'federalist' },
-              { year: '1787', title: 'U.S. Constitution', desc: 'Supreme law. Separation of powers, federalism.', link: null },
-              { year: '1791', title: 'Bill of Rights', desc: 'First 10 amendments. Individual liberties.', link: 'billhistory' },
-              { year: '1791-1992', title: '27 Amendments', desc: 'Slavery abolished, voting expanded, rights protected.', link: 'amendments' },
+              { year: '1215', title: 'Magna Carta', desc: 'Rule of law over kings' },
+              { year: '1689', title: 'English Bill of Rights', desc: 'Protestant limits on monarchy' },
+              { year: '1776', title: 'Declaration of Independence', desc: 'Natural rights, revolution' },
+              { year: '1787-88', title: 'Federalist Papers', desc: '85 essays defending Constitution' },
+              { year: '1791', title: 'Bill of Rights', desc: 'First 10 amendments' },
+              { year: '1863', title: 'Emancipation Proclamation', desc: 'Slaves in rebellion states freed' },
+              { year: '1865', title: '13th Amendment', desc: 'Slavery abolished' },
             ].map((item, i) => (
-              <div key={i} className="flex items-start gap-4 p-3 rounded-lg bg-ink/5 dark:bg-paper/5">
-                <div className="text-center flex-shrink-0">
-                  <span className="text-lg font-bold text-copper">{item.year}</span>
-                </div>
-                <div className="flex-1">
-                  <h4 className="font-semibold text-ink dark:text-paper">{item.title}</h4>
+              <div key={i} className="flex gap-4 p-3 rounded-lg bg-ink/5 dark:bg-paper/5">
+                <span className="font-bold text-copper">{item.year}</span>
+                <div>
+                  <p className="font-semibold text-ink dark:text-paper">{item.title}</p>
                   <p className="text-sm text-ink/60 dark:text-paper/60">{item.desc}</p>
                 </div>
-                {item.link && (
-                  <button onClick={() => setActiveDoc(item.link)} className="text-copper hover:underline text-sm">
-                    View →
-                  </button>
-                )}
               </div>
             ))}
           </div>
+        </div>
+      )}
 
-          <div className="mt-6 p-4 rounded-lg bg-copper/10 border border-copper/20">
-            <h4 className="font-semibold text-copper mb-2">Quick Links to Full Documents</h4>
-            <div className="grid sm:grid-cols-2 gap-2">
-              {[
-                { name: 'Declaration of Independence', url: 'https://www.archives.gov/founding-docs/declaration-transcript' },
-                { name: 'U.S. Constitution', url: 'https://www.archives.gov/founding-docs/constitution-transcript' },
-                { name: 'Bill of Rights', url: 'https://www.archives.gov/founding-docs/bill-of-rights-transcript' },
-                { name: 'All Amendments', url: 'https://constitution.congress.gov/constitution/' },
-              ].map((link, i) => (
-                <a key={i} href={link.url} target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-sm text-copper hover:underline">
-                  <ExternalLink size={12} /> {link.name}
+      {/* POLITICAL PARTIES */}
+      {activeDoc === 'parties' && (
+        <div className="space-y-4">
+          <div className="card">
+            <h3 className="card-headline flex items-center gap-2 mb-4 text-ink dark:text-paper">
+              <Vote size={18} className="text-copper" />
+              Major Political Parties
+            </h3>
+            <p className="text-sm text-ink/60 dark:text-paper/60 mb-4">Official platforms from each party's own website.</p>
+
+            <div className="space-y-4">
+              {POLITICAL_PARTIES.parties.map((party) => (
+                <div key={party.name} className={`p-4 rounded-lg border-l-4 ${
+                  party.color === 'blue' ? 'border-blue-500 bg-blue-500/10' :
+                  party.color === 'red' ? 'border-red-500 bg-red-500/10' :
+                  party.color === 'gold' ? 'border-yellow-500 bg-yellow-500/10' :
+                  party.color === 'green' ? 'border-green-500 bg-green-500/10' :
+                  'border-purple-500 bg-purple-500/10'
+                }`}>
+                  <h4 className="font-semibold text-ink dark:text-paper mb-2">{party.name}</h4>
+                  <p className="text-xs font-medium text-ink/60 dark:text-paper/60 mb-2">Key Beliefs:</p>
+                  <ul className="space-y-1 mb-3">
+                    {party.beliefs.map((belief, i) => (
+                      <li key={i} className="text-sm text-ink/70 dark:text-paper/70 flex items-start gap-2">
+                        <span className="text-copper">•</span> {belief}
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="flex gap-3">
+                    <a href={party.platformUrl} target="_blank" rel="noopener noreferrer"
+                      className="text-xs text-copper hover:underline flex items-center gap-1">
+                      <FileText size={12} /> Official Platform
+                    </a>
+                    <a href={party.officialUrl} target="_blank" rel="noopener noreferrer"
+                      className="text-xs text-steel hover:underline flex items-center gap-1">
+                      <ExternalLink size={12} /> Website
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Project 2025 Section */}
+          <div className="card border-copper/30">
+            <h3 className="card-headline flex items-center gap-2 mb-3 text-ink dark:text-paper">
+              <Info size={18} className="text-copper" />
+              {POLITICAL_PARTIES.project2025.title}
+            </h3>
+            <p className="text-sm text-ink/60 dark:text-paper/60 mb-4">{POLITICAL_PARTIES.project2025.description}</p>
+            
+            <div className="p-3 rounded-lg bg-forest/10 border border-forest/20 mb-4">
+              <p className="text-xs text-forest">{POLITICAL_PARTIES.project2025.note}</p>
+            </div>
+
+            <h4 className="font-semibold text-sm text-ink dark:text-paper mb-2">Credible Sources:</h4>
+            <div className="space-y-2">
+              {POLITICAL_PARTIES.project2025.credibleSources.map((source, i) => (
+                <a key={i} href={source.url} target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-sm text-steel hover:text-copper">
+                  <ExternalLink size={12} /> {source.name}
                 </a>
               ))}
             </div>
@@ -355,380 +452,256 @@ export default function FoundingDocsView() {
       {/* MAGNA CARTA */}
       {activeDoc === 'magnacarta' && (
         <div className="card">
-          <div className="flex items-center gap-3 mb-4">
-            <Globe size={24} className="text-copper" />
-            <div>
-              <h3 className="font-headline text-lg font-semibold text-ink dark:text-paper">{MAGNA_CARTA.title}</h3>
-              <p className="text-sm text-ink/60 dark:text-paper/60">{MAGNA_CARTA.fullTitle}</p>
-            </div>
-          </div>
+          <h3 className="card-headline flex items-center gap-2 mb-4 text-ink dark:text-paper">
+            <Globe size={18} className="text-copper" />
+            {MAGNA_CARTA.title}
+          </h3>
+          <p className="text-sm text-ink/60 dark:text-paper/60 mb-4">{MAGNA_CARTA.summary}</p>
 
-          <div className="p-3 rounded-lg bg-forest/10 border border-forest/20 mb-4">
-            <p className="text-sm text-forest">{MAGNA_CARTA.summary}</p>
-          </div>
-
-          <div className="mb-4 p-3 rounded-lg bg-ink/5 dark:bg-paper/5">
-            <h4 className="font-semibold text-ink dark:text-paper mb-2">Historical Context</h4>
-            <p className="text-sm text-ink/70 dark:text-paper/70">{MAGNA_CARTA.historicalContext}</p>
-          </div>
-
-          <h4 className="font-semibold text-ink dark:text-paper mb-3">Key Principles → American Influence</h4>
           <div className="space-y-3 mb-4">
-            {MAGNA_CARTA.keyPrinciples.map((principle, i) => (
+            {MAGNA_CARTA.keyPrinciples.map((p, i) => (
               <div key={i} className="p-3 rounded-lg border border-ink/10 dark:border-paper/10">
-                <p className="text-xs text-copper font-mono mb-1">{principle.clause}</p>
-                <p className="text-sm italic text-ink/70 dark:text-paper/70 mb-2">"{principle.original}"</p>
-                <p className="text-sm text-forest">→ {principle.influence}</p>
+                <p className="text-xs text-copper font-mono">{p.clause}</p>
+                <p className="text-sm italic text-ink/70 dark:text-paper/70 my-1">"{p.original}"</p>
+                <p className="text-sm text-forest">→ {p.influence}</p>
               </div>
             ))}
           </div>
 
-          <h4 className="font-semibold text-ink dark:text-paper mb-3">Timeline</h4>
-          <div className="space-y-2 mb-4">
-            {MAGNA_CARTA.timeline.map((item, i) => (
-              <div key={i} className="flex gap-3 text-sm">
-                <span className="font-mono text-copper w-12">{item.year}</span>
-                <span className="text-ink/70 dark:text-paper/70">{item.event}</span>
-              </div>
-            ))}
-          </div>
-
-          <div className="p-3 rounded-lg bg-steel/10 border border-steel/20 mb-4">
-            <p className="text-xs text-ink/60 dark:text-paper/60"><strong>Still in Force:</strong> {MAGNA_CARTA.stillInForce}</p>
-          </div>
-
-          <h4 className="font-semibold text-ink dark:text-paper mb-2">Comprehensive Resources</h4>
-          <div className="space-y-2">
-            {MAGNA_CARTA.resources.map((r, i) => (
-              <a key={i} href={r.url} target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-2 text-sm text-steel hover:text-copper">
-                <ExternalLink size={12} /> {r.name}
-              </a>
-            ))}
-          </div>
+          <h4 className="font-semibold text-sm text-ink dark:text-paper mb-2">Resources:</h4>
+          {MAGNA_CARTA.resources.map((r, i) => (
+            <a key={i} href={r.url} target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-2 text-sm text-steel hover:text-copper mb-1">
+              <ExternalLink size={12} /> {r.name}
+            </a>
+          ))}
         </div>
       )}
 
-      {/* MAYFLOWER COMPACT */}
-      {activeDoc === 'mayflower' && (
+      {/* ENGLISH BILL OF RIGHTS 1689 */}
+      {activeDoc === 'english1689' && (
         <div className="card">
-          <div className="flex items-center gap-3 mb-4">
-            <Feather size={24} className="text-copper" />
-            <div>
-              <h3 className="font-headline text-lg font-semibold text-ink dark:text-paper">{MAYFLOWER_COMPACT.title}</h3>
-              <p className="text-sm text-ink/60 dark:text-paper/60">{MAYFLOWER_COMPACT.year}</p>
-            </div>
+          <h3 className="card-headline flex items-center gap-2 mb-4 text-ink dark:text-paper">
+            <Shield size={18} className="text-copper" />
+            {ENGLISH_BILL_OF_RIGHTS.title} ({ENGLISH_BILL_OF_RIGHTS.year})
+          </h3>
+
+          <div className="p-3 rounded-lg bg-copper/10 border border-copper/20 mb-4">
+            <h4 className="font-semibold text-copper mb-1">{ENGLISH_BILL_OF_RIGHTS.religiousContext.background}</h4>
+            <p className="text-sm text-ink/70 dark:text-paper/70 mb-2">{ENGLISH_BILL_OF_RIGHTS.religiousContext.explanation}</p>
+            <p className="text-xs text-copper/80"><strong>Key Issue:</strong> {ENGLISH_BILL_OF_RIGHTS.religiousContext.keyCatholicProtestantIssue}</p>
           </div>
 
-          <div className="p-3 rounded-lg bg-forest/10 border border-forest/20 mb-4">
-            <p className="text-sm text-forest">{MAYFLOWER_COMPACT.summary}</p>
-          </div>
+          <p className="text-sm text-ink/60 dark:text-paper/60 mb-4">{ENGLISH_BILL_OF_RIGHTS.summary}</p>
 
-          <h4 className="font-semibold text-ink dark:text-paper mb-3">Significance</h4>
-          <ul className="space-y-2 mb-4">
-            {MAYFLOWER_COMPACT.significance.map((item, i) => (
-              <li key={i} className="flex items-start gap-2 text-sm text-ink/70 dark:text-paper/70">
-                <span className="text-copper">•</span> {item}
-              </li>
-            ))}
-          </ul>
-
-          <div className="p-3 rounded-lg bg-ink/5 dark:bg-paper/5 border-l-4 border-copper mb-4">
-            <p className="text-xs text-copper font-medium mb-1">Original Text:</p>
-            <p className="text-sm italic text-ink/70 dark:text-paper/70">{MAYFLOWER_COMPACT.fullText}</p>
-          </div>
-
-          <div className="p-3 rounded-lg bg-forest/10 border border-forest/20 mb-4">
-            <p className="text-xs text-forest font-medium mb-1">In Plain English:</p>
-            <p className="text-sm text-ink/80 dark:text-paper/80">{MAYFLOWER_COMPACT.laymans}</p>
-          </div>
-
-          <h4 className="font-semibold text-ink dark:text-paper mb-2">Comprehensive Resources</h4>
-          <div className="space-y-2">
-            {MAYFLOWER_COMPACT.resources.map((r, i) => (
-              <a key={i} href={r.url} target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-2 text-sm text-steel hover:text-copper">
-                <ExternalLink size={12} /> {r.name}
-              </a>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* ARTICLES OF CONFEDERATION */}
-      {activeDoc === 'articles' && (
-        <div className="card">
-          <div className="flex items-center gap-3 mb-4">
-            <FileText size={24} className="text-copper" />
-            <div>
-              <h3 className="font-headline text-lg font-semibold text-ink dark:text-paper">{ARTICLES_OF_CONFEDERATION.title}</h3>
-              <p className="text-sm text-ink/60 dark:text-paper/60">{ARTICLES_OF_CONFEDERATION.years} • America's First Constitution</p>
-            </div>
-          </div>
-
-          <div className="p-3 rounded-lg bg-burgundy/10 border border-burgundy/20 mb-4">
-            <p className="text-sm text-burgundy">{ARTICLES_OF_CONFEDERATION.summary}</p>
-          </div>
-
-          <h4 className="font-semibold text-ink dark:text-paper mb-3">Key Weaknesses</h4>
+          <h4 className="font-semibold text-sm text-ink dark:text-paper mb-3">Provisions → American Influence</h4>
           <div className="space-y-2 mb-4">
-            {ARTICLES_OF_CONFEDERATION.keyWeaknesses.map((item, i) => (
-              <div key={i} className="p-3 rounded-lg bg-ink/5 dark:bg-paper/5 border-l-4 border-burgundy">
-                <p className="font-medium text-sm text-ink dark:text-paper">{item.issue}</p>
-                <p className="text-xs text-ink/60 dark:text-paper/60">→ {item.consequence}</p>
+            {ENGLISH_BILL_OF_RIGHTS.keyProvisions.map((p, i) => (
+              <div key={i} className="flex justify-between p-2 rounded-lg bg-ink/5 dark:bg-paper/5 text-sm">
+                <span className="text-ink dark:text-paper">{p.provision}</span>
+                <span className="text-forest">→ {p.americanInfluence}</span>
               </div>
             ))}
           </div>
 
-          <h4 className="font-semibold text-ink dark:text-paper mb-3">Crises That Proved Reform Necessary</h4>
-          <div className="space-y-3 mb-4">
-            {ARTICLES_OF_CONFEDERATION.crises.map((crisis, i) => (
-              <div key={i} className="p-3 rounded-lg border border-ink/10 dark:border-paper/10">
-                <p className="font-semibold text-copper text-sm">{crisis.name}</p>
-                <p className="text-sm text-ink/70 dark:text-paper/70">{crisis.description}</p>
-              </div>
-            ))}
-          </div>
-
-          <h4 className="font-semibold text-ink dark:text-paper mb-2">Comprehensive Resources</h4>
-          <div className="space-y-2">
-            {ARTICLES_OF_CONFEDERATION.resources.map((r, i) => (
-              <a key={i} href={r.url} target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-2 text-sm text-steel hover:text-copper">
-                <ExternalLink size={12} /> {r.name}
-              </a>
-            ))}
-          </div>
+          <h4 className="font-semibold text-sm text-ink dark:text-paper mb-2">Resources:</h4>
+          {ENGLISH_BILL_OF_RIGHTS.resources.map((r, i) => (
+            <a key={i} href={r.url} target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-2 text-sm text-steel hover:text-copper mb-1">
+              <ExternalLink size={12} /> {r.name}
+            </a>
+          ))}
         </div>
       )}
 
-      {/* FEDERALIST PAPERS */}
+      {/* FEDERALIST PAPERS - 8 Essays with 9th Grade Explanations */}
       {activeDoc === 'federalist' && (
         <div className="card">
-          <div className="flex items-center gap-3 mb-4">
-            <Feather size={24} className="text-copper" />
-            <div>
-              <h3 className="font-headline text-lg font-semibold text-ink dark:text-paper">{FEDERALIST_PAPERS.title}</h3>
-              <p className="text-sm text-ink/60 dark:text-paper/60">{FEDERALIST_PAPERS.years} • {FEDERALIST_PAPERS.count} Essays</p>
-            </div>
-          </div>
+          <h3 className="card-headline flex items-center gap-2 mb-4 text-ink dark:text-paper">
+            <Feather size={18} className="text-copper" />
+            {FEDERALIST_PAPERS.title}
+          </h3>
+          <p className="text-sm text-ink/60 dark:text-paper/60 mb-4">{FEDERALIST_PAPERS.summary}</p>
 
-          <div className="p-3 rounded-lg bg-forest/10 border border-forest/20 mb-4">
-            <p className="text-sm text-forest">{FEDERALIST_PAPERS.summary}</p>
-          </div>
-
-          <h4 className="font-semibold text-ink dark:text-paper mb-3">Authors ("Publius")</h4>
-          <div className="grid sm:grid-cols-3 gap-3 mb-4">
-            {FEDERALIST_PAPERS.authors.map((author, i) => (
-              <div key={i} className="p-3 rounded-lg bg-ink/5 dark:bg-paper/5 text-center">
-                <p className="font-semibold text-copper">{author.name}</p>
-                <p className="text-xs text-ink/60 dark:text-paper/60">{author.essays}</p>
-                <p className="text-xs text-ink/50 dark:text-paper/50 mt-1">{author.focus}</p>
+          <div className="grid sm:grid-cols-3 gap-2 mb-4">
+            {FEDERALIST_PAPERS.authors.map((a, i) => (
+              <div key={i} className="p-2 rounded-lg bg-ink/5 dark:bg-paper/5 text-center">
+                <p className="font-semibold text-copper text-sm">{a.name}</p>
+                <p className="text-xs text-ink/50 dark:text-paper/50">{a.essays}</p>
               </div>
             ))}
           </div>
 
-          <h4 className="font-semibold text-ink dark:text-paper mb-3">Key Essays</h4>
-          <div className="space-y-3 mb-4">
-            {FEDERALIST_PAPERS.keyEssays.map((essay, i) => (
-              <div key={i} className="p-3 rounded-lg border border-ink/10 dark:border-paper/10">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xs font-mono bg-copper/20 text-copper px-2 py-0.5 rounded">#{essay.number}</span>
-                  <span className="text-xs text-ink/50 dark:text-paper/50">({essay.author})</span>
-                </div>
-                <p className="font-semibold text-sm text-ink dark:text-paper">{essay.title}</p>
-                <p className="text-sm text-ink/70 dark:text-paper/70">{essay.summary}</p>
+          <div className="p-3 rounded-lg bg-forest/10 border border-forest/20 mb-4 flex items-center gap-2">
+            <Users size={16} className="text-forest" />
+            <span className="text-sm text-forest font-medium">9th Grade Reading Level explanations included</span>
+          </div>
+
+          <h4 className="font-semibold text-ink dark:text-paper mb-3">8 Key Essays</h4>
+          <div className="space-y-3">
+            {FEDERALIST_PAPERS.keyEssays.map((essay) => (
+              <div key={essay.number} className="border border-ink/10 dark:border-paper/10 rounded-lg overflow-hidden">
+                <button
+                  onClick={() => setExpandedSection(expandedSection === `fed${essay.number}` ? null : `fed${essay.number}`)}
+                  className="w-full p-3 text-left hover:bg-ink/5 dark:hover:bg-paper/5"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-mono bg-copper/20 text-copper px-2 py-0.5 rounded">#{essay.number}</span>
+                      <span className="font-semibold text-ink dark:text-paper">{essay.title}</span>
+                      <span className="text-xs text-ink/40 dark:text-paper/40">({essay.author})</span>
+                    </div>
+                    {expandedSection === `fed${essay.number}` ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  </div>
+                  <p className="text-sm text-ink/60 dark:text-paper/60 mt-1">{essay.tldr}</p>
+                </button>
+
+                {expandedSection === `fed${essay.number}` && (
+                  <div className="px-3 pb-3 space-y-3">
+                    <div className="p-3 rounded-lg bg-forest/10 border border-forest/20">
+                      <p className="text-xs text-forest font-semibold mb-1">📚 9th Grade Explanation:</p>
+                      <p className="text-sm text-ink/80 dark:text-paper/80">{essay.ninthGrade}</p>
+                    </div>
+                    <div className="p-3 rounded-lg bg-ink/5 dark:bg-paper/5 border-l-4 border-copper">
+                      <p className="text-xs text-copper font-semibold mb-1">Famous Quote:</p>
+                      <p className="text-sm italic text-ink/70 dark:text-paper/70">{essay.famousQuote}</p>
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>
 
-          <div className="p-3 rounded-lg bg-burgundy/10 border border-burgundy/20 mb-4">
-            <h4 className="font-semibold text-burgundy mb-2">{FEDERALIST_PAPERS.antifederalistResponse.title}</h4>
-            <p className="text-sm text-burgundy/80 mb-2">{FEDERALIST_PAPERS.antifederalistResponse.description}</p>
-            <ul className="text-xs text-burgundy/70 space-y-1">
-              {FEDERALIST_PAPERS.antifederalistResponse.keyArguments.map((arg, i) => (
-                <li key={i}>• {arg}</li>
-              ))}
-            </ul>
-          </div>
-
-          <h4 className="font-semibold text-ink dark:text-paper mb-2">Comprehensive Resources</h4>
-          <div className="space-y-2">
-            {FEDERALIST_PAPERS.resources.map((r, i) => (
-              <a key={i} href={r.url} target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-2 text-sm text-steel hover:text-copper">
-                <ExternalLink size={12} /> {r.name}
-              </a>
-            ))}
-          </div>
+          <h4 className="font-semibold text-ink dark:text-paper mt-4 mb-2">Resources:</h4>
+          {FEDERALIST_PAPERS.resources.map((r, i) => (
+            <a key={i} href={r.url} target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-2 text-sm text-steel hover:text-copper mb-1">
+              <ExternalLink size={12} /> {r.name}
+            </a>
+          ))}
         </div>
       )}
 
       {/* BILL OF RIGHTS HISTORY */}
       {activeDoc === 'billhistory' && (
         <div className="card">
-          <div className="flex items-center gap-3 mb-4">
-            <History size={24} className="text-copper" />
+          <h3 className="card-headline flex items-center gap-2 mb-4 text-ink dark:text-paper">
+            <History size={18} className="text-copper" />
+            {BILL_OF_RIGHTS_HISTORY.title}
+          </h3>
+          <p className="text-sm text-ink/60 dark:text-paper/60 mb-4">{BILL_OF_RIGHTS_HISTORY.summary}</p>
+
+          <div className="space-y-3 mb-4">
+            {BILL_OF_RIGHTS_HISTORY.attempts.map((a) => (
+              <div key={a.attempt} className={`p-3 rounded-lg border-2 ${
+                a.outcome === 'RATIFIED' ? 'border-forest bg-forest/5' :
+                a.outcome === 'REJECTED' ? 'border-burgundy bg-burgundy/5' :
+                'border-copper bg-copper/5'
+              }`}>
+                <div className="flex justify-between mb-1">
+                  <span className={`text-xs font-bold px-2 py-0.5 rounded ${
+                    a.outcome === 'RATIFIED' ? 'bg-forest text-white' :
+                    a.outcome === 'REJECTED' ? 'bg-burgundy text-white' :
+                    'bg-copper text-white'
+                  }`}>Attempt {a.attempt}: {a.outcome}</span>
+                  <span className="text-xs text-ink/50 dark:text-paper/50">{a.year}</span>
+                </div>
+                <p className="font-semibold text-ink dark:text-paper">{a.title}</p>
+                <p className="text-sm text-ink/70 dark:text-paper/70">{a.description}</p>
+              </div>
+            ))}
+          </div>
+
+          <h4 className="font-semibold text-ink dark:text-paper mb-2">Resources:</h4>
+          {BILL_OF_RIGHTS_HISTORY.resources.map((r, i) => (
+            <a key={i} href={r.url} target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-2 text-sm text-steel hover:text-copper mb-1">
+              <ExternalLink size={12} /> {r.name}
+            </a>
+          ))}
+        </div>
+      )}
+
+      {/* EMANCIPATION PROCLAMATION */}
+      {activeDoc === 'emancipation' && (
+        <div className="card">
+          <h3 className="card-headline flex items-center gap-2 mb-4 text-ink dark:text-paper">
+            <Flag size={18} className="text-copper" />
+            {EMANCIPATION_PROCLAMATION.title} ({EMANCIPATION_PROCLAMATION.year})
+          </h3>
+          <p className="text-sm text-ink/60 dark:text-paper/60 mb-2">Issued by {EMANCIPATION_PROCLAMATION.issuedBy}</p>
+          <p className="text-sm text-ink/70 dark:text-paper/70 mb-4">{EMANCIPATION_PROCLAMATION.summary}</p>
+
+          <div className="p-3 rounded-lg bg-ink/5 dark:bg-paper/5 border-l-4 border-copper mb-4">
+            <p className="text-sm italic text-ink/70 dark:text-paper/70">{EMANCIPATION_PROCLAMATION.famousQuote}</p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-4 mb-4">
             <div>
-              <h3 className="font-headline text-lg font-semibold text-ink dark:text-paper">{BILL_OF_RIGHTS_HISTORY.title}</h3>
+              <h4 className="font-semibold text-forest text-sm mb-2">What It Did:</h4>
+              <ul className="space-y-1">
+                {EMANCIPATION_PROCLAMATION.whatItDid.map((item, i) => (
+                  <li key={i} className="text-sm text-ink/70 dark:text-paper/70 flex items-start gap-2">
+                    <span className="text-forest">✓</span> {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold text-burgundy text-sm mb-2">What It Did NOT Do:</h4>
+              <ul className="space-y-1">
+                {EMANCIPATION_PROCLAMATION.whatItDidNot.map((item, i) => (
+                  <li key={i} className="text-sm text-ink/70 dark:text-paper/70 flex items-start gap-2">
+                    <span className="text-burgundy">✗</span> {item}
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
 
-          <div className="p-3 rounded-lg bg-forest/10 border border-forest/20 mb-4">
-            <p className="text-sm text-forest">{BILL_OF_RIGHTS_HISTORY.summary}</p>
-          </div>
-
-          <div className="space-y-4 mb-6">
-            {BILL_OF_RIGHTS_HISTORY.attempts.map((attempt, i) => (
-              <div key={i} className={`p-4 rounded-lg border-2 ${
-                attempt.outcome === 'RATIFIED' ? 'border-forest bg-forest/5' :
-                attempt.outcome === 'REJECTED' ? 'border-burgundy bg-burgundy/5' :
-                'border-copper bg-copper/5'
-              }`}>
-                <div className="flex items-center justify-between mb-2">
-                  <span className={`text-xs font-bold px-2 py-1 rounded ${
-                    attempt.outcome === 'RATIFIED' ? 'bg-forest text-white' :
-                    attempt.outcome === 'REJECTED' ? 'bg-burgundy text-white' :
-                    'bg-copper text-white'
-                  }`}>
-                    Attempt {attempt.attempt}: {attempt.outcome}
-                  </span>
-                  <span className="text-sm font-mono text-ink/50 dark:text-paper/50">{attempt.year}</span>
-                </div>
-                <h4 className="font-semibold text-ink dark:text-paper mb-2">{attempt.title}</h4>
-                <p className="text-sm text-ink/70 dark:text-paper/70 mb-2">{attempt.description}</p>
-                <p className="text-xs text-ink/60 dark:text-paper/60 mb-2">
-                  <strong>Key Figures:</strong> {attempt.keyFigures.join(', ')}
-                </p>
-                {attempt.whyFailed && (
-                  <p className="text-xs text-burgundy"><strong>Why it failed:</strong> {attempt.whyFailed}</p>
-                )}
-                {attempt.keyDifference && (
-                  <p className="text-xs text-copper"><strong>Key development:</strong> {attempt.keyDifference}</p>
-                )}
-                {attempt.whatChanged && (
-                  <p className="text-xs text-forest"><strong>What changed:</strong> {attempt.whatChanged}</p>
-                )}
-              </div>
-            ))}
-          </div>
-
           <div className="p-3 rounded-lg bg-steel/10 border border-steel/20 mb-4">
-            <h4 className="font-semibold text-steel mb-2">The Two That Weren't Ratified (in 1791)</h4>
-            {BILL_OF_RIGHTS_HISTORY.twoNotRatified.map((item, i) => (
-              <div key={i} className="mb-2">
-                <p className="text-sm font-medium text-ink dark:text-paper">{item.title}</p>
-                <p className="text-xs text-ink/60 dark:text-paper/60">{item.text}</p>
-                <p className="text-xs text-copper italic">{item.note}</p>
-              </div>
-            ))}
+            <p className="text-xs text-ink/60 dark:text-paper/60"><strong className="text-ink dark:text-paper">Historical Context:</strong> {EMANCIPATION_PROCLAMATION.historicalContext}</p>
           </div>
 
-          <h4 className="font-semibold text-ink dark:text-paper mb-2">Comprehensive Resources</h4>
-          <div className="space-y-2">
-            {BILL_OF_RIGHTS_HISTORY.resources.map((r, i) => (
-              <a key={i} href={r.url} target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-2 text-sm text-steel hover:text-copper">
-                <ExternalLink size={12} /> {r.name}
-              </a>
-            ))}
-          </div>
+          <h4 className="font-semibold text-ink dark:text-paper mb-2">Resources:</h4>
+          {EMANCIPATION_PROCLAMATION.resources.map((r, i) => (
+            <a key={i} href={r.url} target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-2 text-sm text-steel hover:text-copper mb-1">
+              <ExternalLink size={12} /> {r.name}
+            </a>
+          ))}
         </div>
       )}
 
       {/* ALL 27 AMENDMENTS */}
       {activeDoc === 'amendments' && (
         <div className="card">
-          <div className="flex items-center gap-3 mb-4">
-            <Scale size={24} className="text-copper" />
-            <div>
-              <h3 className="font-headline text-lg font-semibold text-ink dark:text-paper">All 27 Amendments</h3>
-              <p className="text-sm text-ink/60 dark:text-paper/60">Complete text with plain English explanations</p>
-            </div>
-          </div>
-
-          <div className="relative mb-4">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/40 dark:text-paper/40" size={16} />
-            <input
-              type="text"
-              value={amendmentSearch}
-              onChange={(e) => setAmendmentSearch(e.target.value)}
-              placeholder="Search amendments (try 'voting' or '18')..."
-              className="w-full pl-10 pr-4 py-2 text-sm rounded-lg border border-ink/20 dark:border-paper/20 
-                       bg-paper dark:bg-ink text-ink dark:text-paper
-                       focus:outline-none focus:ring-2 focus:ring-copper/50"
-            />
-          </div>
-
-          <div className="space-y-2 max-h-[60vh] overflow-y-auto">
-            {filteredAmendments.map((amendment) => (
-              <div key={amendment.number} className={`border rounded-lg overflow-hidden ${
-                amendment.status === 'REPEALED' ? 'border-burgundy/30 bg-burgundy/5' : 'border-ink/10 dark:border-paper/10'
+          <h3 className="card-headline flex items-center gap-2 mb-4 text-ink dark:text-paper">
+            <Scale size={18} className="text-copper" />
+            All 27 Amendments
+          </h3>
+          <div className="space-y-2 max-h-[50vh] overflow-y-auto">
+            {ALL_AMENDMENTS.map((a) => (
+              <div key={a.number} className={`flex items-center justify-between p-2 rounded-lg ${
+                a.status === 'REPEALED' ? 'bg-burgundy/10 border border-burgundy/30' : 'bg-ink/5 dark:bg-paper/5'
               }`}>
-                <button
-                  onClick={() => setExpandedSection(expandedSection === `a${amendment.number}` ? null : `a${amendment.number}`)}
-                  className="w-full p-3 text-left hover:bg-ink/5 dark:hover:bg-paper/5 transition-colors"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-mono text-copper">{amendment.number}{['st','nd','rd'][amendment.number-1] || 'th'}</span>
-                      <span className="text-xs text-ink/40 dark:text-paper/40">({amendment.year})</span>
-                      {amendment.status === 'REPEALED' && (
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-burgundy/20 text-burgundy">REPEALED</span>
-                      )}
-                    </div>
-                    {expandedSection === `a${amendment.number}` ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                  </div>
-                  <p className="font-medium text-sm text-ink dark:text-paper mt-1">{amendment.title}</p>
-                </button>
-
-                {expandedSection === `a${amendment.number}` && (
-                  <div className="px-3 pb-3 space-y-2">
-                    <div className="p-2 rounded bg-ink/5 dark:bg-paper/5 border-l-2 border-copper">
-                      <p className="text-[10px] text-copper mb-1">Full Text:</p>
-                      <p className="text-xs text-ink/70 dark:text-paper/70">{amendment.fullText}</p>
-                    </div>
-                    <div className={`p-2 rounded border-l-2 ${amendment.status === 'REPEALED' ? 'bg-burgundy/10 border-burgundy' : 'bg-forest/10 border-forest'}`}>
-                      <p className={`text-[10px] mb-1 ${amendment.status === 'REPEALED' ? 'text-burgundy' : 'text-forest'}`}>Plain English:</p>
-                      <p className="text-xs text-ink/80 dark:text-paper/80">{amendment.laymans}</p>
-                    </div>
-                  </div>
-                )}
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-mono text-copper">{a.number}</span>
+                  <span className="text-sm text-ink dark:text-paper">{a.title}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-ink/40 dark:text-paper/40">{a.year}</span>
+                  {a.status === 'REPEALED' && <span className="text-[10px] bg-burgundy text-white px-1.5 py-0.5 rounded">REPEALED</span>}
+                </div>
               </div>
             ))}
           </div>
-
-          <div className="mt-4">
-            <a href="https://constitution.congress.gov/constitution/" target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-2 text-sm text-copper hover:underline">
-              <ExternalLink size={14} /> Full text on Congress.gov
-            </a>
-          </div>
+          <a href="https://constitution.congress.gov/constitution/" target="_blank" rel="noopener noreferrer"
+            className="flex items-center gap-2 text-sm text-copper hover:underline mt-4">
+            <ExternalLink size={14} /> Full text on Congress.gov
+          </a>
         </div>
       )}
-
-      {/* Quick Stats */}
-      <div className="card">
-        <h3 className="card-headline mb-4">Quick Reference</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-          <div className="p-3 rounded-lg bg-ink/5 dark:bg-paper/5">
-            <p className="text-2xl font-bold text-copper">1215</p>
-            <p className="text-xs text-ink/50 dark:text-paper/50">Magna Carta</p>
-          </div>
-          <div className="p-3 rounded-lg bg-ink/5 dark:bg-paper/5">
-            <p className="text-2xl font-bold text-copper">85</p>
-            <p className="text-xs text-ink/50 dark:text-paper/50">Federalist Papers</p>
-          </div>
-          <div className="p-3 rounded-lg bg-ink/5 dark:bg-paper/5">
-            <p className="text-2xl font-bold text-copper">27</p>
-            <p className="text-xs text-ink/50 dark:text-paper/50">Amendments</p>
-          </div>
-          <div className="p-3 rounded-lg bg-burgundy/10">
-            <p className="text-2xl font-bold text-burgundy">1</p>
-            <p className="text-xs text-burgundy/70">Repealed</p>
-          </div>
-        </div>
-      </div>
 
       {/* Footer */}
       <div className="flex items-center justify-center gap-2 text-copper/30">

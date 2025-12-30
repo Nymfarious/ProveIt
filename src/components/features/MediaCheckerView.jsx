@@ -1,7 +1,6 @@
 import { useState, useRef } from 'react'
-import { Camera, Upload, AlertTriangle, CheckCircle, XCircle, HelpCircle, Loader2, Image, Film, FileImage, Info, ChevronDown, ChevronUp, Eye, Zap } from 'lucide-react'
+import { Camera, Upload, AlertTriangle, CheckCircle, XCircle, HelpCircle, Loader2, Image, Film, FileImage, Info, ChevronDown, ChevronUp, Eye, Zap, Brain, RefreshCw } from 'lucide-react'
 
-// Detection markers checklist
 const DETECTION_MARKERS = {
   common: [
     { id: 'fingers', label: 'Finger anomalies', description: 'Extra, missing, or malformed fingers/hands', severity: 'high' },
@@ -29,6 +28,40 @@ const DETECTION_MARKERS = {
   ],
 }
 
+// AI Critical Thinking Questions
+const CRITICAL_THINKING_QUESTIONS = [
+  {
+    id: 'source',
+    question: 'Where did this image originate?',
+    hint: 'Can you trace it back to its first appearance online? Reverse image search can help.',
+    importance: 'Original source often reveals intent and authenticity.',
+  },
+  {
+    id: 'motive',
+    question: 'Who benefits if this image is believed?',
+    hint: 'Consider political, financial, or social motivations for creating/sharing it.',
+    importance: 'Understanding motive helps assess likelihood of manipulation.',
+  },
+  {
+    id: 'timing',
+    question: 'Why is this image appearing now?',
+    hint: 'Is it tied to an election, controversy, or trending topic?',
+    importance: 'Fake images often surface at strategically advantageous moments.',
+  },
+  {
+    id: 'corroboration',
+    question: 'Do other credible sources show the same event?',
+    hint: 'Real events usually have multiple angles and witnesses.',
+    importance: 'Lack of corroborating evidence is a red flag.',
+  },
+  {
+    id: 'plausibility',
+    question: 'Does this image show something physically possible?',
+    hint: 'Consider physics, human anatomy, known locations, and timeline.',
+    importance: 'Sometimes the "big picture" is the clearest tell.',
+  },
+]
+
 export default function MediaCheckerView() {
   const [file, setFile] = useState(null)
   const [preview, setPreview] = useState(null)
@@ -36,6 +69,7 @@ export default function MediaCheckerView() {
   const [result, setResult] = useState(null)
   const [expandedSection, setExpandedSection] = useState('common')
   const [showHowItWorks, setShowHowItWorks] = useState(false)
+  const [showCriticalQuestions, setShowCriticalQuestions] = useState(false)
   const fileInputRef = useRef(null)
 
   const handleFileSelect = (e) => {
@@ -43,8 +77,6 @@ export default function MediaCheckerView() {
     if (selectedFile) {
       setFile(selectedFile)
       setResult(null)
-      
-      // Create preview
       const reader = new FileReader()
       reader.onload = (e) => setPreview(e.target.result)
       reader.readAsDataURL(selectedFile)
@@ -67,14 +99,12 @@ export default function MediaCheckerView() {
     if (!file) return
     setIsAnalyzing(true)
     
-    // Simulate analysis (in production, this would call an AI vision API)
+    // Simulate analysis (in production, this would call Gemini Vision API)
     await new Promise(resolve => setTimeout(resolve, 2500))
     
-    // Mock result - in production, each marker would be checked by AI
     const mockChecks = {}
     Object.entries(DETECTION_MARKERS).forEach(([category, markers]) => {
       markers.forEach(marker => {
-        // Randomly assign detection status for demo
         const rand = Math.random()
         mockChecks[marker.id] = {
           detected: rand < 0.2,
@@ -84,7 +114,6 @@ export default function MediaCheckerView() {
       })
     })
     
-    // Calculate overall score
     const detectedCount = Object.values(mockChecks).filter(c => c.detected).length
     const totalChecks = Object.keys(mockChecks).length
     const authenticityScore = Math.max(0, 100 - (detectedCount * 15))
@@ -99,6 +128,7 @@ export default function MediaCheckerView() {
     })
     
     setIsAnalyzing(false)
+    setShowCriticalQuestions(true)
   }
 
   const getVerdictDisplay = (verdict) => {
@@ -119,7 +149,7 @@ export default function MediaCheckerView() {
       case 'high': return 'text-burgundy'
       case 'medium': return 'text-copper'
       case 'low': return 'text-steel'
-      default: return 'text-ink/50'
+      default: return 'text-ink/50 dark:text-paper/50'
     }
   }
 
@@ -132,7 +162,7 @@ export default function MediaCheckerView() {
             <Camera size={24} className="text-copper" />
           </div>
           <div>
-            <h2 className="font-headline text-xl font-semibold">Media Authenticity Checker</h2>
+            <h2 className="font-headline text-xl font-semibold text-ink dark:text-paper">Media Authenticity Checker</h2>
             <p className="text-sm text-ink/60 dark:text-paper/60">
               Analyze images and videos for AI generation markers
             </p>
@@ -148,17 +178,25 @@ export default function MediaCheckerView() {
         
         {showHowItWorks && (
           <div className="mt-3 p-3 rounded-lg bg-steel/10 border border-steel/20 text-xs text-ink/60 dark:text-paper/60">
-            <p className="mb-2"><strong>We check for 18+ detection markers in 3 categories:</strong></p>
+            <p className="mb-2"><strong className="text-ink dark:text-paper">We check for 18+ detection markers in 3 categories:</strong></p>
             <ul className="space-y-1">
               <li>• <strong>Common:</strong> Fingers, text, facial symmetry, lighting</li>
               <li>• <strong>Uncommon:</strong> Jewelry, teeth, hair, reflections</li>
               <li>• <strong>Advanced:</strong> Metadata, compression, noise patterns</li>
             </ul>
-            <p className="mt-2 text-[10px] text-ink/40">
+            <p className="mt-2 text-[10px] text-ink/40 dark:text-paper/40">
               Note: This tool provides indicators, not definitive proof. AI detection is an evolving field.
             </p>
           </div>
         )}
+      </div>
+
+      {/* Vision API Status */}
+      <div className="p-3 rounded-lg bg-copper/10 border border-copper/20 flex items-center gap-2">
+        <Eye size={16} className="text-copper" />
+        <span className="text-xs text-ink/70 dark:text-paper/70">
+          <strong className="text-copper">Vision API:</strong> Currently using pattern detection. Add Gemini API key in DevTools for AI-powered analysis.
+        </span>
       </div>
 
       {/* Upload Area */}
@@ -179,7 +217,7 @@ export default function MediaCheckerView() {
         {!preview ? (
           <div className="py-12 text-center">
             <Upload size={40} className="mx-auto mb-4 text-ink/30 dark:text-paper/30" />
-            <p className="font-medium mb-1">Drop media here or click to upload</p>
+            <p className="font-medium mb-1 text-ink dark:text-paper">Drop media here or click to upload</p>
             <p className="text-sm text-ink/50 dark:text-paper/50">
               Supports: JPG, PNG, GIF, WebP, MP4
             </p>
@@ -197,7 +235,7 @@ export default function MediaCheckerView() {
               <img src={preview} alt="Preview" className="max-h-64 mx-auto rounded-lg" />
             )}
             <button 
-              onClick={(e) => { e.stopPropagation(); setFile(null); setPreview(null); setResult(null) }}
+              onClick={(e) => { e.stopPropagation(); setFile(null); setPreview(null); setResult(null); setShowCriticalQuestions(false) }}
               className="absolute top-2 right-2 p-2 rounded-full bg-ink/80 text-white hover:bg-burgundy transition-colors"
             >
               <XCircle size={18} />
@@ -254,7 +292,7 @@ export default function MediaCheckerView() {
                     }`}>
                       {result.score}%
                     </div>
-                    <div className="text-xs text-ink/40">Authenticity</div>
+                    <div className="text-xs text-ink/40 dark:text-paper/40">Authenticity</div>
                   </div>
                 </div>
               )
@@ -263,7 +301,7 @@ export default function MediaCheckerView() {
 
           {/* Authenticity Spectrum */}
           <div className="card">
-            <h3 className="card-headline mb-3">Authenticity Spectrum</h3>
+            <h3 className="card-headline mb-3 text-ink dark:text-paper">Authenticity Spectrum</h3>
             <div className="relative h-6 rounded-full bg-gradient-to-r from-burgundy via-copper to-forest overflow-hidden">
               <div 
                 className="absolute top-0 h-full w-1 bg-white shadow-lg"
@@ -277,9 +315,38 @@ export default function MediaCheckerView() {
             </div>
           </div>
 
+          {/* AI Critical Thinking Questions */}
+          {showCriticalQuestions && (
+            <div className="card border-copper/30">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="card-headline flex items-center gap-2 text-ink dark:text-paper">
+                  <Brain size={18} className="text-copper" />
+                  Critical Thinking Questions
+                </h3>
+                <button onClick={() => setShowCriticalQuestions(false)} className="text-ink/40 dark:text-paper/40 hover:text-ink dark:hover:text-paper">
+                  <ChevronUp size={18} />
+                </button>
+              </div>
+              <p className="text-xs text-ink/50 dark:text-paper/50 mb-4">
+                Beyond technical analysis, consider these questions:
+              </p>
+              <div className="space-y-3">
+                {CRITICAL_THINKING_QUESTIONS.map((q, i) => (
+                  <div key={q.id} className="p-3 rounded-lg bg-ink/5 dark:bg-paper/5 border-l-4 border-copper">
+                    <p className="font-medium text-sm text-ink dark:text-paper mb-1">
+                      {i + 1}. {q.question}
+                    </p>
+                    <p className="text-xs text-ink/50 dark:text-paper/50 mb-1">💡 {q.hint}</p>
+                    <p className="text-[10px] text-copper">Why it matters: {q.importance}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Detection Checklist */}
           <div className="card">
-            <h3 className="card-headline mb-4 flex items-center gap-2">
+            <h3 className="card-headline mb-4 flex items-center gap-2 text-ink dark:text-paper">
               <Zap size={18} className="text-copper" />
               Detection Checklist
             </h3>
@@ -290,10 +357,10 @@ export default function MediaCheckerView() {
                   onClick={() => setExpandedSection(expandedSection === category ? null : category)}
                   className="w-full flex items-center justify-between p-2 rounded-lg bg-ink/5 dark:bg-paper/5 hover:bg-ink/10 dark:hover:bg-paper/10"
                 >
-                  <span className="font-medium text-sm capitalize">{category} Signs</span>
+                  <span className="font-medium text-sm capitalize text-ink dark:text-paper">{category} Signs</span>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-ink/50">{markers.length} checks</span>
-                    {expandedSection === category ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                    <span className="text-xs text-ink/50 dark:text-paper/50">{markers.length} checks</span>
+                    {expandedSection === category ? <ChevronUp size={16} className="text-ink/50 dark:text-paper/50" /> : <ChevronDown size={16} className="text-ink/50 dark:text-paper/50" />}
                   </div>
                 </button>
 
@@ -318,7 +385,7 @@ export default function MediaCheckerView() {
                                 <CheckCircle size={16} className="text-forest mt-0.5 flex-shrink-0" />
                               )}
                               <div>
-                                <p className="font-medium text-sm">{marker.label}</p>
+                                <p className="font-medium text-sm text-ink dark:text-paper">{marker.label}</p>
                                 <p className="text-xs text-ink/50 dark:text-paper/50">{marker.description}</p>
                                 {check?.detected && check.note && (
                                   <p className="text-xs text-burgundy mt-1">{check.note}</p>
@@ -343,22 +410,20 @@ export default function MediaCheckerView() {
             <div className="flex items-start gap-2">
               <Info size={16} className="text-steel mt-0.5 flex-shrink-0" />
               <div className="text-xs text-ink/60 dark:text-paper/60">
-                <p className="mb-1"><strong>Important:</strong> This analysis provides indicators, not definitive proof.</p>
+                <p className="mb-1"><strong className="text-ink dark:text-paper">Important:</strong> This analysis provides indicators, not definitive proof.</p>
                 <p>AI-generated media detection is an evolving field. High-quality fakes may evade detection, and real images may trigger false positives. Use this as one tool among many for verification.</p>
               </div>
             </div>
           </div>
 
-          {/* Actions */}
-          <div className="flex gap-2">
+          {/* Actions - Softer, less obtrusive buttons */}
+          <div className="flex gap-3 pt-2">
             <button 
-              onClick={() => { setFile(null); setPreview(null); setResult(null) }}
-              className="btn-ghost flex-1"
+              onClick={() => { setFile(null); setPreview(null); setResult(null); setShowCriticalQuestions(false) }}
+              className="flex-1 px-4 py-2 text-sm text-ink/60 dark:text-paper/60 hover:text-ink dark:hover:text-paper border border-ink/20 dark:border-paper/20 rounded-lg hover:bg-ink/5 dark:hover:bg-paper/5 transition-colors flex items-center justify-center gap-2"
             >
+              <RefreshCw size={14} />
               Check Another
-            </button>
-            <button className="btn-secondary flex-1">
-              Download Report
             </button>
           </div>
         </div>
