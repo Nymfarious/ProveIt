@@ -10,7 +10,6 @@ const currentDocket = [
     status: 'Decided',
     decision: '6-3',
     summary: 'Presidents have absolute immunity for core constitutional powers, presumptive immunity for official acts.',
-    // NEW: POV Analysis
     povs: {
       farLeft: 'Dangerous expansion of executive power that puts presidents above the law. Sets precedent for authoritarian abuse.',
       left: 'Overly broad immunity risks accountability. Narrow ruling would have been more appropriate.',
@@ -59,8 +58,6 @@ const shadowDocket = [
   { id: 'A-156', date: '2024-11-10', type: 'Emergency Stay', issue: 'Environmental regulation', outcome: 'Granted', vote: 'Unsigned' },
 ]
 
-// Justice data with bias scores based on voting patterns
-// Scale: -2 (very liberal) to +2 (very conservative)
 const justices = [
   { name: 'John Roberts', position: 'Chief Justice', appointed: '2005', appointedBy: 'G.W. Bush', wiki: 'https://en.wikipedia.org/wiki/John_Roberts', portrait: 'https://www.supremecourt.gov/about/images/JGRoberts.jpg', initials: 'JR', biasScore: 0.8, biasLabel: 'Conservative', agreementRate: 87 },
   { name: 'Clarence Thomas', position: 'Associate Justice', appointed: '1991', appointedBy: 'G.H.W. Bush', wiki: 'https://en.wikipedia.org/wiki/Clarence_Thomas', portrait: 'https://www.supremecourt.gov/about/images/CThomas.jpg', initials: 'CT', biasScore: 1.9, biasLabel: 'Very Conservative', agreementRate: 82 },
@@ -119,9 +116,7 @@ export default function SupremeCourtView() {
     return scotusNews.filter(n => new Date(n.date) >= cutoff)
   }
 
-  // Render Justice Bias Meter
   const renderBiasMeter = (score) => {
-    // Score from -2 to +2, position from 0 to 100
     const position = ((score + 2) / 4) * 100
     return (
       <div className="relative h-2 w-24 rounded-full bg-gradient-to-r from-blue-600 via-slate-400 to-red-600">
@@ -133,7 +128,6 @@ export default function SupremeCourtView() {
     )
   }
 
-  // POV color coding
   const povColors = {
     farLeft: { bg: 'bg-blue-900/20', border: 'border-blue-900/30', text: 'text-blue-300', label: 'Far Left' },
     left: { bg: 'bg-blue-600/20', border: 'border-blue-600/30', text: 'text-blue-400', label: 'Left' },
@@ -161,7 +155,7 @@ export default function SupremeCourtView() {
           
           <button onClick={() => setShowNewsPanel(!showNewsPanel)}
             className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
-              showNewsPanel ? 'bg-copper text-white' : 'bg-ink/5 dark:bg-paper/5 hover:bg-ink/10'
+              showNewsPanel ? 'bg-copper text-white' : 'bg-ink/5 dark:bg-paper/5 hover:bg-ink/10 dark:hover:bg-paper/10'
             }`}>
             <Newspaper size={18} />
             <span className="hidden sm:inline text-sm">News</span>
@@ -169,7 +163,7 @@ export default function SupremeCourtView() {
         </div>
       </div>
 
-      {/* News Panel */}
+      {/* News Panel - FIXED DROPDOWN STYLING */}
       {showNewsPanel && (
         <div className="card border-copper/30">
           <div className="flex items-center justify-between mb-4">
@@ -178,12 +172,27 @@ export default function SupremeCourtView() {
               SCOTUS News
             </h3>
             <div className="flex items-center gap-2">
-              <select value={newsFilter} onChange={(e) => setNewsFilter(e.target.value)}
-                className="text-xs px-2 py-1 rounded border border-ink/20 dark:border-paper/20 bg-transparent">
-                <option value="3days">Past 3 Days</option>
-                <option value="7days">Past 7 Days</option>
-              </select>
-              <button onClick={() => setShowNewsPanel(false)} className="text-ink/40 hover:text-ink">
+              {/* FIXED: Custom dropdown with proper dark mode styling */}
+              <div className="relative">
+                <select 
+                  value={newsFilter} 
+                  onChange={(e) => setNewsFilter(e.target.value)}
+                  className="appearance-none text-xs px-3 py-1.5 pr-8 rounded-lg
+                           border border-ink/20 dark:border-paper/20 
+                           bg-paper dark:bg-ink 
+                           text-ink dark:text-paper
+                           focus:outline-none focus:ring-2 focus:ring-copper/50
+                           cursor-pointer"
+                >
+                  <option value="3days" className="bg-paper dark:bg-ink text-ink dark:text-paper">Past 3 Days</option>
+                  <option value="7days" className="bg-paper dark:bg-ink text-ink dark:text-paper">Past 7 Days</option>
+                </select>
+                <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-ink/50 dark:text-paper/50" />
+              </div>
+              <button 
+                onClick={() => setShowNewsPanel(false)} 
+                className="p-1.5 rounded-lg hover:bg-ink/10 dark:hover:bg-paper/10 text-ink/60 dark:text-paper/60 hover:text-ink dark:hover:text-paper transition-colors"
+              >
                 <X size={18} />
               </button>
             </div>
@@ -192,8 +201,8 @@ export default function SupremeCourtView() {
             {filterNewsByDays(newsFilter === '3days' ? 3 : 7).map((article) => (
               <a key={article.id} href={article.url} target="_blank" rel="noopener noreferrer"
                 className="block p-3 rounded-lg bg-ink/5 dark:bg-paper/5 hover:bg-copper/10 transition-colors">
-                <h4 className="text-sm font-medium mb-1">{article.title}</h4>
-                <div className="flex items-center gap-2 text-xs text-ink/50">
+                <h4 className="text-sm font-medium mb-1 text-ink dark:text-paper">{article.title}</h4>
+                <div className="flex items-center gap-2 text-xs text-ink/50 dark:text-paper/50">
                   <span>{article.source}</span>
                   <span>{article.date}</span>
                 </div>
@@ -210,7 +219,7 @@ export default function SupremeCourtView() {
           return (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)}
               className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                activeTab === tab.id ? 'bg-paper dark:bg-ink shadow-sm' : 'text-ink/60 dark:text-paper/60'
+                activeTab === tab.id ? 'bg-paper dark:bg-ink shadow-sm text-ink dark:text-paper' : 'text-ink/60 dark:text-paper/60'
               }`}>
               <Icon size={16} />
               <span className="hidden sm:inline">{tab.label}</span>
@@ -241,16 +250,16 @@ export default function SupremeCourtView() {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="font-mono text-xs text-ink/40">{caseItem.id}</span>
+                        <span className="font-mono text-xs text-ink/40 dark:text-paper/40">{caseItem.id}</span>
                         <span className={`text-xs px-2 py-0.5 rounded-full ${getStatusColor(caseItem.status)}`}>
                           {caseItem.status}
                         </span>
-                        {caseItem.decision && <span className="text-xs font-mono text-ink/50">{caseItem.decision}</span>}
+                        {caseItem.decision && <span className="text-xs font-mono text-ink/50 dark:text-paper/50">{caseItem.decision}</span>}
                       </div>
-                      <h4 className="font-headline font-semibold">{caseItem.name}</h4>
+                      <h4 className="font-headline font-semibold text-ink dark:text-paper">{caseItem.name}</h4>
                       <p className="text-sm text-ink/60 dark:text-paper/60">{caseItem.issue}</p>
                     </div>
-                    {expandedCase === caseItem.id ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                    {expandedCase === caseItem.id ? <ChevronUp size={20} className="text-ink/50 dark:text-paper/50" /> : <ChevronDown size={20} className="text-ink/50 dark:text-paper/50" />}
                   </div>
                 </button>
 
@@ -259,7 +268,7 @@ export default function SupremeCourtView() {
                     <p className="text-sm text-ink/70 dark:text-paper/70">{caseItem.summary}</p>
                     
                     {caseItem.argued && (
-                      <p className="text-xs text-ink/40 flex items-center gap-1">
+                      <p className="text-xs text-ink/40 dark:text-paper/40 flex items-center gap-1">
                         <Calendar size={12} /> Argued: {new Date(caseItem.argued).toLocaleDateString()}
                       </p>
                     )}
@@ -318,18 +327,18 @@ export default function SupremeCourtView() {
                   <AlertTriangle size={20} className="text-copper" />
                 </div>
                 <div>
-                  <h3 className="font-headline font-semibold mb-1">What is the Shadow Docket?</h3>
+                  <h3 className="font-headline font-semibold mb-1 text-ink dark:text-paper">What is the Shadow Docket?</h3>
                   <p className="text-sm text-ink/60 dark:text-paper/60">
                     Emergency orders issued without full briefing or signed opinions.
                   </p>
                 </div>
               </div>
-              <button onClick={() => setShowShadowInfo(!showShadowInfo)} className="text-ink/40 hover:text-copper">
+              <button onClick={() => setShowShadowInfo(!showShadowInfo)} className="text-ink/40 dark:text-paper/40 hover:text-copper">
                 <Info size={18} />
               </button>
             </div>
             {showShadowInfo && (
-              <div className="mt-4 p-3 rounded-lg bg-steel/10 border border-steel/20 text-sm text-ink/60">
+              <div className="mt-4 p-3 rounded-lg bg-steel/10 border border-steel/20 text-sm text-ink/60 dark:text-paper/60">
                 <ul className="space-y-1 text-xs">
                   <li>• Often issued without explanation or recorded votes</li>
                   <li>• Can effectively decide cases without full consideration</li>
@@ -348,16 +357,16 @@ export default function SupremeCourtView() {
                 <div key={order.id} className="p-4 rounded-lg bg-ink/5 dark:bg-paper/5 border-l-4 border-copper">
                   <div className="flex items-start justify-between mb-2">
                     <div>
-                      <span className="font-mono text-xs text-ink/40">{order.id}</span>
-                      <span className="mx-2 text-ink/20">•</span>
-                      <span className="text-xs text-ink/50">{order.type}</span>
+                      <span className="font-mono text-xs text-ink/40 dark:text-paper/40">{order.id}</span>
+                      <span className="mx-2 text-ink/20 dark:text-paper/20">•</span>
+                      <span className="text-xs text-ink/50 dark:text-paper/50">{order.type}</span>
                     </div>
-                    <span className="text-xs text-ink/40">{order.date}</span>
+                    <span className="text-xs text-ink/40 dark:text-paper/40">{order.date}</span>
                   </div>
-                  <p className="font-medium text-sm mb-1">{order.issue}</p>
+                  <p className="font-medium text-sm mb-1 text-ink dark:text-paper">{order.issue}</p>
                   <div className="flex items-center gap-3 text-xs">
                     <span className={`font-semibold ${getOutcomeColor(order.outcome)}`}>{order.outcome}</span>
-                    {order.vote && <span className="text-ink/50">Vote: {order.vote}</span>}
+                    {order.vote && <span className="text-ink/50 dark:text-paper/50">Vote: {order.vote}</span>}
                   </div>
                 </div>
               ))}
@@ -388,7 +397,7 @@ export default function SupremeCourtView() {
                 <li>• Data from Martin-Quinn scores and SCOTUSblog statistics</li>
                 <li>• Agreement rate = % alignment with majority in decided cases</li>
               </ul>
-              <p className="mt-2 text-[10px] text-ink/40">Sources: Martin-Quinn Scores, SCOTUSblog Stat Pack</p>
+              <p className="mt-2 text-[10px] text-ink/40 dark:text-paper/40">Sources: Martin-Quinn Scores, SCOTUSblog Stat Pack</p>
             </div>
           )}
 
@@ -404,7 +413,7 @@ export default function SupremeCourtView() {
                     <img src={justice.portrait} alt={justice.name} className="w-full h-full object-cover"
                       onError={() => handleImageError(justice.name)} />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-lg font-bold text-ink/40">
+                    <div className="w-full h-full flex items-center justify-center text-lg font-bold text-ink/40 dark:text-paper/40">
                       {justice.initials}
                     </div>
                   )}
@@ -413,7 +422,7 @@ export default function SupremeCourtView() {
                 {/* Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h4 className="font-headline font-semibold">{justice.name}</h4>
+                    <h4 className="font-headline font-semibold text-ink dark:text-paper">{justice.name}</h4>
                     {justice.position === 'Chief Justice' && (
                       <span className="text-xs text-copper">Chief</span>
                     )}
@@ -441,7 +450,7 @@ export default function SupremeCourtView() {
                 {/* Agreement Rate */}
                 <div className="text-center flex-shrink-0">
                   <div className="text-lg font-bold text-copper">{justice.agreementRate}%</div>
-                  <div className="text-[10px] text-ink/40">Agreement</div>
+                  <div className="text-[10px] text-ink/40 dark:text-paper/40">Agreement</div>
                 </div>
               </div>
             ))}

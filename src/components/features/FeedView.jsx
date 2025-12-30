@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Newspaper, TrendingUp, Clock, ExternalLink, Loader2, RefreshCw, Globe, Filter, History, X, ChevronLeft, ChevronRight, Film } from 'lucide-react'
+import { Newspaper, TrendingUp, Clock, ExternalLink, Loader2, RefreshCw, Globe, Filter, History, X, ChevronLeft, ChevronRight, Film, ChevronDown } from 'lucide-react'
 import { fetchHeadlines } from '../../lib/news'
 
 const categories = [
@@ -19,19 +19,12 @@ const regions = [
   { id: 'world', label: 'World' },
 ]
 
-// Extract potential IMDB search terms from article
 const extractImdbSearchTerms = (article) => {
-  // Would be smarter with NLP, but basic extraction for now
   const title = article.title || ''
-  // Look for quoted titles, movie/show names patterns
   const quotedMatch = title.match(/"([^"]+)"/)
   if (quotedMatch) return quotedMatch[1]
-  
-  // Look for common patterns like "Actor in Movie" or "Show: Episode"
   const colonMatch = title.match(/^([^:]+):/)
   if (colonMatch) return colonMatch[1].trim()
-  
-  // Return first few meaningful words as fallback
   return title.split(' ').slice(0, 3).join(' ')
 }
 
@@ -158,7 +151,7 @@ export default function FeedView() {
                 key={cat.id}
                 onClick={() => { setCategory(cat.id); setActiveHistoryIndex(-1) }}
                 className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors flex items-center gap-1.5 ${
-                  category === cat.id ? 'bg-copper text-white' : 'bg-ink/5 dark:bg-paper/5 hover:bg-ink/10'
+                  category === cat.id ? 'bg-copper text-white' : 'bg-ink/5 dark:bg-paper/5 text-ink dark:text-paper hover:bg-ink/10 dark:hover:bg-paper/10'
                 }`}
               >
                 {cat.hasImdb && <Film size={14} />}
@@ -169,11 +162,11 @@ export default function FeedView() {
           
           <div className="flex gap-1 ml-2">
             <button onClick={() => setShowHistory(!showHistory)}
-              className={`p-2 rounded-lg transition-colors ${showHistory ? 'bg-steel text-white' : 'bg-ink/5 dark:bg-paper/5'}`}>
+              className={`p-2 rounded-lg transition-colors ${showHistory ? 'bg-steel text-white' : 'bg-ink/5 dark:bg-paper/5 text-ink dark:text-paper'}`}>
               <History size={18} />
             </button>
             <button onClick={() => setShowFilters(!showFilters)}
-              className={`p-2 rounded-lg transition-colors ${showFilters ? 'bg-copper text-white' : 'bg-ink/5 dark:bg-paper/5'}`}>
+              className={`p-2 rounded-lg transition-colors ${showFilters ? 'bg-copper text-white' : 'bg-ink/5 dark:bg-paper/5 text-ink dark:text-paper'}`}>
               <Filter size={18} />
             </button>
           </div>
@@ -186,7 +179,7 @@ export default function FeedView() {
             {regions.map((r) => (
               <button key={r.id} onClick={() => setRegion(r.id)}
                 className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
-                  region === r.id ? 'bg-steel text-white' : 'bg-ink/10 dark:bg-paper/10'
+                  region === r.id ? 'bg-steel text-white' : 'bg-ink/10 dark:bg-paper/10 text-ink dark:text-paper'
                 }`}>
                 {r.label}
               </button>
@@ -201,9 +194,9 @@ export default function FeedView() {
           <div className="flex items-center justify-between mb-3">
             <h3 className="card-headline flex items-center gap-2">
               <History size={18} className="text-steel" />
-              Feed History <span className="text-xs font-normal text-ink/40">(Last 30 days)</span>
+              Feed History <span className="text-xs font-normal text-ink/40 dark:text-paper/40">(Last 30 days)</span>
             </h3>
-            <button onClick={() => setShowHistory(false)} className="text-ink/40 hover:text-ink dark:hover:text-paper">
+            <button onClick={() => setShowHistory(false)} className="p-1.5 rounded-lg hover:bg-ink/10 dark:hover:bg-paper/10 text-ink/40 dark:text-paper/40">
               <X size={18} />
             </button>
           </div>
@@ -217,8 +210,8 @@ export default function FeedView() {
                   activeHistoryIndex === -1 ? 'bg-forest/10 border border-forest/30' : 'bg-ink/5 dark:bg-paper/5'
                 }`}>
                 <div className="flex items-center gap-2">
-                  <span className={`w-2 h-2 rounded-full ${activeHistoryIndex === -1 ? 'bg-forest animate-pulse' : 'bg-ink/30'}`} />
-                  <span className="font-medium text-sm">Live Feed</span>
+                  <span className={`w-2 h-2 rounded-full ${activeHistoryIndex === -1 ? 'bg-forest animate-pulse' : 'bg-ink/30 dark:bg-paper/30'}`} />
+                  <span className="font-medium text-sm text-ink dark:text-paper">Live Feed</span>
                 </div>
                 {activeHistoryIndex === -1 && <span className="text-xs text-forest">Current</span>}
               </button>
@@ -230,12 +223,12 @@ export default function FeedView() {
                   }`}>
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="text-sm font-medium">{categories.find(c => c.id === entry.category)?.label}</span>
-                      <span className="text-xs text-ink/40 ml-2">{regions.find(r => r.id === entry.region)?.label}</span>
+                      <span className="text-sm font-medium text-ink dark:text-paper">{categories.find(c => c.id === entry.category)?.label}</span>
+                      <span className="text-xs text-ink/40 dark:text-paper/40 ml-2">{regions.find(r => r.id === entry.region)?.label}</span>
                     </div>
-                    <span className="text-xs text-ink/40">{formatHistoryTime(entry.timestamp)}</span>
+                    <span className="text-xs text-ink/40 dark:text-paper/40">{formatHistoryTime(entry.timestamp)}</span>
                   </div>
-                  <p className="text-xs text-ink/50 mt-1">{entry.articleCount} articles</p>
+                  <p className="text-xs text-ink/50 dark:text-paper/50 mt-1">{entry.articleCount} articles</p>
                 </button>
               ))}
             </div>
@@ -321,7 +314,7 @@ export default function FeedView() {
                         </div>
                       )}
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-headline font-semibold leading-tight mb-1 group-hover:text-copper transition-colors line-clamp-2">
+                        <h4 className="font-headline font-semibold leading-tight mb-1 group-hover:text-copper transition-colors line-clamp-2 text-ink dark:text-paper">
                           {article.title}
                         </h4>
                         {article.description && (
@@ -334,7 +327,6 @@ export default function FeedView() {
                           </span>
                           <ExternalLink size={12} className="text-ink/30 dark:text-paper/30" />
                           
-                          {/* IMDB Link for Movies/TV */}
                           {showImdbLinks && imdbSearch && (
                             <a
                               href={`https://www.imdb.com/find/?q=${encodeURIComponent(imdbSearch)}`}
